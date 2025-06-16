@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Tree View -->
+    <record id="view_hostel_room_tree" model="ir.ui.view">
+        <field name="name">hostel.room.tree</field>
+        <field name="model">hostel.room</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="room_code"/>
+                <field name="hostel_id"/>
+                <field name="floor_number"/>
+                <field name="capacity"/>
+                <field name="rent_amount"/>
+                <field name="currency_id"/>
+                <field name="active"/>
+            </tree>
+        </field>
+    </record>
+
+  <!-- Form View -->
+<record id="view_hostel_room_form" model="ir.ui.view">
+    <field name="name">hostel.room.form</field>
+    <field name="model">hostel.room</field>
+    <field name="arch" type="xml">
+        <form string="Hostel Room">
+            <sheet>
+                <div class="oe_title">
+                <label for="room_code" class="oe_edit_only"/>
+                    <h1>
+                        <field name="room_code" required="1" string= "Room code" />
+                    </h1>
+                </div>
+                <group>
+                    <group>
+                        <field name="room_no" required="1"/>
+                        <field name="hostel_id" required="1"/>
+                        <field name="floor_number"/>
+                    </group>
+                    <group>
+                        <field name="capacity"/>
+                        <field name="student_per_room" required="1"/>
+                        <field name="availability"/>
+                    </group>
+                </group>
+                <group>
+                    <group>
+                        <field name="rent_amount"/>
+                        <field name="currency_id" required="1"/>
+                    </group>
+                    <group>
+                        <field name="active"/>
+                    </group>
+                </group>
+                <group>
+                    <field name="notes"/>
+                </group>
+            </sheet>
+        </form>
+    </field>
+</record>
+    <!-- Search View -->
+    <record id="view_hostel_room_search" model="ir.ui.view">
+        <field name="name">hostel.room.search</field>
+        <field name="model">hostel.room</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="room_code"/>
+                <field name="hostel_id"/>
+                <field name="active"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_hostel_room" model="ir.actions.act_window">
+        <field name="name">Hostel Rooms</field>
+        <field name="res_model">hostel.room</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="oe_view_nocontent_create">
+                Click to create your first hostel room
+            </p>
+        </field>
+    </record>
+
+    <!-- Menu Items -->
+    <menuitem id="hostel_room_menu"
+              name="Rooms"
+              parent="hostel_main_menu"
+              action="action_hostel_room"
+              sequence="2"
+              groups="my_hostel.group_hostel_manager"/>
+
+</odoo>
