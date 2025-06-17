@@ -23,6 +23,7 @@
         'views/hostel.xml',
         'views/hostel_room.xml',
         'views/hostel_category.xml',
+        'views/hostel_student.xml',
     ],
     'assets': {
         'web.assets_backend': [
