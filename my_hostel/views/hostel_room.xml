@@ -56,9 +56,16 @@
                     <field name="notes"/>
                 </group>
             </sheet>
+
+            <button name="make_available" string="Make Availabe" type="object"/>
+            <button name="make_closed" string="Make Closed" type="object"/>
+            <field name="state" widget="statusbar" />
+
         </form>
     </field>
 </record>
+
+
     <!-- Search View -->
     <record id="view_hostel_room_search" model="ir.ui.view">
         <field name="name">hostel.room.search</field>

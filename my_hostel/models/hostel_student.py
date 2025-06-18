@@ -37,9 +37,6 @@ class HostelStudent(models.Model):
                     student.discharge_date = (student.admission_date + timedelta(days=student.duration)).strftime('%Y-%m-%d')
 
 
-
-
-
 # from odoo import models, fields, api
 
 # class HostelStudent(models.Model):
