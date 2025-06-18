@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- Tree View -->
+    <record id="view_hostel_room_category_tree_view" model="ir.ui.view">
+        <field name="name">hostel.room.category.tree.view</field>
+        <field name="model">hostel.room.category</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="parent_id"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_hostel_room_category_form_view" model="ir.ui.view">
+        <field name="name">hostel.room.category.form.view</field>
+        <field name="model">hostel.room.category</field>
+        <field name="arch" type="xml">
+            <form string="Room Category">
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="parent_id"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_hostel_room_category_search_view" model="ir.ui.view">
+        <field name="name">hostel.room.category.search.view</field>
+        <field name="model">hostel.room.category</field>
+        <field name="arch" type="xml">
+            <search string="Search Room Categories">
+                <field name="name"/>
+                <field name="parent_id"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_hostel_room_category" model="ir.actions.act_window">
+        <field name="name">Room Categories</field>
+        <field name="res_model">hostel.room.category</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_hostel_room_category_search_view"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your room categories here.
+            </p>
+        </field>
+    </record>
+
+    <!-- Menu Item -->
+    <menuitem id="menu_hostel_root" name="Hostel Management"/>
+
+    <menuitem id="menu_hostel_room_category"
+              name="Room Categories"
+              parent="menu_hostel_root"
+              action="action_hostel_room_category"/>
+
+</odoo>
