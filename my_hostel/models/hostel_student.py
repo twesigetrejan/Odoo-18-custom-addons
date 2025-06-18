@@ -6,16 +6,18 @@ class HostelStudent(models.Model):
     _description = 'Information about a hostel student'
     _order = 'id desc, name'
     _rec_name = 'student_code'
-    _inherits= {'res.partner': 'partner_id'}
+    
     
 
-    hostel_id = fields.Many2one('hostel.hostel', related='room_id.hostel_id')
+    hostel_id = fields.Many2one('hostel.hostel', string='Hostel')
+    room_id = fields.Many2one('hostel.room', string='Room', required=True, domain="[('hostel_id', '=', hostel_id)]")
+
     student_code = fields.Char(string='Student Code', help='Unique code for the student')
-    name = fields.Char(related='partner_id.name', required=True, store=True, string='Student Name')
+    name = fields.Char(string='Student Name', required=True)
 
     gender = fields.Selection([('male', 'Male'), ('female', 'Female')], string='Gender')
     active = fields.Boolean(string='Active', default=True, help='Activate/Deactivate student record')
-    room_id = fields.Many2one('hostel.room', string='Room', required=True, help='Room assigned to the student')
+    
     admission_date = fields.Date(default=fields.Datetime.today, string='Admission Date', help='Date when the student was admitted to the hostel')
     discharge_date = fields.Date(string='Discharge Date', help='Date when the student left the hostel')
     duration = fields.Integer(string='Duration', compute='_compute_check_duration', store=True, help='Duration of stay in the hostel in days', inverse='_inverse_duration')

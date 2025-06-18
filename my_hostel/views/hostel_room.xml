@@ -60,6 +60,7 @@
             <button name="make_available" string="Make Availabe" type="object"/>
             <button name="make_closed" string="Make Closed" type="object"/>
             <field name="state" widget="statusbar" />
+            <button name="log_all_room_members" string="Room members" type="object" />
 
         </form>
     </field>

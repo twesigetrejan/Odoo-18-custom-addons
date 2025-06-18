@@ -1,7 +1,9 @@
 from odoo import models, fields, api
 from odoo.exceptions import ValidationError, UserError
 from odoo.tools.translate import _
+import logging
 
+_logger = logging.getLogger(__name__)
 class HostelRoom(models.Model):
     _name = 'hostel.room'
     _description = 'Information about a hostel room'
@@ -75,3 +77,16 @@ class HostelRoom(models.Model):
         """Compute the availability of the room based on the number of students assigned."""
         for record in self:
            record.availability = record.student_per_room - len(record.student_ids.ids)
+
+
+    def log_all_room_members(self):
+        """Log all students assigned to this room."""
+        for room in self:
+            students = room.student_ids
+            if students:
+                student_names = ', '.join(students.mapped('name'))
+                _logger.info(f"Room {room.room_no} has the following members: {student_names}")
+            else:
+                _logger.info(f"Room {room.room_no} has no members assigned.")
+        return True
+    
