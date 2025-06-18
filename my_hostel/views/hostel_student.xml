@@ -30,7 +30,7 @@
                                         <field name="name" required="1" placeholder="Name"/>
                                     </td>
                                     <td style="padding-right:10px;">
-                                        <field name="student_code" placeholder="Code"/>
+                                        <field name="student_code" placeholder="Student reg no"/>
                                     </td>
                                 </tr>
                             </table>
@@ -38,15 +38,15 @@
                     </div>
 
                     <group>
-                        <group>
+                    
                             <label for="name" string="Student name"/>
                             <field name="name" placeholder="Student Name" required="1"/>
                             <field name="student_code" placeholder="Student Code" required="1"/>
-                            <field name="gender"/>
+                            <field name="gender" placeholder="Students Gender"/>
                             <field name="room_id" placeholder="Room" options='{"no_create": True}'/>
                             <field name="hostel_id" placeholder="Hostel" options='{"no_create": True}'/>
                             <field name="admission_date" placeholder="Day of student admission"/>
-                        </group>
+                    
                     </group>
                 </sheet>
             </form>

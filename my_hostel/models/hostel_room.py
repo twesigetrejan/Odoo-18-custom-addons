@@ -1,5 +1,7 @@
 from odoo import models, fields, api
-from odoo.exceptions import ValidationError
+from odoo.exceptions import ValidationError, UserError
+from odoo.tools.translate import _
+
 class HostelRoom(models.Model):
     _name = 'hostel.room'
     _description = 'Information about a hostel room'
@@ -51,7 +53,8 @@ class HostelRoom(models.Model):
             if room.is_allowed_transition(room.state, new_state):
                 room.state = new_state
             else:
-                continue
+                msg = _("Transition from %s to %s is not allowed.") % (room.state, new_state)
+                raise UserError(msg)
     
     def make_available(self):
         """Change the state of the room if change is allowed."""

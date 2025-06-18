@@ -75,6 +75,7 @@
                 <field name="room_code"/>
                 <field name="hostel_id"/>
                 <field name="active"/>
+                <!-- needs addition of search fields to include hostel name -->
             </search>
         </field>
     </record>
