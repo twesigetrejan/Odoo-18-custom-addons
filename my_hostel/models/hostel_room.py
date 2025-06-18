@@ -90,3 +90,15 @@ class HostelRoom(models.Model):
                 _logger.info(f"Room {room.room_no} has no members assigned.")
         return True
     
+
+    def find_room(self):
+        """Find a room based on the room number and name."""
+        domain = [ 
+            '|', 
+                '&', ('name', 'ilike', 'Room Name'), 
+                    ('category_id.name', 'ilike', 'Category Name'), 
+                '&', ('name', 'ilike', 'Second Room Name 2'), 
+                    ('category_id.name', 'ilike', 'SecondCategory Name 2') 
+        ]
+
+        
