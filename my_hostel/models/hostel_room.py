@@ -4,6 +4,7 @@ from odoo.tools.translate import _
 import logging
 
 _logger = logging.getLogger(__name__)
+
 class HostelRoom(models.Model):
     _name = 'hostel.room'
     _description = 'Information about a hostel room'
@@ -101,4 +102,28 @@ class HostelRoom(models.Model):
                     ('category_id.name', 'ilike', 'SecondCategory Name 2') 
         ]
 
-        
+    def filter_members(self):
+        all_rooms = self.search([])
+        return self.rooms_with_multiple_members(all_rooms)
+
+    def rooms_with_multiple_members(self, all_rooms):
+        def predicate(room):
+            if len(room.student_ids) > 1:
+                _logger.info(f"Room {room.room_no} has multiple members: {len(room.student_ids)}")
+                return True
+            return False
+        return all_rooms.filtered(predicate)
+
+
+    @api.model
+    def get_members_names(self, rooms):
+        """Get names of all members in the given rooms."""
+        return rooms.mapped('member_ids.name')
+    
+
+    @api.model
+    def sort_rooms_by_capacity(self, rooms):
+        return rooms.sorted(key= 'capacity', reverse=True)
+    
+    
+    
