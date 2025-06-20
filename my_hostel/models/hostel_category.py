@@ -6,7 +6,7 @@ class HostelCategory(models.Model):
     _name = 'hostel.category'
     _parent_store = True
     _parent_name = 'parent_id'
-
+    _description = 'Hostel Category'
     
     name = fields.Char('Hostel category')
     

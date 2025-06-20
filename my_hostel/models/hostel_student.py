@@ -1,5 +1,6 @@
 from datetime import timedelta
 from odoo import models, fields, api
+from odoo.exceptions import UserError
 
 class HostelStudent(models.Model):
     _name = 'hostel.student'
@@ -17,7 +18,11 @@ class HostelStudent(models.Model):
 
     gender = fields.Selection([('male', 'Male'), ('female', 'Female')], string='Gender')
     active = fields.Boolean(string='Active', default=True, help='Activate/Deactivate student record')
-    
+    status = fields.Selection([("draft", "Draft"), 
+       ("reservation", "Reservation"), ("pending", "Pending"), 
+       ("paid", "Done"),("discharge", "Discharge"), ("cancel", "Cancel")], 
+       string="Status", copy=False, default="draft", 
+       help="State of the student hostel") 
     admission_date = fields.Date(default=fields.Datetime.today, string='Admission Date', help='Date when the student was admitted to the hostel')
     discharge_date = fields.Date(string='Discharge Date', help='Date when the student left the hostel')
     duration = fields.Integer(string='Duration', compute='_compute_check_duration', store=True, help='Duration of stay in the hostel in days', inverse='_inverse_duration')
@@ -38,3 +43,17 @@ class HostelStudent(models.Model):
                 duration = (student.discharge_date - student.admission_date).days
                 if duration != student.duration:
                     student.discharge_date = (student.admission_date + timedelta(days=student.duration)).strftime('%Y-%m-%d')
+
+    # def action_assign_room(self):
+    #     self.ensure_one()
+    #     if self.status != 'paid':
+    #         raise UserError("You cannot assign a room to this student until the payment is made.")
+    #     room_as_superuser = self.env['hostel.room'].sudo()
+
+    #     room_rec = room_as_superuser.create({ 
+    #        "name": "Room A-103", 
+    #        "room_no": "A-103", 
+    #        "floor_no": 1, 
+    #        "room_category_id": self.env.ref("my_hostel.single_room_categ").id, 
+    #        "hostel_id": self.hostel_id.id, 
+    #    })
