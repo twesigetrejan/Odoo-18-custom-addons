@@ -36,6 +36,9 @@ class HostelRoom(models.Model):
     availability = fields.Float(compute = '_compute_check_availability', string='Availability', help="Room availability in hostel", store=True)
     date_terminate = fields.Date(string='Date of Termination', help='Date when the room was terminated or closed')
 
+    cost_price = fields.Float('Room cost', help='Cost of the room per month', default=0.0)
+    
+
     student_ids = fields.One2many(
         'hostel.student', 'room_id', string='Students',
         help='Students assigned to this room'
@@ -50,6 +53,8 @@ class HostelRoom(models.Model):
         domain="[('active', '=', True)]",
         help="Amenities available in this room"
     )
+    previous_room_id = fields.Many2one('hostel.room', string='Previous Room')
+
 
     state = fields.Selection(
         [('draft', 'Unavailable'), ('available', 'Available'), ('closed', 'Closed'),], string='State', default='draft', help='State of the room')
@@ -183,3 +188,14 @@ class HostelRoom(models.Model):
             args += ['|','|',('name', operator, name), ('isbn', operator, name),  ('author_ids.name', operator, name)]
         return super(HostelRoom, self)._name_search( 
          name=name, args=args, operator=operator, limit=limit, name_get_uid=name_get_uid)
+    
+    
+    def get_average_cost(self):
+        grouped_result  = self.read_group(
+            [('cost_price', '!=', False)],
+            ['category_id', 'cost_price:avg'],
+            ['category_id']
+        )
+        return grouped_result
+    
+            

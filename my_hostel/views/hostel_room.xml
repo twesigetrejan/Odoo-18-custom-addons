@@ -14,6 +14,7 @@
                 <field name="rent_amount"/>
                 <field name="currency_id"/>
                 <field name="active"/>
+                <field name="previous_room_id" />
             </tree>
         </field>
     </record>
@@ -66,6 +67,8 @@
             <button name="make_closed" string="Make Closed" type="object"/>
             <field name="state" widget="statusbar" />
             <button name="log_all_room_members" string="Room members" type="object" />
+            <button name="get_average_cost" string="Average Cost" type="object" />
+
             <!-- <button name="rooms_with_multiple_members" string="Rooms with multiple members" type="object" /> -->
         </form>
     </field>

@@ -33,3 +33,4 @@ class RoomCategory(models.Model):
             if not self.search([('name', '=', vals['name'])]):
                 self.create(vals)
         return True
+    
