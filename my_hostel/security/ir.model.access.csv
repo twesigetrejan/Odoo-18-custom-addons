@@ -4,3 +4,5 @@ access_hostel_manager_id,access.hostel.manager,my_hostel.model_hostel_hostel,my_
  ostel.group_hostel_manager,1,1,1,1 
 access_hostel_user_id,access.hostel.user,my_hostel.model_hostel_hostel,my_hostel.
  group_hostel_user,1,0,0,0
+
+

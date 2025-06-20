@@ -9,7 +9,7 @@
             <tree>
                 <field name="room_code"/>
                 <field name="hostel_id"/>
-                <field name="floor_number"/>
+                <field name="category_id"/>
                 <field name="capacity"/>
                 <field name="rent_amount"/>
                 <field name="currency_id"/>
@@ -34,6 +34,10 @@
                 <group>
                     <group>
                         <field name="room_no" required="1"/>
+                        <field name="category_id" 
+                        widget="many2one" 
+                        options="{'no_open': True, 'no_create': True}"
+                        context="{'default_active': True}"/>
                         <field name="hostel_id" required="1"/>
                         <field name="floor_number"/>
                     </group>
@@ -54,6 +58,7 @@
                 </group>
                 <group>
                     <field name="notes"/>
+                    <field name = "remarks"/>
                 </group>
             </sheet>
 

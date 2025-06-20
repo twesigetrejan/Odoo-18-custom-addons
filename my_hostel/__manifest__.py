@@ -10,6 +10,7 @@
 
 {
     'name': "Hostel Management",
+    'post_init_hook': 'post_init_hook.create_default_categories',
     'summary': "Manage hostels easily within the school",
     'description': "Efficiently manage the entire residential facility in the school.",
     'author': "trejan_dev",

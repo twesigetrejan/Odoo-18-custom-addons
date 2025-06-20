@@ -1,3 +1,4 @@
+from datetime import timedelta
 from odoo import models, fields, api
 from odoo.exceptions import ValidationError, UserError
 from odoo.tools.translate import _
@@ -13,10 +14,18 @@ class HostelRoom(models.Model):
     _sql_constraints = [
         ('room_no_unique', 'UNIQUE(room_no)', 'Room number must be unique!'),]
     _inherit = ['base.archive']
+
     
     room_no = fields.Char(string='Room number', required=True)
     room_code = fields.Char(string='Room number')
     hostel_id = fields.Many2one('hostel.hostel', string='Hostel', required=True, help='Hostel to which the room belongs')
+    category_id = fields.Many2one(
+        'hostel.room.category', 
+        string='Room Category',
+        help='Category of this room',
+        domain="[('active', '=', True)]",
+        required=False
+    )
     floor_number = fields.Integer(string='Floor Number')
     capacity = fields.Integer(string='Capacity', help='Number of occupants the room can hold')
     rent_amount = fields.Monetary(string='Rent amount', currency_field='currency_id')
@@ -25,7 +34,8 @@ class HostelRoom(models.Model):
     notes = fields.Text(string='Notes')
     student_per_room = fields.Integer("Student per room", required=True, help="Number of students allowed in this room")
     availability = fields.Float(compute = '_compute_check_availability', string='Availability', help="Room availability in hostel", store=True)
-    
+    date_terminate = fields.Date(string='Date of Termination', help='Date when the room was terminated or closed')
+
     student_ids = fields.One2many(
         'hostel.student', 'room_id', string='Students',
         help='Students assigned to this room'
@@ -43,6 +53,8 @@ class HostelRoom(models.Model):
 
     state = fields.Selection(
         [('draft', 'Unavailable'), ('available', 'Available'), ('closed', 'Closed'),], string='State', default='draft', help='State of the room')
+    remarks = fields.Text(string='Remarks', help='Additional remarks about the room')
+
     
     @api.model
     def is_allowed_transition(self, old_state, new_state):
@@ -61,10 +73,25 @@ class HostelRoom(models.Model):
     
     def make_available(self):
         """Change the state of the room if change is allowed."""
-        self.change_state('available')
+        self.date_terminate = False
+        return super(HostelRoom, self).make_available()
+    
+        # self.change_state('available')
+
+    # def make_closed(self):
+    #     """Change the state of the room if change is allowed."""
+    #     day_to_allocate = self.category_id.max_allow_days or 10
+    #     self.date_return = fields.Date.today() + timedelta(days=day_to_allocate)
+    #     return super(HostelRoom, self).make_closed()
     def make_closed(self):
         """Change the state of the room if change is allowed."""
-        self.change_state('closed')
+        if not self.category_id:
+            raise UserError(_("Please select a room category first"))
+        day_to_allocate = self.category_id.max_allow_days or 10
+        self.date_terminate = fields.Date.today() + timedelta(days=day_to_allocate)
+        self.state = 'closed'
+    
+        # self.change_state('closed')
 
 
     @api.constrains('rent_amount')
@@ -119,11 +146,40 @@ class HostelRoom(models.Model):
     def get_members_names(self, rooms):
         """Get names of all members in the given rooms."""
         return rooms.mapped('member_ids.name')
-    
 
     @api.model
     def sort_rooms_by_capacity(self, rooms):
         return rooms.sorted(key= 'capacity', reverse=True)
     
+
+    @api.model
+    def create(self, values):
+        """Override create method to ensure users who arent part of the hostel managers cannot create room remarks."""
+        if not self.user.has_groups('my_hostel.group_hostel_manager'):
+            if values.get('remarks'):
+                raise UserError(_("You are not allowed to create remarks for rooms."))
+            return super(HostelRoom, self).create(values)
+            
+    def write(self, values):
+        """Override write method to ensure users who arent part of the hostel managers cannot create room remarks."""
+        if not self.user.has_groups('my_hostel.group_hostel_manager'):
+            if values.get('remarks'):
+                raise UserError(_("You are not allowed to create remarks for rooms."))
+        return super(HostelRoom, self).write(values)
     
-    
+
+    def name_get(self, name):
+        """Override name_get to return room code and hostel name."""
+        result = []
+        for room in self:
+            member = room.member_ids.mapped('name')
+            name = '%s (%s)' % (room.name, ', '.join(member))
+            result.append((room.id, name))
+            return result
+
+    def name_search(self, name='', args=None, operator='ilike', limit=100, name_get_uid=None):
+        args = [] if args is None else args.copy()
+        if not (name== ' ' and operator == 'ilike'):
+            args += ['|','|',('name', operator, name), ('isbn', operator, name),  ('author_ids.name', operator, name)]
+        return super(HostelRoom, self)._name_search( 
+         name=name, args=args, operator=operator, limit=limit, name_get_uid=name_get_uid)
