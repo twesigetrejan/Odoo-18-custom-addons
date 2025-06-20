@@ -198,4 +198,14 @@ class HostelRoom(models.Model):
         )
         return grouped_result
     
-            
+    @api.model
+    def update_room_price1(self): 
+        all_rooms = self.search([]) 
+        for room in all_rooms: 
+            room.cost_price += 10
+
+    @api.model 
+    def update_room_price(self, category, amount_to_increase): 
+        category_rooms = self.search([('category_id', '=', category.id)]) 
+        for room in category_rooms: 
+            room.cost_price += amount_to_increase

@@ -1,4 +1,18 @@
-<record forcecreate="True" id="decimal_point" model="decimal.precision"> 
-<field name="name">Rating Value</field> 
-<field name="digits">3</field> 
-</record>
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    
+    <!-- 1. Decimal Precision Definition -->
+    <record id="decimal_point" model="decimal.precision">
+        <field name="name">Rating Value</field>
+        <field name="digits">3</field>
+    </record>
+
+    <!-- 2. First Price Update Function -->
+    <function model="hostel.room" name="update_room_price1"/>
+    
+    <!-- 3. Second Price Update Function with Parameters -->
+    <function model="hostel.room" name="update_room_price">
+        <value eval="[ref('hostel_category_single'), 20]"/>
+    </function>
+
+</odoo>

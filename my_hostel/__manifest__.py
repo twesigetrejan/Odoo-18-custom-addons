@@ -26,6 +26,7 @@
         'views/hostel_category.xml',
         'views/hostel_student.xml',
         'views/room_category.xml',
+        'data/data.xml',
     ],
     'assets': {
         'web.assets_backend': [
