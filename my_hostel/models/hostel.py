@@ -27,7 +27,7 @@ class Hostel(models.Model):
     other_info = fields.Text(string='Other information', help='Additional information about the hostel')
     description = fields.Html('Description')
     hostel_rating = fields.Float(string='Hostel average rating', digits=(14, 4), help='Average rating of the hostel based on user feedback')
-    categoy_id = fields.Many2one('hostel.category')
+    category_id = fields.Many2one('hostel.category', string='Category')
     ref_doc_id = fields.Reference(
         selection='_referencable_models',
         string='Reference Document',

@@ -53,8 +53,8 @@ class HostelStudent(models.Model):
     partner_id = fields.Many2one('res.partner', ondelete='cascade')
     active = fields.Boolean(default=True)
 
-    allocation_ids = fields.One2many('hostel.allocation', 'student_id', string='Allocation History')
-    visitor_ids = fields.One2many('hostel.visitor.log', 'student_id', string='Visitor Logs')
+    # allocation_ids = fields.One2many('hostel.allocation', 'student_id', string='Allocation History')
+    # visitor_ids = fields.One2many('hostel.visitor.log', 'student_id', string='Visitor Logs')
 
     @api.depends('admission_date', 'discharge_date')
     def _compute_check_duration(self):
