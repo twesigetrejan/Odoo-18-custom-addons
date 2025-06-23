@@ -87,5 +87,5 @@
 
     <!-- Menu Item -->
     <menuitem id="hostel_student_menu" name="Hostel Students" parent="hostel_main_menu" sequence="3"
-              action="action_hostel_student" groups="my_hostel.group_hostel_manager"/>
+              action="action_hostel_student" groups="my_hostel.group_hostel_manager,my_hostel.group_hostel_user"/>
 </odoo>

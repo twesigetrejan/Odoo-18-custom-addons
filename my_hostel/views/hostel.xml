@@ -104,6 +104,6 @@
               parent="hostel_main_menu"
               action="action_hostel"
               sequence="1"
-              groups="my_hostel.group_hostel_manager"/>
+              groups="my_hostel.group_hostel_manager,my_hostel.group_hostel_user"/>
 
 </odoo>
