@@ -68,8 +68,7 @@
             <field name="state" widget="statusbar" />
             <button name="log_all_room_members" string="Room members" type="object" />
             <button name="get_average_cost" string="Average Cost" type="object" />
-
-            <!-- <button name="rooms_with_multiple_members" string="Rooms with multiple members" type="object" /> -->
+            <button name="action_remove_room_members" string="Remove Members" type="object" class="btn-primary"/>
         </form>
     </field>
 </record>

@@ -33,6 +33,9 @@ class Hostel(models.Model):
         string='Reference Document',
         help='Reference to a document related to the hostel'
     )
+    hostel_capacity = fields.Integer(string='Hostel Capacity', help='Total number of occupants the hostel can accommodate')
+    # amenity_id = fields.Many2many('hostel.room.amenity', string='Hostel amenties available', required = False)
+
 
     @api.depends('hostel_code')
     def _compute_display_name(self):

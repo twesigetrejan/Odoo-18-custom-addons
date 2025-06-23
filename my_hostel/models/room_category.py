@@ -17,7 +17,16 @@ class RoomCategory(models.Model):
         'hostel.room.category', 'parent_id', string='Child Categories'
     )
     max_allow_days = fields.Integer(string= 'Maximum Allowed Days', help='Maximum number of days a student can stay in this room category')
+
+    capacity = fields.Integer(string='Capacity', help='Maximum number of occupants allowed in this room category')
     
+    amenity_ids = fields.Many2many(
+        'hostel.amenity.type',
+        'room_category_amenity_rel',
+        'category_id',
+        'amenity_id',
+        string='Amenities'
+    )
 
 
 

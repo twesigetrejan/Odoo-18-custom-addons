@@ -59,6 +59,7 @@
     <menuitem id="menu_hostel_room_category"
               name="Room Categories"
               parent="hostel_main_menu"
+              sequence="4"
               action="action_hostel_room_category"
               groups = "group_hostel_manager"/>
 
