@@ -77,7 +77,7 @@
               name="Hostel Categories"
               parent="hostel_main_menu"
               action="action_hostel_category"
-              sequence="2"
+              sequence="6"
               groups="my_hostel.group_hostel_manager"/>
 
 </odoo>

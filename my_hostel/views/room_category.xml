@@ -58,7 +58,8 @@
 
     <menuitem id="menu_hostel_room_category"
               name="Room Categories"
-              parent="menu_hostel_root"
-              action="action_hostel_room_category"/>
+              parent="hostel_main_menu"
+              action="action_hostel_room_category"
+              groups = "group_hostel_manager"/>
 
 </odoo>
