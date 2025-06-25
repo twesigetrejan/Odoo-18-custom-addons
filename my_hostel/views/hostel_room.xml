@@ -10,69 +10,55 @@
                 <field name="room_code"/>
                 <field name="hostel_id"/>
                 <field name="category_id"/>
-                <field name="capacity"/>
+                <field name="student_per_room"/>
                 <field name="rent_amount"/>
                 <field name="currency_id"/>
                 <field name="active"/>
-                <field name="previous_room_id" />
             </tree>
         </field>
     </record>
 
-  <!-- Form View -->
-<record id="view_hostel_room_form" model="ir.ui.view">
-    <field name="name">hostel.room.form</field>
-    <field name="model">hostel.room</field>
-    <field name="arch" type="xml">
-        <form string="Hostel Room">
-            <sheet>
-                <div class="oe_title">
-                <label for="room_code" class="oe_edit_only"/>
-                    <h1>
-                        <field name="room_code" required="1" string= "Room code" />
-                    </h1>
-                </div>
-                <group>
+    <!-- Form View -->
+    <record id="view_hostel_room_form" model="ir.ui.view">
+        <field name="name">hostel.room.form</field>
+        <field name="model">hostel.room</field>
+        <field name="arch" type="xml">
+            <form string="Hostel Room">
+                <sheet>
+                    <div class="oe_title">
+                        <label for="room_code" class="oe_edit_only"/>
+                        <h1>
+                            <field name="room_code" required="1" string="Room Code"/>
+                        </h1>
+                    </div>
                     <group>
-                        <field name="room_no" required="1"/>
-                        <field name="category_id" 
-                        widget="many2one" 
-                        options="{'no_open': True, 'no_create': True}"
-                        context="{'default_active': True}"/>
-                        <field name="hostel_id" required="1"/>
-                        <field name="floor_number"/>
+                        <group>
+                            <field name="room_no" required="1"/>
+                            <field name="category_id"/>
+                            <field name="rent_amount" readonly="1"/>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="hostel_id" required="1"/>
+                            <field name="floor_number"/>
+                        </group>
+                        <group>
+                            <field name="student_per_room"/>
+                            <field name="availability"/>
+                            <field name="active"/>
+                        </group>
                     </group>
                     <group>
-                        <field name="capacity"/>
-                        <field name="student_per_room" required="1"/>
-                        <field name="availability"/>
+                        <field name="notes"/>
+                        <field name="remarks"/>
                     </group>
-                </group>
-                <group>
-                    <group>
-                        <field name="rent_amount"/>
-                        <field name="currency_id" required="1"/>
-                    </group>
-                    <group>
-                        <field name="active"/>
-                    </group>
-                </group>
-                <group>
-                    <field name="notes"/>
-                    <field name = "remarks"/>
-                </group>
-            </sheet>
+                </sheet>
 
-            <button name="make_available" string="Make Availabe" type="object"/>
-            <button name="make_closed" string="Make Closed" type="object"/>
-            <field name="state" widget="statusbar" />
-            <button name="log_all_room_members" string="Room members" type="object" />
-            <!-- <button name="get_average_cost" string="Average Cost" type="object" />
-            <button name="action_remove_room_members" string="Remove Members" type="object" class="btn-primary"/> -->
-        </form>
-    </field>
-</record>
-
+                <button name="make_available" string="Make Available" type="object"/>
+                <button name="make_closed" string="Make Closed" type="object"/>
+                <field name="state" widget="statusbar"/>
+                <button name="log_all_room_members" string="Room Members" type="object"/>
+            </form>
+        </field>
+    </record>
 
     <!-- Search View -->
     <record id="view_hostel_room_search" model="ir.ui.view">
@@ -83,7 +69,8 @@
                 <field name="room_code"/>
                 <field name="hostel_id"/>
                 <field name="active"/>
-                <!-- needs addition of search fields to include hostel name -->
+                <filter string="Available Rooms" name="filter_available" domain="[('state','=','available')]"/>
+                <filter string="Closed Rooms" name="filter_closed" domain="[('state','=','closed')]"/>
             </search>
         </field>
     </record>

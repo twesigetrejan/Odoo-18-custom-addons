@@ -27,8 +27,9 @@ class RoomCategory(models.Model):
         'amenity_id',
         string='Amenities'
     )
-
-
+    room_cost = fields.Monetary(string= 'Rent amount', currency_field='currency_id')
+    currency_id = fields.Many2one('res.currency', string='Currency', required=True)
+    
 
     @api.model
     def create_default_categories(self):

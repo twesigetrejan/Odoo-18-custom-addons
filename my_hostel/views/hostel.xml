@@ -2,17 +2,34 @@
 <odoo>
 
     <!-- Tree View -->
-    <record id="view_hostel_tree_view" model="ir.ui.view">
-        <field name="name">hostel.hostel.tree.view</field>
-        <field name="model">hostel.hostel</field>
-        <field name="arch" type="xml">
-            <tree>
-                <field name="name"/>
-                <field name="hostel_code"/>
-                <field name="state_id"/>
-            </tree>
-        </field>
-    </record>
+    <record id="view_hostel_kanban_view" model="ir.ui.view">
+  <field name="name">hostel.hostel.kanban.view</field>
+  <field name="model">hostel.hostel</field>
+  <field name="arch" type="xml">
+    <kanban>
+      <templates>
+        <t t-name="kanban-box">
+          <div class="oe_kanban_global_click o_kanban_record">
+            <div class="o_kanban_image">
+              <img t-if="record.image.raw_value" t-att-src="'data:image/png;base64,' + record.image.raw_value" class="img img-fluid" alt="Hostel Image"/>
+            </div>
+            <div class="oe_kanban_details">
+              <strong><field name="name"/></strong>
+              <p>Code: <field name="hostel_code"/></p>
+              <p>Location: <field name="city"/>, <field name="state_id"/></p>
+              <p>Capacity: <field name="hostel_capacity"/></p>
+              <p>Floors: <field name="hostel_floors"/></p>
+              <p>Rating: <field name="hostel_rating"/></p>
+              <p t-if="record.active.value" style="color: green;">Active</p>
+              <p t-if="not record.active.value" style="color: red;">Inactive</p>
+            </div>
+          </div>
+        </t>
+      </templates>
+    </kanban>
+  </field>
+</record>
+
     <!-- Form View -->
     <record id="view_hostel_form_view" model="ir.ui.view">
         <field name="name">hostel.hostel.form.view</field>
@@ -47,6 +64,10 @@
           <field name="zip" placeholder="ZIP" class="o_address_zip"/>
           <field name="country_id" placeholder="Country" class="o_address_country" 
                  options='{"no_open": True, "no_create": True}'/>
+
+          <field name="image" string="Hostel Image"/>
+
+
         </div>
       </group>
 
@@ -58,8 +79,10 @@
     </group>
      <group> 
         <field name="hostel_floors"/> 
+        <field name="hostel_capacity"/>
         <field name="active"/> 
         <field name="type"/> 
+        <field name= "amenity_id" />
         <field name="hostel_rating"/> 
         <field name="other_info"/> 
      </group> 
@@ -89,7 +112,7 @@
     <record id="action_hostel" model="ir.actions.act_window">
         <field name="name">Hostel</field>
         <field name="res_model">hostel.hostel</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">kanban,tree,form</field>
         <field name="help" type="html">
             <p class="oe_view_nocontent_create">
                 Create your first Hostel

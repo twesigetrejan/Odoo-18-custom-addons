@@ -27,18 +27,16 @@ class HostelRoom(models.Model):
         required=False
     )
     floor_number = fields.Integer(string='Floor Number')
-    capacity = fields.Integer(string='Capacity', help='Number of occupants the room can hold')
+    # capacity = fields.Integer(string='Capacity', help='Number of occupants the room can hold')
     rent_amount = fields.Monetary(string='Rent amount', currency_field='currency_id')
     currency_id = fields.Many2one('res.currency', string='Currency', required=True)
     active = fields.Boolean(string='Active', default=True)
     notes = fields.Text(string='Notes')
-    student_per_room = fields.Integer("Student per room", required=True, help="Number of students allowed in this room")
+    student_per_room = fields.Integer("Room capacity", required=True, help="Number of students allowed in this room")
     availability = fields.Float(compute = '_compute_check_availability', string='Availability', help="Room availability in hostel", store=True)
     date_terminate = fields.Date(string='Date of Termination', help='Date when the room was terminated or closed')
-
-    cost_price = fields.Float('Room cost', help='Cost of the room per month', default=0.0)
+    # cost_price = fields.Float('Room cost', help='Cost of the room per month', default=0.0)
     
-
     student_ids = fields.One2many(
         'hostel.student', 'room_id', string='Students',
         help='Students assigned to this room'
@@ -60,7 +58,13 @@ class HostelRoom(models.Model):
         [('draft', 'Unavailable'), ('available', 'Available'), ('closed', 'Closed'),], string='State', default='draft', help='State of the room')
     remarks = fields.Text(string='Remarks', help='Additional remarks about the room')
 
-    
+    @api.onchange('category_id')
+    def _onchange_category_id(self):
+        for room in self:
+            if room.category_id:
+                room.rent_amount = room.category_id.room_cost
+                room.currency_id = room.category_id.currency_id.id
+
     @api.model
     def is_allowed_transition(self, old_state, new_state):
         """Check if the transition from old_state to new_state is allowed."""
@@ -152,11 +156,10 @@ class HostelRoom(models.Model):
         """Get names of all members in the given rooms."""
         return rooms.mapped('member_ids.name')
 
-    @api.model
-    def sort_rooms_by_capacity(self, rooms):
-        return rooms.sorted(key= 'capacity', reverse=True)
+    # @api.model
+    # def sort_rooms_by_capacity(self, rooms):
+    #     return rooms.sorted(key= 'capacity', reverse=True)
     
-
     @api.model
     def create(self, values):
         """Override create method to ensure users who arent part of the hostel managers cannot create room remarks."""

@@ -20,7 +20,7 @@ class Hostel(models.Model):
     email = fields.Char(string='Email')
     display_name = fields.Char(compute='_compute_display_name', store=True)
     hostel_floors = fields.Integer(string='Total number of floors')
-    image = fields.Binary('Hostel Image')
+    image = fields.Binary(string= 'Hostel Image', help = "Upload your hostel image")
     active = fields.Boolean('Active', default=True, help='Activate/Deactivate hostel record')
     type = fields.Selection([("male", "Boys"), ("female", "Girls"), ("common", "Common")], help='Type of hostel', required=True, default='common'
     )
@@ -34,7 +34,7 @@ class Hostel(models.Model):
         help='Reference to a document related to the hostel'
     )
     hostel_capacity = fields.Integer(string='Hostel Capacity', help='Total number of occupants the hostel can accommodate')
-    # amenity_id = fields.Many2many('hostel.room.amenity', string='Hostel amenties available', required = False)
+    amenity_id = fields.One2many('hostel.room.amenity', 'room_id', string='Hostel amenties available', required = False)
 
 
     @api.depends('hostel_code')
@@ -50,18 +50,3 @@ class Hostel(models.Model):
         models = self.env['ir.model'].search([('field_id.name', '=', 'message_ids')])
         return [(x.model, x.name) for x in models]
     
-
-# class HostelRoom(models.Model):
-#     _name = 'hostel.room'
-#     _description = 'Information about a hostel room'
-#     _order = 'id desc, room_code'
-#     _rec_name = 'room_code'
-
-#     room_code = fields.Char(string='Room Code', required=True, help='Unique code for the room')
-#     hostel_id = fields.Many2one('hostel.hostel', string='Hostel', required=True)
-#     floor_number = fields.Integer(string='Floor Number')
-#     capacity = fields.Integer(string='Capacity', help='Number of occupants the room can hold')
-#     rent_amount = fields.Monetary(string='Rent Amount', currency_field='currency_id')
-#     currency_id = fields.Many2one('res.currency', string='Currency', required=True)
-#     active = fields.Boolean(string='Active', default=True)
-#     notes = fields.Text(string='Notes')
