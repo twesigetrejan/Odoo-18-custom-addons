@@ -1,13 +1,4 @@
 
-# {
-#     'name': 'Hostel Management',
-#     'installable': True,
-#     'application': True,
-#     'category': 'Tools',
-#     'version': '1.0',
-#     'summary': 'A dummy module to test custom addons',
-# }
-
 {
     'name': "Hostel Management",
     # 'post_init_hook': 'post_init_hook.create_default_categories',
