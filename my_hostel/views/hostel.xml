@@ -78,7 +78,7 @@
                                 <!-- Rating -->
                                 <div style="margin-top: 8px; display: flex; align-items: center; gap: 5px;">
                                     <field name="hostel_rating" widget="float_rate" options="{'precision': 0.5}"/>
-                                    <span>rating</span>
+                                    <span>rated</span>
                                 </div>
                             </div>
                         </div>
