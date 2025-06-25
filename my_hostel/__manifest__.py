@@ -21,8 +21,8 @@
     ],
     'assets': {
         'web.assets_backend': [
-        
-            'my_hostel/static/src/xml/**/*',
+            'my_hostel/static/src/css/hostel.css',
+            # 'my_hostel/static/src/js/hostel_kanban.js',
         ],
     },
     'demo': [
@@ -31,4 +31,5 @@
     'installable': True,
     'application': True,
     'auto_install': False,
+    'license': 'LGPL-3',
 }

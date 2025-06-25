@@ -17,7 +17,7 @@ class HostelCategory(models.Model):
         ondelete='restrict',
         index=True,
     )
-    parent_path = fields.Char(index=True)
+    parent_path = fields.Char(index=True, unnaccent= False)
     child_ids = fields.One2many(
         'hostel.category',
         'parent_id',

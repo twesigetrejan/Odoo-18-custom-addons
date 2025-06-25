@@ -1,0 +1,17 @@
+/* Consistent card sizing */
+.hostel_kanban .o_kanban_record {
+    min-height: 160px;
+    margin-bottom: 16px;
+}
+
+/* Hover effect */
+.hostel_kanban .o_kanban_record:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
+
+/* Rating stars styling */
+.hostel_kanban .o_float_rate {
+    font-size: 14px;
+}
