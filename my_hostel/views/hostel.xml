@@ -56,13 +56,11 @@
                                     <field name="city"/>
                                 </div>
                                 
-                                <!-- Description (truncated) -->
-                                <div t-if="record.description.raw_value" 
-                                     style="margin-bottom: 6px; color: #555; font-size: 13px; 
-                                            display: -webkit-box; -webkit-line-clamp: 2; 
-                                            -webkit-box-orient: vertical; overflow: hidden;"
-                                     t-att-data-description="record.description.raw_value">
-                                    <t t-esc="record.description.raw_value"/>
+                                <!-- Description -->
+                                <div style="margin-bottom: 6px; color: #555; font-size: 13px; 
+                                        display: -webkit-box; -webkit-line-clamp: 2; 
+                                        -webkit-box-orient: vertical; overflow: hidden;">
+                                    <field name = "description"/>
                                 </div>
                                 
                                 <!-- Capacity and Floors in one line -->
@@ -78,8 +76,9 @@
                                 </div>
                                 
                                 <!-- Rating -->
-                                <div style="margin-top: 8px;">
+                                <div style="margin-top: 8px; display: flex; align-items: center; gap: 5px;">
                                     <field name="hostel_rating" widget="float_rate" options="{'precision': 0.5}"/>
+                                    <span>rating</span>
                                 </div>
                             </div>
                         </div>

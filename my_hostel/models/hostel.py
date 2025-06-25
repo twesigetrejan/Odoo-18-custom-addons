@@ -36,8 +36,8 @@ class Hostel(models.Model):
     description = fields.Html('Description')
     hostel_rating = fields.Float(
         string='Hostel average rating',
-        digits=(14, 4),
-        help='Average rating of the hostel based on user feedback'
+        digits=(3, 1),
+        help='Average rating of the hostel based on user feedback',
     )
     category_id = fields.Many2one('hostel.category', string='Category')
     ref_doc_id = fields.Reference(

@@ -15,3 +15,8 @@
 .hostel_kanban .o_float_rate {
     font-size: 14px;
 }
+
+.oe_rating i.fa {
+    font-size: 14px;
+    margin-right: 2px;
+}
