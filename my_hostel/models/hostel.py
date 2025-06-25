@@ -2,6 +2,7 @@ import base64
 from odoo import api, fields, models
 from odoo.modules.module import get_module_resource
 import logging
+
 _logger = logging.getLogger(__name__)
 
 class Hostel(models.Model):
@@ -24,13 +25,6 @@ class Hostel(models.Model):
     email = fields.Char(string='Email')
     display_name = fields.Char(compute='_compute_display_name', store=True)
     hostel_floors = fields.Integer(string='Total number of floors')
-    image = fields.Binary(
-        string='Hostel Image',
-        default=lambda self: self._get_default_image(),
-        attachment=True,
-        prefetch= False,
-        help="Upload your hostel image"
-    )
     active = fields.Boolean('Active', default=True, help='Activate/Deactivate hostel record')
     type = fields.Selection(
         [("male", "Boys"), ("female", "Girls"), ("common", "Common")],
@@ -91,17 +85,9 @@ class Hostel(models.Model):
 
     @api.model
     def create(self, vals):
-        # Ensure image is properly processed
-        if 'image' in vals and vals['image']:
-            if isinstance(vals['image'], str) and vals['image'].startswith('data:image'):
-                vals['image'] = vals['image'].split('base64,')[-1]
+        # Set default image if none provided
+        if 'image_1920' not in vals:
+            default_image = self._get_default_image()
+            if default_image:
+                vals['image_1920'] = default_image
         return super().create(vals)
-
-    def write(self, vals):
-        # Handle image updates
-        if 'image' in vals and vals['image']:
-            if isinstance(vals['image'], str) and vals['image'].startswith('data:image'):
-                vals['image'] = vals['image'].split('base64,')[-1]
-            elif vals['image'] is False:
-                vals['image'] = None
-        return super().write(vals)

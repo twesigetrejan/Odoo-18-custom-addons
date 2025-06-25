@@ -7,7 +7,7 @@
     <field name="model">hostel.hostel</field>
     <field name="arch" type="xml">
         <kanban class="hostel_kanban">
-            <field name="image"/>
+            <field name="image_1920"/>
             <field name="name"/>
             <field name="hostel_code"/>
             <field name="city"/>
@@ -22,18 +22,14 @@
                     <div class="oe_kanban_global_click o_kanban_record">
                         <div class="o_kanban_image">
                             <!-- Main image with fallback -->
-                            <img t-if="record.image.raw_value"
-                                t-att-src="'data:image/jpeg;base64,' + record.image.raw_value"
-                                class="img img-fluid oe_kanban_image"
-                                alt="Hostel Image"
-                                style="max-height: 120px; object-fit: cover;"/>
-                            
-                            <!-- Default image fallback -->
+                            <img t-if="record.image_1920.raw_value"
+                            t-att-src="'/web/image/hostel.hostel/' + record.id.raw_value + '/image_1024/300x300'"
+                            class="oe_kanban_image"
+                            alt="Hostel Image"/>
                             <img t-else=""
-                                t-att-src="'%s/static/src/img/hostel-default.jpg' % module_path"
-                                class="img img-fluid oe_kanban_image"
-                                alt="Default Hostel Image"
-                                style="max-height: 120px; object-fit: cover;"/>
+                            t-att-src="'%s/static/src/img/hostel-default.jpg' % module_path"
+                            class="oe_kanban_image"
+                            alt="Default Hostel Image"/>
                         </div>
                         <div class="oe_kanban_details">
                             <strong><field name="name"/></strong>
@@ -100,8 +96,8 @@
           <field name="country_id" placeholder="Country" class="o_address_country" 
                  options='{"no_open": True, "no_create": True}'/>
 
-          <field name="image" widget="image" class="oe_avatar" 
-       options='{"preview_image": "image_1024", "size": [1024, 768]}'/>
+         <field name="image_1920" widget="image" 
+       options="{'preview_image': 'image_1024', 'size': [1024, 768]}"/>
 
 
         </div>

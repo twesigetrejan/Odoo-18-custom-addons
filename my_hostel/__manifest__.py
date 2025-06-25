@@ -7,7 +7,7 @@
     'author': "trejan_dev",
     'website': "http://www.example.com",
     'category': 'Education',
-    'version': '17.0.1.0.0',
+    'version': '17.0.1.0.1',
     'depends': ['base'],
     'data': [
         'security/hostel_security.xml',

@@ -17,7 +17,7 @@ class HostelRoom(models.Model):
 
     
     room_no = fields.Char(string='Room number', required=True)
-    room_code = fields.Char(string='Room number')
+    room_code = fields.Char(string='Room unique number')
     hostel_id = fields.Many2one('hostel.hostel', string='Hostel', required=True, help='Hostel to which the room belongs')
     category_id = fields.Many2one(
         'hostel.room.category', 
