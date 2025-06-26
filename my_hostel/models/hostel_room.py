@@ -185,13 +185,19 @@ class HostelRoom(models.Model):
             result.append((room.id, name))
             return result
 
-    def name_search(self, name='', args=None, operator='ilike', limit=100, name_get_uid=None):
-        args = [] if args is None else args.copy()
-        if not (name== ' ' and operator == 'ilike'):
-            args += ['|','|',('name', operator, name), ('isbn', operator, name),  ('author_ids.name', operator, name)]
-        return super(HostelRoom, self)._name_search( 
-         name=name, args=args, operator=operator, limit=limit, name_get_uid=name_get_uid)
-    
+    # def name_search(self, name='', args=None, operator='ilike', limit=100, name_get_uid=None):
+    #     args = args or []
+    #     # Defensive: ensure args is always a list
+    #     if not isinstance(args, list):
+    #         args = list(args)
+
+    #     if name:
+    #         args = args + [('room_no', operator, name)]
+    #     # Use search and name_get as Odoo expects
+    #     return self.search(args, limit=limit).name_get()
+
+
+
     
     def get_average_cost(self):
         grouped_result  = self.read_group(

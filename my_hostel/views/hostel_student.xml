@@ -71,26 +71,46 @@
                 <sheet>
                     <div class="oe_title">
                         <h1>
-                            <field name="student_code" required="1" placeholder="Student Code"/>
+                            <field name="name" required="1" placeholder="Student name"/>
                         </h1>
                     </div>
     
                     <group>
                         <group string="Student Info">
-                            <field name="name" required="1" placeholder="Student Name"/>
+                            <field name="student_code" required="1" placeholder="Student hostel code"/>
+                            <field name="student_id_number"/>
                             <field name="gender"/>
+                            <field name="date_of_birth"/>
+                            <field name="phone"/>
+                            <field name="email"/>
                             <field name="active"/>
+                            <field name="blood_group"/>
+                            <field name="allergies"/>
+                            <field name="is_special_needs"/>
                         </group>
     
                         <group string="Hostel Allocation">
                             <field name="hostel_id" options='{"no_create": True}'/>
                             <field name="room_id" required="1" options='{"no_create": True}'/>
                         </group>
+
+                        <group string="University info">
+                            <field name= "faculty"/>
+                            <field name= "year_of_study"/>
+                        </group>
+                        <group string = "Guardian details">
+                            <field name= "guardian_name"/>
+                            <field name= "guardian_contact"/>
+                            <field name="emergency_contact"/>
+                            <field name= "remarks" />
+
+                        </group>
     
                         <group string="Stay Details">
                             <field name="admission_date" required="1"/>
                             <field name="discharge_date"/>
                             <field name="duration"/>
+                            <field name="status"/>
                         </group>
                     </group>
                 </sheet>
