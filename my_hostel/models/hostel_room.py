@@ -91,13 +91,6 @@ class HostelRoom(models.Model):
         self.date_terminate = False
         return super(HostelRoom, self).make_available()
     
-        # self.change_state('available')
-
-    # def make_closed(self):
-    #     """Change the state of the room if change is allowed."""
-    #     day_to_allocate = self.category_id.max_allow_days or 10
-    #     self.date_return = fields.Date.today() + timedelta(days=day_to_allocate)
-    #     return super(HostelRoom, self).make_closed()
     def make_closed(self):
         """Change the state of the room if change is allowed."""
         if not self.category_id:
@@ -105,9 +98,6 @@ class HostelRoom(models.Model):
         day_to_allocate = self.category_id.max_allow_days or 10
         self.date_terminate = fields.Date.today() + timedelta(days=day_to_allocate)
         self.state = 'closed'
-    
-        # self.change_state('closed')
-
 
     @api.constrains('rent_amount')
     def _check_rent_amount(self):
@@ -162,10 +152,6 @@ class HostelRoom(models.Model):
         """Get names of all members in the given rooms."""
         return rooms.mapped('member_ids.name')
 
-    # @api.model
-    # def sort_rooms_by_capacity(self, rooms):
-    #     return rooms.sorted(key= 'capacity', reverse=True)
-    
     @api.model
     def create(self, values):
         """Override create method to ensure users who arent part of the hostel managers cannot create room remarks."""
@@ -202,19 +188,6 @@ class HostelRoom(models.Model):
                 room.rent_amount = 0.0
                 room.currency_id = self.env.company.currency_id.id  # fallback default currency
 
-    # def name_search(self, name='', args=None, operator='ilike', limit=100, name_get_uid=None):
-    #     args = args or []
-    #     # Defensive: ensure args is always a list
-    #     if not isinstance(args, list):
-    #         args = list(args)
-
-    #     if name:
-    #         args = args + [('room_no', operator, name)]
-    #     # Use search and name_get as Odoo expects
-    #     return self.search(args, limit=limit).name_get()
-
-
-
     
     def get_average_cost(self):
         grouped_result  = self.read_group(
@@ -235,28 +208,3 @@ class HostelRoom(models.Model):
         category_rooms = self.search([('category_id', '=', category.id)]) 
         for room in category_rooms: 
             room.cost_price += amount_to_increase
-
-    # @api.model
-    # def action_remove_room(self):
-    #     """Action to remove all members from the room."""
-    #     if self.env.context.get('is_hostel_room'):
-    #         self.room_id = False
-
-    # def action_remove_room_members(self):
-    #     """Action to remove all members from the room."""
-    #     student.with_context(is_hostel_room = True).action_remove_room()
-
-    # @api.model
-    # def create(self, vals):
-    #     if vals.get('category_id'):
-    #         category = self.env['hostel.room.category'].browse(vals['category_id'])
-    #         vals['rent_amount'] = category.room_cost
-    #         vals['currency_id'] = category.currency_id.id
-    #     return super().create(vals)
-
-    # def write(self, vals):
-    #     if vals.get('category_id'):
-    #         category = self.env['hostel.room.category'].browse(vals['category_id'])
-    #         vals['rent_amount'] = category.room_cost
-    #         vals['currency_id'] = category.currency_id.id
-    #     return super().write(vals)
