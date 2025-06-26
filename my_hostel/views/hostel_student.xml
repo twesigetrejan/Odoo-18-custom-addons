@@ -2,45 +2,99 @@
 <odoo>
 
     <!-- Kanban View -->
-    <record id="view_hostel_student_kanban" model="ir.ui.view">
-        <field name="name">hostel.student.kanban</field>
-        <field name="model">hostel.student</field>
-        <field name="arch" type="xml">
-            <kanban class="o_kanban_example">
-                <templates>
-                    <t t-name="kanban-box">
-                        <div class="oe_kanban_card">
-                            <div class="oe_kanban_content">
-                                <div class="oe_kanban_left">
-                                    <field name="image_1920" widget="image" class="oe_avatar"
-                                           options="{'preview_image': 'image_1920'}"/>
-                                </div>
-                                <div class="oe_kanban_details">
-                                    <strong><field name="name"/></strong>
-                                    <div><strong>Code:</strong> <field name="student_code"/></div>
-                                    <div><strong>Hostel:</strong> <field name="hostel_id"/></div>
-                                    <div><strong>Room:</strong> <field name="room_id"/></div>
-                                    <div><strong>Gender:</strong> <field name="gender" widget="badge"/></div>
-                                    <div><strong>Admission:</strong> <field name="admission_date"/></div>
+    <record id="view_hostel_student_kanban_view" model="ir.ui.view">
+    <field name="name">hostel.student.kanban.view</field>
+    <field name="model">hostel.student</field>
+    <field name="arch" type="xml">
+        <kanban class="student_kanban">
+            <field name="image_1920"/>
+            <field name="name"/>
+            <field name="student_code"/>
+            <field name="gender"/>
+            <field name="phone"/>
+            <field name="hostel_id"/>
+            <field name="room_id"/>
+            <field name="admission_date"/>
+            <field name="status"/>
+            <field name="active"/>
 
-                                    <div class="oe_kanban_bottom_right">
-                                        <button type="object"
-                                                name="action_discharge"
-                                                string="Discharge"
-                                                class="btn btn-danger btn-sm"/>
-                                        <button type="object"
-                                                name="action_message"
-                                                string="Message"
-                                                class="btn btn-primary btn-sm"/>
-                                    </div>
+            <templates>
+                <t t-name="kanban-box">
+                    <div class="oe_kanban_global_click o_kanban_record" style="padding: 12px; border-radius: 12px;">
+
+                        <!-- Image and Details -->
+                        <div style="display: flex; gap: 16px; border-radius: 12px;">
+
+                            <!-- Photo -->
+                            <div style="flex: 0 0 120px;">
+                                <div style="border-radius: 8px; overflow: hidden; height: 120px;">
+                                    <img t-if="record.image_1920.raw_value"
+                                         t-att-src="'/web/image/hostel.student/' + record.id.raw_value + '/image_1024/240x240'"
+                                         alt="Student Photo"
+                                         style="height: 100%; width: 100%; object-fit: cover;"/>
+                                    <img t-else=""
+                                         t-att-src="'/my_hostel/static/src/img/student-default.jpg'"
+                                         alt="Default Student Photo"
+                                         style="height: 100%; width: 100%; object-fit: cover;"/>
                                 </div>
                             </div>
+
+                            <!-- Details -->
+                            <div style="flex: 1; position: relative;">
+
+                                <!-- Name + Code -->
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                    <h4 style="margin: 0; font-size: 16px; font-weight: 600;">
+                                        <field name="name"/> 
+                                        <span style="color: #666; font-weight: 500;">(<field name="student_code"/>)</span>
+                                    </h4>
+                                    <span t-if="record.active.raw_value" style="color: green; font-size: 12px;">● Active</span>
+                                    <span t-else="" style="color: red; font-size: 12px;">● Inactive</span>
+                                </div>
+
+                                <div style="margin-bottom: 6px; color: #555;">
+                                    <i class="fa fa-home" title="Hostel" style="margin-right: 5px;"/>
+                                    <field name="hostel_id"/>
+                                    <span style="margin: 0 5px;">|</span>
+                                    <i class="fa fa-door-open" title="Room" style="margin-right: 5px;"/>
+                                    <field name="room_id"/>
+                                </div>
+
+                                <div style="margin-bottom: 6px; color: #555;">
+                                    <i class="fa fa-user" title="Gender" style="margin-right: 5px;"/>
+                                    <field name="gender"/>
+                                    <span style="margin: 0 5px;">|</span>
+                                    <i class="fa fa-phone" title="Phone" style="margin-right: 5px;"/>
+                                    <field name="phone"/>
+                                </div>
+
+
+                                <!-- Admission Date -->
+                                <div style="margin-bottom: 6px; color: #555;">
+                                    <i class="fa fa-calendar-alt" title="Admission Date" style="margin-right: 5px;"/>
+                                    <field name="admission_date"/>
+                                </div>
+
+                                <!-- Status Badge -->
+                                <div style="margin-top: 8px;">
+                                    <span t-if="record.status.raw_value == 'draft'" class="badge badge-secondary">Draft</span>
+                                    <span t-if="record.status.raw_value == 'reservation'" class="badge badge-warning">Reservation</span>
+                                    <span t-if="record.status.raw_value == 'pending'" class="badge badge-info">Pending</span>
+                                    <span t-if="record.status.raw_value == 'paid'" class="badge badge-success">Done</span>
+                                    <span t-if="record.status.raw_value == 'discharge'" class="badge badge-danger">Discharged</span>
+                                    <span t-if="record.status.raw_value == 'cancel'" class="badge badge-dark">Cancelled</span>
+                                </div>
+
+                            </div>
                         </div>
-                    </t>
-                </templates>
-            </kanban>
-        </field>
-    </record>
+
+                    </div>
+                </t>
+            </templates>
+        </kanban>
+    </field>
+</record>
+
 
 
     <!-- Form View -->
@@ -127,7 +181,8 @@
         <field name="name">Hostel Students</field>
         <field name="res_model">hostel.student</field>
         <field name="view_mode">kanban,tree,form</field>
-        <field name="view_id" ref="view_hostel_student_kanban"/>
+        <!-- Remove this line, or point it to a tree/form view -->
+        <!-- <field name="view_id" ref="view_hostel_student_kanban"/> -->
         <field name="search_view_id" ref="view_hostel_student_search_view"/>
         <field name="help" type="html">
             <p class="oe_view_nocontent_create">
@@ -135,6 +190,7 @@
             </p>
         </field>
     </record>
+
 
 
     <!-- Menu Item -->
