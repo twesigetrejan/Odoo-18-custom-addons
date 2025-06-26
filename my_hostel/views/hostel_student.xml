@@ -23,7 +23,7 @@
                     <div class="oe_kanban_global_click o_kanban_record" style="padding: 12px; border-radius: 12px;">
 
                         <!-- Image and Details -->
-                        <div style="display: flex; gap: 16px; border-radius: 12px;">
+                        <div style="display: flex; gap: 16px; border-radius: 12px; border: none; box-shadow: none;">
 
                             <!-- Photo -->
                             <div style="flex: 0 0 120px;">
@@ -33,7 +33,7 @@
                                          alt="Student Photo"
                                          style="height: 100%; width: 100%; object-fit: cover;"/>
                                     <img t-else=""
-                                         t-att-src="'/my_hostel/static/src/img/student-default.jpg'"
+                                         t-att-src="'/my_hostel/static/src/img/student-default.png'"
                                          alt="Default Student Photo"
                                          style="height: 100%; width: 100%; object-fit: cover;"/>
                                 </div>
@@ -46,13 +46,13 @@
                                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                                     <h4 style="margin: 0; font-size: 16px; font-weight: 600;">
                                         <field name="name"/> 
-                                        <span style="color: #666; font-weight: 500;">(<field name="student_code"/>)</span>
                                     </h4>
                                     <span t-if="record.active.raw_value" style="color: green; font-size: 12px;">● Active</span>
                                     <span t-else="" style="color: red; font-size: 12px;">● Inactive</span>
                                 </div>
-
+                                
                                 <div style="margin-bottom: 6px; color: #555;">
+                                    <span style="color: #666; font-weight: 500;"><field name="student_code"/></span>
                                     <i class="fa fa-home" title="Hostel" style="margin-right: 5px;"/>
                                     <field name="hostel_id"/>
                                     <span style="margin: 0 5px;">|</span>
@@ -75,14 +75,37 @@
                                     <field name="admission_date"/>
                                 </div>
 
-                                <!-- Status Badge -->
-                                <div style="margin-top: 8px;">
-                                    <span t-if="record.status.raw_value == 'draft'" class="badge badge-secondary">Draft</span>
-                                    <span t-if="record.status.raw_value == 'reservation'" class="badge badge-warning">Reservation</span>
-                                    <span t-if="record.status.raw_value == 'pending'" class="badge badge-info">Pending</span>
-                                    <span t-if="record.status.raw_value == 'paid'" class="badge badge-success">Done</span>
-                                    <span t-if="record.status.raw_value == 'discharge'" class="badge badge-danger">Discharged</span>
-                                    <span t-if="record.status.raw_value == 'cancel'" class="badge badge-dark">Cancelled</span>
+                                <div style="display:flex; gap:8px;">
+                                    <field name ="faculty"/>
+                                    <field name ="year_of_study"/>
+                                    
+                                    <!-- Status Badge -->
+                                    <div style="margin-top: 24px;">
+                                        <span t-if="record.status.raw_value == 'draft'" 
+                                            class="badge badge-secondary"
+                                            style="background-color: #6c757d; color: #fff;">Draft</span>
+
+                                        <span t-if="record.status.raw_value == 'reservation'" 
+                                            class="badge badge-warning"
+                                            style="background-color: #ffc107; color: #212529;">Reservation</span>
+
+                                        <span t-if="record.status.raw_value == 'pending'" 
+                                            class="badge badge-info"
+                                            style="background-color: #17a2b8; color: #fff;">Pending</span>
+
+                                        <span t-if="record.status.raw_value == 'paid'" 
+                                            class="badge badge-success"
+                                            style="background-color: #28a745; color: #fff;">Done</span>
+
+                                        <span t-if="record.status.raw_value == 'discharge'" 
+                                            class="badge badge-danger"
+                                            style="background-color: #dc3545; color: #fff;">Discharged</span>
+
+                                        <span t-if="record.status.raw_value == 'cancel'" 
+                                            class="badge badge-dark"
+                                            style="background-color: #343a40; color: #fff;">Cancelled</span>
+                                    </div>
+
                                 </div>
 
                             </div>

@@ -11,8 +11,8 @@
                 <field name="hostel_id"/>
                 <field name="category_id"/>
                 <field name="student_per_room"/>
-                <field name="rent_amount"/>
-                <field name="currency_id"/>
+                <field name="rent_amount" string ="Rent amount(USD) "/>
+                <field name="availability"/>
                 <field name="active"/>
             </tree>
         </field>

@@ -12,7 +12,7 @@ class HostelRoom(models.Model):
     _order = 'id desc, room_code'
     _rec_name = 'room_code'
     _sql_constraints = [
-        ('room_no_unique', 'UNIQUE(room_no)', 'Room number must be unique!'),]
+        ('room_code_unique', 'UNIQUE(room_code)', 'Room number must be unique!'),]
     _inherit = ['base.archive']
 
     
@@ -28,7 +28,13 @@ class HostelRoom(models.Model):
     )
     floor_number = fields.Integer(string='Floor Number')
     # capacity = fields.Integer(string='Capacity', help='Number of occupants the room can hold')
-    rent_amount = fields.Monetary(string='Rent amount', currency_field='currency_id')
+    rent_amount = fields.Monetary(
+        string='Rent amount', 
+        currency_field='currency_id',
+        compute='_compute_rent_amount', 
+        store=True, 
+        readonly=True
+    )
     currency_id = fields.Many2one('res.currency', string='Currency', required=True)
     active = fields.Boolean(string='Active', default=True)
     notes = fields.Text(string='Notes')
@@ -184,6 +190,17 @@ class HostelRoom(models.Model):
             name = '%s (%s)' % (room.name, ', '.join(member))
             result.append((room.id, name))
             return result
+        
+                
+    @api.depends('category_id')
+    def _compute_rent_amount(self):
+        for room in self:
+            if room.category_id:
+                room.rent_amount = room.category_id.room_cost
+                room.currency_id = room.category_id.currency_id.id
+            else:
+                room.rent_amount = 0.0
+                room.currency_id = self.env.company.currency_id.id  # fallback default currency
 
     # def name_search(self, name='', args=None, operator='ilike', limit=100, name_get_uid=None):
     #     args = args or []
@@ -228,3 +245,18 @@ class HostelRoom(models.Model):
     # def action_remove_room_members(self):
     #     """Action to remove all members from the room."""
     #     student.with_context(is_hostel_room = True).action_remove_room()
+
+    # @api.model
+    # def create(self, vals):
+    #     if vals.get('category_id'):
+    #         category = self.env['hostel.room.category'].browse(vals['category_id'])
+    #         vals['rent_amount'] = category.room_cost
+    #         vals['currency_id'] = category.currency_id.id
+    #     return super().create(vals)
+
+    # def write(self, vals):
+    #     if vals.get('category_id'):
+    #         category = self.env['hostel.room.category'].browse(vals['category_id'])
+    #         vals['rent_amount'] = category.room_cost
+    #         vals['currency_id'] = category.currency_id.id
+    #     return super().write(vals)
