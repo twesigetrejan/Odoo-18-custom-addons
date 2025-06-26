@@ -4,6 +4,7 @@ from odoo.exceptions import UserError
 
 class HostelStudent(models.Model):
     _name = 'hostel.student'
+    _inherit = ['image.mixin'] 
     _description = 'Information about a hostel student'
     _order = 'id desc, name'
     _rec_name = 'student_code'
@@ -15,7 +16,7 @@ class HostelStudent(models.Model):
     gender = fields.Selection([('male', 'Male'), ('female', 'Female')], string='Gender')
     phone = fields.Char(string='Phone Number')
     email = fields.Char(string='Email Address')
-    photo = fields.Binary(string='Photo')
+    
     blood_group = fields.Selection(
         [('A+', 'A+'), ('A-', 'A-'), ('B+', 'B+'), ('B-', 'B-'),
          ('O+', 'O+'), ('O-', 'O-'), ('AB+', 'AB+'), ('AB-', 'AB-')],
@@ -53,9 +54,6 @@ class HostelStudent(models.Model):
     partner_id = fields.Many2one('res.partner', ondelete='cascade')
     active = fields.Boolean(default=True)
 
-    # allocation_ids = fields.One2many('hostel.allocation', 'student_id', string='Allocation History')
-    # visitor_ids = fields.One2many('hostel.visitor.log', 'student_id', string='Visitor Logs')
-    
     def action_discharge(self):
         for rec in self:
             rec.status = 'discharge'
@@ -65,8 +63,6 @@ class HostelStudent(models.Model):
             message = f"Student {rec.name} is in room {rec.room_id.room_no if rec.room_id else 'N/A'}"
             self.env.user.notify_info(message)
 
-    
-    
     @api.depends('admission_date', 'discharge_date')
     def _compute_check_duration(self):
         for record in self:
@@ -79,4 +75,3 @@ class HostelStudent(models.Model):
                 duration = (student.discharge_date - student.admission_date).days
                 if duration != student.duration:
                     student.discharge_date = (student.admission_date + timedelta(days=student.duration)).strftime('%Y-%m-%d')
-
