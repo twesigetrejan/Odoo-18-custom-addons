@@ -163,14 +163,14 @@ class HostelRoom(models.Model):
     @api.model
     def create(self, values):
         """Override create method to ensure users who arent part of the hostel managers cannot create room remarks."""
-        if not self.user.has_groups('my_hostel.group_hostel_manager'):
+        if not self.env.user.has_group('my_hostel.group_hostel_manager'):
             if values.get('remarks'):
                 raise UserError(_("You are not allowed to create remarks for rooms."))
-            return super(HostelRoom, self).create(values)
-            
+        return super(HostelRoom, self).create(values)
+    
     def write(self, values):
         """Override write method to ensure users who arent part of the hostel managers cannot create room remarks."""
-        if not self.user.has_groups('my_hostel.group_hostel_manager'):
+        if not self.env.user.has_group('my_hostel.group_hostel_manager'):
             if values.get('remarks'):
                 raise UserError(_("You are not allowed to create remarks for rooms."))
         return super(HostelRoom, self).write(values)

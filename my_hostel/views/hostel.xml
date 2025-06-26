@@ -19,9 +19,9 @@
 
             <templates>
                 <t t-name="kanban-box">
-                    <div class="oe_kanban_global_click o_kanban_record" style="padding: 12px; border-radius: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                    <div class="oe_kanban_global_click o_kanban_record" style="padding: 12px; border-radius: 12px;">
                         <!-- Image and Details Container -->
-                        <div style="display: flex; gap: 16px;">
+                        <div style="display: flex; gap: 16px; border-radius: 12px; border: none; box-shadow: none;">
                             <!-- Image Column -->
                             <div style="flex: 0 0 120px;">
                                 <div style="border-radius: 8px; overflow: hidden; height: 120px;">

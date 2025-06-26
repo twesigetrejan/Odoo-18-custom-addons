@@ -23,6 +23,18 @@
                         <field name="name"/>
                         <field name="parent_id"/>
                     </group>
+                    <group>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                            <field name="room_cost"/>
+                            <field name= "capacity"/>
+                                    
+                                </div>
+                        <field name="currency_id"/>
+                        
+                    </group>
+                    <group>
+                        <field name="amenity_ids"/>
+                    </group>
                 </sheet>
             </form>
         </field>

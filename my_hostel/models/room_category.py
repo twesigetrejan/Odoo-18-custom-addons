@@ -10,7 +10,7 @@ class RoomCategory(models.Model):
     description = fields.Text(string='Description', help='Description of the room category')
     parent_id = fields.Many2one(
         'hostel.room.category', string='Parent Category',
-        ondelete='restrict', index=True
+        ondelete='cascade', index=True
         )
     active = fields.Boolean(string='Active', default=True, help='Activate/Deactivate this room category')
     child_ids = fields.One2many(
@@ -31,16 +31,16 @@ class RoomCategory(models.Model):
     currency_id = fields.Many2one('res.currency', string='Currency', required=True)
     
 
-    @api.model
-    def create_default_categories(self):
-        """Create default categories when module is installed"""
-        categories = [
-            {'name': 'Single Room', 'description': 'A room for one person'},
-            {'name': 'Double Room', 'description': 'A room for two persons'},
-            {'name': 'Deluxe Room', 'description': 'A room with additional amenities'},
-        ]
-        for vals in categories:
-            if not self.search([('name', '=', vals['name'])]):
-                self.create(vals)
-        return True
+    # @api.model
+    # def create_default_categories(self):
+    #     """Create default categories when module is installed"""
+    #     categories = [
+    #         {'name': 'Single Room', 'description': 'A room for one person'},
+    #         {'name': 'Double Room', 'description': 'A room for two persons'},
+    #         {'name': 'Deluxe Room', 'description': 'A room with additional amenities'},
+    #     ]
+    #     for vals in categories:
+    #         if not self.search([('name', '=', vals['name'])]):
+    #             self.create(vals)
+    #     return True
     
