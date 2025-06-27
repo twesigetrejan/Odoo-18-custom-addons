@@ -24,6 +24,9 @@
         'web.assets_backend': [
             'my_hostel/static/src/css/hostel.css',
             # 'my_hostel/static/src/js/hostel_kanban.js',
+            'https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css',
+            'my_hostel/static/src/js/hostel_dashboard_main.js',
+            'https://cdn.jsdelivr.net/npm/chart.js',
         ],
     },
     'demo': [
