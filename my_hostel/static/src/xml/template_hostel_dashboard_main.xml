@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-    <template id="template_hostel_dashboard_main">
+    <template id="my_hostel.template_hostel_dashboard_main" xml:space="preserve">
+        <t t-name= "my_hostel.template_hostel_dashboard_main" >
+
             <div class="o_hostel_dashboard_main p-4">
                 <h1 class="mb-4">🏠 Hostel Overview Dashboard</h1>
-
+                
                 <div class="row">
                     <div class="col-lg-3 col-md-6 col-12 mb-3">
                         <div class="card shadow-sm p-3">
@@ -11,7 +13,7 @@
                             <p t-esc="state.total_hostels" class="display-6 fw-bold text-primary"/>
                         </div>
                     </div>
-
+                    
                     <div class="col-lg-3 col-md-6 col-12 mb-3">
                         <div class="card shadow-sm p-3">
                             <h4>Total Rooms</h4>
@@ -25,7 +27,7 @@
                             <p t-esc="state.total_students" class="display-6 fw-bold text-info"/>
                         </div>
                     </div>
-
+                    
                     <div class="col-lg-3 col-md-6 col-12 mb-3">
                         <div class="card shadow-sm p-3">
                             <h4>Total Rent</h4>
@@ -35,8 +37,9 @@
                         </div>
                     </div>
                 </div>
-
+                
                 <canvas id="occupancy_chart" height="100"></canvas>
             </div>
+        </t>
     </template>
 </odoo>

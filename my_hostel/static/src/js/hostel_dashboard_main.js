@@ -29,6 +29,6 @@ export class HostelDashboardMain extends Component {
     }
 }
 
-HostelDashboardMain.template = 'template_hostel_dashboard_main';
+HostelDashboardMain.template = 'my_hostel.template_hostel_dashboard_main';
 
 registry.category('actions').add('hostel_dashboard_main', HostelDashboardMain);
