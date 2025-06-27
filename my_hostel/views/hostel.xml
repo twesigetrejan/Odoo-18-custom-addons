@@ -2,92 +2,98 @@
 <odoo>
 
     <!-- kanban View -->
-<record id="view_hostel_kanban_view" model="ir.ui.view">
-    <field name="name">hostel.hostel.kanban.view</field>
-    <field name="model">hostel.hostel</field>
-    <field name="arch" type="xml">
-        <kanban class="hostel_kanban">
-            <field name="image_1920"/>
-            <field name="name"/>
-            <field name="hostel_code"/>
-            <field name="city"/>
-            <field name="hostel_capacity"/>
-            <field name="hostel_floors"/>
-            <field name="hostel_rating"/>
-            <field name="description"/>
-            <field name="active"/>
+    <record id="view_hostel_kanban_view" model="ir.ui.view">
+        <field name="name">hostel.hostel.kanban.view</field>
+        <field name="model">hostel.hostel</field>
+        <field name="arch" type="xml">
+            <kanban class="hostel_kanban" t-attf-style="background-color: transparent !important; padding: 0 !important;">
+                <field name="image_1920"/>
+                <field name="name"/>
+                <field name="hostel_code"/>
+                <field name="city"/>
+                <field name="hostel_capacity"/>
+                <field name="hostel_floors"/>
+                <field name="hostel_rating"/>
+                <field name="description"/>
+                <field name="active"/>
 
-            <templates>
-                <t t-name="kanban-box">
-                    <div class="oe_kanban_global_click o_kanban_record" style="padding: 12px; border-radius: 12px;">
-                        <!-- Image and Details Container -->
-                        <div style="display: flex; gap: 16px; border-radius: 12px; border: none; box-shadow: none;">
-                            <!-- Image Column -->
-                            <div style="flex: 0 0 120px;">
-                                <div style="border-radius: 8px; overflow: hidden; height: 120px;">
-                                    <!-- Uploaded Image -->
-                                    <img t-if="record.image_1920.raw_value"
-                                        t-att-src="'/web/image/hostel.hostel/' + record.id.raw_value + '/image_1024/240x240'"
-                                        alt="Hostel Photo"
-                                        style="height: 100%; width: 100%; object-fit: cover;"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_global_click o_kanban_record" 
+                             style="padding: 12px; 
+                                    margin: 8px 0; 
+                                    border-radius: 12px; 
+                                    background-color: white !important; 
+                                    border: 1px solid #e0e0e0 !important; 
+                                    box-shadow: none !important;">
+                            <!-- Image and Details Container -->
+                            <div style="display: flex; gap: 16px; border-radius: 12px; border: none; box-shadow: none;">
+                                <!-- Image Column -->
+                                <div style="flex: 0 0 120px;">
+                                    <div style="border-radius: 8px; overflow: hidden; height: 120px;">
+                                        <!-- Uploaded Image -->
+                                        <img t-if="record.image_1920.raw_value"
+                                            t-att-src="'/web/image/hostel.hostel/' + record.id.raw_value + '/image_1024/240x240'"
+                                            alt="Hostel Photo"
+                                            style="height: 100%; width: 100%; object-fit: cover;"/>
+                                        
+                                        <!-- Default Fallback Image -->
+                                        <img t-else=""
+                                            t-att-src="'/my_hostel/static/src/img/hostel-default.jpg'"
+                                            alt="Default Hostel Photo"
+                                            style="height: 100%; width: 100%; object-fit: cover;"/>
+                                    </div>
+                                </div>
+                                
+                                <!-- Details Column -->
+                                <div style="flex: 1; position: relative;">
+                                    <!-- Name and Code in one line -->
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                        <h4 style="margin: 0; font-size: 16px; font-weight: 600;">
+                                            <field name="name"/> <span style="color: #666; font-weight: 500;"><field name="hostel_code"/></span>
+                                        </h4>
+                                        <span t-if="record.active.raw_value" style="color: green; font-size: 12px;">● Active</span>
+                                        <span t-else="" style="color: red; font-size: 12px;">● Inactive</span>
+                                    </div>
                                     
-                                    <!-- Default Fallback Image -->
-                                    <img t-else=""
-                                        t-att-src="'/my_hostel/static/src/img/hostel-default.jpg'"
-                                        alt="Default Hostel Photo"
-                                        style="height: 100%; width: 100%; object-fit: cover;"/>
-                                </div>
-                            </div>
-                            
-                            <!-- Details Column -->
-                            <div style="flex: 1; position: relative;">
-                                <!-- Name and Code in one line -->
-                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                                    <h4 style="margin: 0; font-size: 16px; font-weight: 600;">
-                                        <field name="name"/> <span style="color: #666; font-weight: 500;"><field name="hostel_code"/></span>
-                                    </h4>
-                                    <span t-if="record.active.raw_value" style="color: green; font-size: 12px;">● Active</span>
-                                    <span t-else="" style="color: red; font-size: 12px;">● Inactive</span>
-                                </div>
-                                
-                                <!-- Location -->
-                                <div style="margin-bottom: 6px; color: #555;">
-                                    <i class="fa fa-map-marker" title="Location" style="margin-right: 5px;"/> 
-                                    <field name="city"/>
-                                </div>
-                                
-                                <!-- Description -->
-                                <div style="margin-bottom: 6px; color: #555; font-size: 13px; 
-                                        display: -webkit-box; -webkit-line-clamp: 2; 
-                                        -webkit-box-orient: vertical; overflow: hidden;">
-                                    <field name = "description"/>
-                                </div>
-                                
-                                <!-- Capacity and Floors in one line -->
-                                <div style="display: flex; gap: 16px; margin-bottom: 6px; color: #555;">
-                                    <div>
-                                        <i class="fa fa-users" title="Capacity" style="margin-right: 5px;"/> 
-                                        <field name="hostel_capacity"/> capacity
+                                    <!-- Location -->
+                                    <div style="margin-bottom: 6px; color: #555;">
+                                        <i class="fa fa-map-marker" title="Location" style="margin-right: 5px;"/> 
+                                        <field name="city"/>
                                     </div>
-                                    <div>
-                                        <i class="fa fa-building" title="Floors" style="margin-right: 5px;"/> 
-                                        <field name="hostel_floors"/> floors
+                                    
+                                    <!-- Description -->
+                                    <div style="margin-bottom: 6px; color: #555; font-size: 13px; 
+                                            display: -webkit-box; -webkit-line-clamp: 2; 
+                                            -webkit-box-orient: vertical; overflow: hidden;">
+                                        <field name="description"/>
                                     </div>
-                                </div>
-                                
-                                <!-- Rating -->
-                                <div style="margin-top: 8px; display: flex; align-items: center; gap: 5px;">
-                                    <field name="hostel_rating" widget="float_rate" options="{'precision': 0.5}"/>
-                                    <span>rated</span>
+                                    
+                                    <!-- Capacity and Floors in one line -->
+                                    <div style="display: flex; gap: 16px; margin-bottom: 6px; color: #555;">
+                                        <div>
+                                            <i class="fa fa-users" title="Capacity" style="margin-right: 5px;"/> 
+                                            <field name="hostel_capacity"/> capacity
+                                        </div>
+                                        <div>
+                                            <i class="fa fa-building" title="Floors" style="margin-right: 5px;"/> 
+                                            <field name="hostel_floors"/> floors
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Rating -->
+                                    <div style="margin-top: 8px; display: flex; align-items: center; gap: 5px;">
+                                        <field name="hostel_rating" widget="float_rate" options="{'precision': 0.5}"/>
+                                        <span>rated</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </t>
-            </templates>
-        </kanban>
-    </field>
-</record>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
 
     <!-- Form View -->
     <record id="view_hostel_form_view" model="ir.ui.view">
