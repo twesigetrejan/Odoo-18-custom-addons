@@ -1,5 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
+    <!-- Main Dashboard Menu -->
+    <menuitem id="menu_hostel_dashboard_root"
+              name="Hostel Dashboard"
+              parent=""
+              sequence="10"
+              groups="my_hostel.group_hostel_manager,my_hostel.group_hostel_user"/>
 
-    
+    <!-- Child Menus -->
+    <menuitem id="menu_dashboard_overview"
+              name="Overview"
+              parent="menu_hostel_dashboard_root"
+              sequence="1"/>
+
+    <menuitem id="menu_dashboard_students"
+              name="Students"
+              parent="menu_hostel_dashboard_root"
+              sequence="2"/>
+
+    <menuitem id="menu_dashboard_occupancy"
+              name="Occupancy"
+              parent="menu_hostel_dashboard_root"
+              sequence="3"/>
+
+    <menuitem id="menu_dashboard_finance"
+              name="Finance"
+              parent="menu_hostel_dashboard_root"
+              sequence="4"/>
+
+    <menuitem id="menu_dashboard_admissions"
+              name="Admissions"
+              parent="menu_hostel_dashboard_root"
+              sequence="5"/>
 </odoo>
