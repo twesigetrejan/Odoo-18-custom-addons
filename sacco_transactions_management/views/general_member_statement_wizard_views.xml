@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_general_member_statement_wizard_form" model="ir.ui.view">
+        <field name="name">general.member.statement.wizard.form</field>
+        <field name="model">general.member.statement.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Generate General Member Statement">
+                <group>
+                    <field name="partner_id" options="{'no_create': True, 'no_open': True}"/>
+                    <field name="date_from"/>
+                    <field name="date_to"/>
+                </group>
+                <footer>
+                    <button name="action_generate_statement" type="object" string="Generate Statement" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_general_member_statement_wizard" model="ir.actions.act_window">
+        <field name="name">General Member Statement</field>
+        <field name="res_model">general.member.statement.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="view_id" ref="view_general_member_statement_wizard_form"/>
+    </record>
+
+    <menuitem
+        id="menu_general_member_statement"
+        name="General Member Statement"
+        action="action_general_member_statement_wizard"
+        parent="account.account_reports_legal_statements_menu"
+        groups="sacco_transactions_management.group_sacco_teller,sacco_transactions_management.group_sacco_accountant,sacco_transactions_management.group_sacco_manager,sacco_transactions_management.group_sacco_super_user"
+        sequence="20"/>
+</odoo>

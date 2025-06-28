@@ -1,0 +1,11 @@
+<odoo>
+    <data noupdate="1">
+        <!-- Define the Member Journal -->
+        <record id="journal_member_journal" model="account.journal" forcecreate="False">
+            <field name="name">Member Journal</field>
+            <field name="code">MEMJ</field>
+            <field name="type">general</field>
+            <field name="sequence" eval="10"/>
+        </record>
+    </data>
+</odoo>

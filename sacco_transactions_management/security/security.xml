@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+        <record id="module_category_sacco" model="ir.module.category">
+            <field name="name">SACCO Management</field>
+            <field name="description">Manage SACCO operations and access rights.</field>
+            <field name="sequence">10</field>
+        </record>
+
+        <!-- SACCO User (Base Group) -->
+        <record id="group_sacco_user" model="res.groups">
+            <field name="name">SACCO User</field>
+            <field name="category_id" ref="sacco_transactions_management.module_category_sacco"/>
+            <field name="implied_ids" eval="[(4, ref('base.group_user')), (4, ref('account.group_account_readonly'))]"/>
+            <field name="comment">Base access for SACCO module users.</field>
+        </record>
+
+        <!-- Member Registrar -->
+        <record id="group_sacco_member_registrar" model="res.groups">
+            <field name="name">Member Registrar</field>
+            <field name="category_id" ref="sacco_transactions_management.module_category_sacco"/>
+            <field name="implied_ids" eval="[(4, ref('sacco_transactions_management.group_sacco_user'))]"/>
+            <field name="comment">Can create and manage general transactions (e.g., walk-in payments).</field>
+        </record>
+
+        <!-- SACCO Teller -->
+        <record id="group_sacco_teller" model="res.groups">
+            <field name="name">SACCO Teller</field>
+            <field name="category_id" ref="sacco_transactions_management.module_category_sacco"/>
+            <field name="implied_ids" eval="[(4, ref('sacco_transactions_management.group_sacco_user'))]"/>
+            <field name="comment">Can create and manage general transactions and manage receiving/paying accounts.</field>
+        </record>
+
+        <!-- Accounts Assistant -->
+        <record id="group_sacco_accounts_assistant" model="res.groups">
+            <field name="name">Accounts Assistant</field>
+            <field name="category_id" ref="sacco_transactions_management.module_category_sacco"/>
+            <field name="implied_ids" eval="[(4, ref('sacco_transactions_management.group_sacco_user'))]"/>
+            <field name="comment">Read-only access to transactions and accounts.</field>
+        </record>
+
+        <!-- Loans Officer -->
+        <record id="group_sacco_loans_officer" model="res.groups">
+            <field name="name">Loans Officer</field>
+            <field name="category_id" ref="sacco_transactions_management.module_category_sacco"/>
+            <field name="implied_ids" eval="[(4, ref('sacco_transactions_management.group_sacco_user'))]"/>
+            <field name="comment">Read-only access to transactions and accounts.</field>
+        </record>
+
+        <!-- Accountant -->
+        <record id="group_sacco_accountant" model="res.groups">
+            <field name="name">Accountant</field>
+            <field name="category_id" ref="sacco_transactions_management.module_category_sacco"/>
+            <field name="implied_ids" eval="[(4, ref('sacco_transactions_management.group_sacco_user'))]"/>
+            <field name="comment">Can mass approve, verify, and delete transactions; manage receiving/paying accounts; generate statements.</field>
+        </record>
+
+        <!-- Manager -->
+        <record id="group_sacco_manager" model="res.groups">
+            <field name="name">SACCO Manager</field>
+            <field name="category_id" ref="sacco_transactions_management.module_category_sacco"/>
+            <field name="implied_ids" eval="[(4, ref('sacco_transactions_management.group_sacco_user'))]"/>
+            <field name="users" eval="[(4, ref('base.user_admin'))]"/>
+            <field name="comment">Read-only access to transactions; can manage background jobs and generate statements.</field>
+        </record>
+
+        <!-- Audit Viewer -->
+        <record id="group_sacco_audit_viewer" model="res.groups">
+            <field name="name">Audit Viewer</field>
+            <field name="category_id" ref="sacco_transactions_management.module_category_sacco"/>
+            <field name="implied_ids" eval="[(4, ref('sacco_transactions_management.group_sacco_user'))]"/>
+            <field name="comment">Read-only access to all SACCO models.</field>
+        </record>
+
+        <!-- Super User -->
+        <record id="group_sacco_super_user" model="res.groups">
+            <field name="name">SACCO Super User</field>
+            <field name="category_id" ref="sacco_transactions_management.module_category_sacco"/>
+            <field name="implied_ids" eval="[
+                (4, ref('sacco_transactions_management.group_sacco_member_registrar')),
+                (4, ref('sacco_transactions_management.group_sacco_teller')),
+                (4, ref('sacco_transactions_management.group_sacco_accounts_assistant')),
+                (4, ref('sacco_transactions_management.group_sacco_loans_officer')),
+                (4, ref('sacco_transactions_management.group_sacco_accountant')),
+                (4, ref('sacco_transactions_management.group_sacco_manager')),
+                (4, ref('sacco_transactions_management.group_sacco_audit_viewer')),
+                (4, ref('base.group_erp_manager'))
+            ]"/>
+            <field name="comment">Full access to all SACCO models and operations.</field>
+        </record>
+
+        <!-- Record Rules -->
+        <record id="rule_sacco_general_transaction_all" model="ir.rule">
+            <field name="name">View All General Transactions</field>
+            <field name="model_id" ref="sacco_transactions_management.model_sacco_general_transaction"/>
+            <field name="domain_force">[(1,'=',1)]</field>
+            <field name="groups" eval="[
+                (4, ref('sacco_transactions_management.group_sacco_member_registrar')),
+                (4, ref('sacco_transactions_management.group_sacco_teller')),
+                (4, ref('sacco_transactions_management.group_sacco_accounts_assistant')),
+                (4, ref('sacco_transactions_management.group_sacco_loans_officer')),
+                (4, ref('sacco_transactions_management.group_sacco_accountant')),
+                (4, ref('sacco_transactions_management.group_sacco_manager')),
+                (4, ref('sacco_transactions_management.group_sacco_audit_viewer')),
+                (4, ref('sacco_transactions_management.group_sacco_super_user'))
+            ]"/>
+        </record>
+
+        <record id="rule_sacco_receiving_account_all" model="ir.rule">
+            <field name="name">View All Receiving Accounts</field>
+            <field name="model_id" ref="sacco_transactions_management.model_sacco_receiving_account"/>
+            <field name="domain_force">[(1,'=',1)]</field>
+            <field name="groups" eval="[
+                (4, ref('sacco_transactions_management.group_sacco_member_registrar')),
+                (4, ref('sacco_transactions_management.group_sacco_teller')),
+                (4, ref('sacco_transactions_management.group_sacco_accounts_assistant')),
+                (4, ref('sacco_transactions_management.group_sacco_loans_officer')),
+                (4, ref('sacco_transactions_management.group_sacco_accountant')),
+                (4, ref('sacco_transactions_management.group_sacco_manager')),
+                (4, ref('sacco_transactions_management.group_sacco_audit_viewer')),
+                (4, ref('sacco_transactions_management.group_sacco_super_user'))
+            ]"/>
+        </record>
+
+        <record id="rule_sacco_paying_account_all" model="ir.rule">
+            <field name="name">View All Paying Accounts</field>
+            <field name="model_id" ref="sacco_transactions_management.model_sacco_paying_account"/>
+            <field name="domain_force">[(1,'=',1)]</field>
+            <field name="groups" eval="[
+                (4, ref('sacco_transactions_management.group_sacco_member_registrar')),
+                (4, ref('sacco_transactions_management.group_sacco_teller')),
+                (4, ref('sacco_transactions_management.group_sacco_accounts_assistant')),
+                (4, ref('sacco_transactions_management.group_sacco_loans_officer')),
+                (4, ref('sacco_transactions_management.group_sacco_accountant')),
+                (4, ref('sacco_transactions_management.group_sacco_manager')),
+                (4, ref('sacco_transactions_management.group_sacco_audit_viewer')),
+                (4, ref('sacco_transactions_management.group_sacco_super_user'))
+            ]"/>
+        </record>
+
+        <record id="rule_sacco_transaction_link_all" model="ir.rule">
+            <field name="name">View All Transaction Links</field>
+            <field name="model_id" ref="sacco_transactions_management.model_sacco_transaction_link"/>
+            <field name="domain_force">[(1,'=',1)]</field>
+            <field name="groups" eval="[
+                (4, ref('sacco_transactions_management.group_sacco_member_registrar')),
+                (4, ref('sacco_transactions_management.group_sacco_teller')),
+                (4, ref('sacco_transactions_management.group_sacco_accounts_assistant')),
+                (4, ref('sacco_transactions_management.group_sacco_loans_officer')),
+                (4, ref('sacco_transactions_management.group_sacco_accountant')),
+                (4, ref('sacco_transactions_management.group_sacco_manager')),
+                (4, ref('sacco_transactions_management.group_sacco_audit_viewer')),
+                (4, ref('sacco_transactions_management.group_sacco_super_user'))
+            ]"/>
+        </record>
+    </data>
+</odoo>

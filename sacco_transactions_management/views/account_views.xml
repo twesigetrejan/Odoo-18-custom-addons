@@ -1,0 +1,25 @@
+<odoo>
+    <data>
+        <record id="view_account_form_inherit_sacco" model="ir.ui.view">
+            <field name="name">account.account.form.inherit.sacco</field>
+            <field name="model">account.account</field>
+            <field name="inherit_id" ref="account.view_account_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//page[@name='accounting']//group[last()]" position="after">
+                    <group string="Member Account Requirements">
+                        <field name="requires_member"/>
+                        <field name="account_product_type" 
+                               invisible="requires_member == False" 
+                               required="requires_member == True"/>
+                        <field name="original_shares_amount" 
+                               invisible="account_product_type != 'shares'" 
+                               required="account_product_type == 'shares'"/>
+                        <field name="interest_rate" 
+                               invisible="account_product_type not in ('loans', 'savings')" 
+                               required="account_product_type in ('loans', 'savings')"/>
+                    </group>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

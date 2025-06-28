@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Main SACCO Menu -->
+    <menuitem id="menu_sacco_root" name="Transactions" web_icon="sacco_transactions_management,static/description/icon.png" sequence="2"/>
+    
+    <!-- Configuration Menu -->
+    <menuitem id="menu_sacco_config" name="Configuration" parent="menu_sacco_root" sequence="100"/>
+
+    <!-- SACCO Members Tree View -->
+    <record id="view_sacco_members_tree" model="ir.ui.view">
+        <field name="name">res.partner.sacco.members.tree</field>
+        <field name="model">res.partner</field>
+        <field name="arch" type="xml">
+            <tree string="SACCO Members">
+                <field name="member_id"/>
+                <field name="name"/>
+                <field name="email"/>
+                <field name="mobile"/>
+                <field name="membership_status"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Action for SACCO Members -->
+    <record id="action_sacco_members" model="ir.actions.act_window">
+        <field name="name">SACCO Members</field>
+        <field name="res_model">res.partner</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('is_sacco_member', '=', True)]</field>
+        <field name="context">{'default_is_sacco_member': True}</field>
+        <field name="help" type="html">
+            <p class="oe_view_nocontent_create">
+                Click to view or manage SACCO members.
+            </p>
+        </field>
+    </record>
+
+    <!-- Mass Action Server Action -->
+    <record id="action_mass_post_general_statements" model="ir.actions.server">
+        <field name="name">Post General Statements</field>
+        <field name="model_id" ref="base.model_res_partner"/>
+        <field name="state">code</field>
+        <field name="code">
+            action = env['general.member.statement.wizard'].action_mass_post_statements(records)
+        </field>
+        <field name="binding_model_id" ref="base.model_res_partner"/>
+        <field name="binding_view_types">list</field>
+    </record>
+
+    <!-- MEMBER JOURNALS -->
+
+    <!-- Search View for Member Journal -->
+    <record id="view_member_journal_search" model="ir.ui.view">
+        <field name="name">account.move.line.member.journal.search</field>
+        <field name="model">account.move.line</field>
+        <field name="inherit_id" ref="account.view_account_move_line_filter"/>
+        <field name="arch" type="xml">
+            <search>
+                <!-- Remove the journal_id filter; it's already defined in the inherited view -->
+                <filter string="Posted" name="state_posted" domain="[('move_id.state', '=', 'posted')]"/>
+                <filter string="Savings Account" name="account_product_type_savings" domain="[('account_product_type', '=', 'savings')]"/>
+                <filter string="Shares Account" name="account_product_type_shares" domain="[('account_product_type', '=', 'shares')]"/>
+                <filter string="Loan Account" name="account_product_type_loans" domain="[('account_product_type', '=', 'loans')]"/>
+                <group string="Account Product Type">
+                    <filter string="Savings" name="account_product_type_savings" domain="[('account_product_type', '=', 'savings')]"/>
+                    <filter string="Shares" name="account_product_type_shares" domain="[('account_product_type', '=', 'shares')]"/>
+                    <filter string="Loans" name="account_product_type_loans" domain="[('account_product_type', '=', 'loans')]"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action for Member Journal -->
+    <record id="action_member_journal_items" model="ir.actions.server">
+        <field name="name">Member Journal</field>
+        <field name="model_id" ref="account.model_account_move_line"/>
+        <field name="state">code</field>
+        <field name="code">
+            action = env['sacco.helper'].get_member_journal_action()
+        </field>
+    </record>
+
+    <!-- Menu Item for SACCO Members -->
+    <!-- <menuitem
+        id="menu_sacco_members"
+        name="SACCO Members"
+        parent="menu_sacco_root"
+        action="action_sacco_members"
+        sequence="20"/> -->
+
+    <!-- Existing Menus -->
+    <menuitem
+        id="menu_member_journal"
+        name="Member Journal"
+        parent="account.menu_finance_entries_accounting_miscellaneous"
+        action="action_member_journal_items"
+        sequence="20"/>
+    
+</odoo>

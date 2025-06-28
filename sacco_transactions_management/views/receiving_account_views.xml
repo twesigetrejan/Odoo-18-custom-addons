@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Tree View -->
+    <record id="view_sacco_receiving_account_tree" model="ir.ui.view">
+        <field name="name">sacco.receiving.account.tree</field>
+        <field name="model">sacco.receiving.account</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="account_type"/>
+                <field name="name"/>
+                <field name="bank_name" invisible="account_type != 'bank'"/>
+                <field name="branch" invisible="account_type != 'bank'"/>
+                <field name="mobile_money_number" invisible="account_type != 'mobile'"/>
+                <field name="account_id"/>
+                <field name="account_number"/>
+                <field name="status" widget="badge" decoration-muted="status == 'draft'" decoration-success="status == 'active'" decoration-danger="status == 'inactive'"/>
+                <field name="default"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_sacco_receiving_account_form" model="ir.ui.view">
+        <field name="name">sacco.receiving.account.form</field>
+        <field name="model">sacco.receiving.account</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <field name="status" widget="statusbar" statusbar_visible="draft,active,inactive"/>
+                    <button name="action_activate" string="Activate" type="object" class="oe_highlight" invisible="status != 'draft'" groups="sacco_transactions_management.group_sacco_teller,sacco_transactions_management.group_sacco_accountant,sacco_transactions_management.group_sacco_super_user"/>
+                    <button name="action_reset_to_draft" string="Reset to Draft" type="object" class="oe_highlight" invisible="status not in ['active', 'inactive']" groups="sacco_transactions_management.group_sacco_teller,sacco_transactions_management.group_sacco_accountant,sacco_transactions_management.group_sacco_super_user"/>
+                    <button name="action_deactivate" string="Deactivate" type="object" class="oe_highlight" invisible="status != 'active'" groups="sacco_transactions_management.group_sacco_teller,sacco_transactions_management.group_sacco_accountant,sacco_transactions_management.group_sacco_super_user"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="account_type" readonly="status in ['active', 'inactive']"/>
+                            <field name="name" readonly="status in ['active', 'inactive']"/>
+                            <field name="bank_name" invisible="account_type != 'bank'" readonly="status in ['active', 'inactive']"/>
+                            <field name="branch" required="account_type == 'bank'" invisible="account_type != 'bank'" readonly="status in ['active', 'inactive']"/>
+                            <field name="mobile_money_number" required="account_type == 'mobile'" invisible="account_type != 'mobile'" readonly="status in ['active', 'inactive']"/>
+                        </group>
+                        <group>
+                            <field name="account_id" readonly="status in ['active', 'inactive']"/>
+                            <field name="account_number"/>
+                            <field name="default" readonly="status in ['active', 'inactive']"/>
+                        </group>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_sacco_receiving_account" model="ir.actions.act_window">
+        <field name="name">Receiving Accounts</field>
+        <field name="res_model">sacco.receiving.account</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new receiving account
+            </p>
+            <p>
+                Link external account names (like banks or mobile money) to Internal receiving accounts.
+            </p>
+        </field>
+    </record>
+
+    <!-- Menu Item -->
+    <menuitem id="menu_sacco_receiving_accounts" 
+              name="Receiving Accounts" 
+              parent="menu_sacco_config" 
+              action="action_sacco_receiving_account" 
+              sequence="15"/>
+</odoo>

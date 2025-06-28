@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-    <template id="my_hostel.template_hostel_dashboard_main" xml:space="preserve">
+    <template id="template" xml:space="preserve">
         <t t-name= "my_hostel.template_hostel_dashboard_main" >
 
             <div class="o_hostel_dashboard_main p-4">

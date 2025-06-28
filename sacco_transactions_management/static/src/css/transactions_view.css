@@ -1,0 +1,321 @@
+/** @odoo-module **/
+
+/* Odoo Enterprise Color Palette */
+:root {
+    --primary: #875A7B; /* Odoo purple */
+    --primary-dark: #714B67;
+    --secondary: #F0ECEE; /* Light grey */
+    --success: #21B799;
+    --danger: #EB6767;
+    --warning: #F4A261;
+    --info: #5BC0DE;
+    --text: #212529;
+    --text-muted: #6C757D;
+    --border: #DEE2E6;
+    --background: #FFFFFF;
+    --hover: #F8F9FA;
+}
+
+/* General Container */
+.transactions-view {
+    padding: 2rem;
+    background: var(--background);
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    font-family: 'Roboto', sans-serif;
+    max-height: 100vh; /* Limit to viewport height */
+    overflow-y: auto; /* Enable vertical scrolling */
+    -webkit-overflow-scrolling: touch; /* Smooth scrolling on mobile */
+}
+
+/* Header */
+.transactions-view h1 {
+    color: var(--primary);
+    font-size: 1.75rem;
+    font-weight: 500;
+    margin-bottom: 1.5rem;
+    border-bottom: 2px solid var(--primary);
+    padding-bottom: 0.5rem;
+}
+
+/* Header Info Grid */
+.header-info {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+/* Field Styling */
+.field {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.field label {
+    color: var(--text);
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.field input,
+.field select {
+    padding: 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-size: 0.95rem;
+    color: var(--text);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.field input:focus,
+.field select:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(135, 90, 123, 0.2);
+}
+
+/* Ensure table doesn’t overflow */
+.transactions-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin-bottom: 2rem;
+    background: var(--background);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden; /* Keep table content contained */
+}
+
+.transactions-table th {
+    background: var(--primary);
+    color: white;
+    font-weight: 600;
+    padding: 1rem;
+    text-align: left;
+    font-size: 0.95rem;
+}
+
+.transactions-table td {
+    padding: 1rem;
+    border-top: 1px solid var(--border);
+    vertical-align: middle;
+}
+
+.transactions-table tbody tr:hover {
+    background: var(--hover);
+}
+
+.transactions-table tfoot td {
+    font-weight: 600;
+    background: var(--secondary);
+    padding: 1rem;
+}
+
+/* Buttons */
+button {
+    padding: 0.75rem 1.5rem;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background 0.2s ease, transform 0.1s ease;
+    margin-right: 0.75rem;
+}
+
+button:hover:not(:disabled) {
+    background: var(--primary-dark);
+    transform: translateY(-1px);
+}
+
+button:disabled {
+    background: var(--text-muted);
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+/* Suggestions Dropdown */
+.suggestions {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--background);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 1000;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-top: 0.25rem;
+}
+
+.suggestions div {
+    padding: 0.75rem;
+    cursor: pointer;
+    color: var(--text);
+    font-size: 0.95rem;
+}
+
+.suggestions div:hover {
+    background: var(--hover);
+}
+
+/* Button Container */
+.button-container {
+    margin-top: 1rem;
+    margin-bottom: 2rem;
+}
+
+/* Transaction Summary Card */
+.transaction-summary-card {
+    background: var(--background);
+    border: 1px solid var(--success);
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 1rem;
+    margin-top: 1rem;
+    max-width: 500px;
+    max-height: 50vh; /* Limit card height to half viewport */
+    overflow-y: auto; /* Enable scrolling within card */
+    animation: slideIn 0.3s ease-out;
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid var(--success);
+    padding-bottom: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.card-header h2 {
+    color: var(--success);
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.close-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0;
+    width: 24px;
+    height: 24px;
+    line-height: 24px;
+    transition: color 0.2s ease;
+}
+
+.close-btn:hover {
+    color: var(--danger);
+}
+
+.card-body {
+    color: var(--text);
+}
+
+.card-body p {
+    margin: 0.5rem 0;
+    font-size: 0.95rem;
+}
+
+.card-body h3 {
+    color: var(--primary);
+    font-size: 1.1rem;
+    font-weight: 500;
+    margin: 1rem 0 0.5rem;
+}
+
+.card-body ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.card-body li {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.95rem;
+}
+
+.card-body li:last-child {
+    border-bottom: none;
+}
+
+.card-body strong {
+    color: var(--primary-dark);
+}
+
+.o_link {
+    color: #007bff;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.o_link:hover {
+    color: #0056d2;
+}
+
+/* Animation for Card Appearance */
+@keyframes slideIn {
+    from {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .header-info {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .transactions-table th,
+    .transactions-table td {
+        padding: 0.75rem;
+        font-size: 0.9rem;
+    }
+
+    .transactions-view {
+        padding: 1rem;
+    }
+
+    .transaction-summary-card {
+        max-width: 100%; /* Full width on smaller screens */
+        margin-left: auto;
+        margin-right: auto;
+    }
+}
+
+@media (max-width: 480px) {
+    .header-info {
+        grid-template-columns: 1fr;
+    }
+
+    .transactions-view {
+        padding: 0.5rem;
+    }
+
+    .transactions-table th,
+    .transactions-table td {
+        padding: 0.5rem;
+        font-size: 0.85rem;
+    }
+
+    .button-container button {
+        width: 100%; /* Full-width buttons */
+        margin: 0.5rem 0; /* Stack vertically with spacing */
+    }
+}

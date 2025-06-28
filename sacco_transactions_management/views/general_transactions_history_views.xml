@@ -1,0 +1,175 @@
+<odoo>
+    <record id="sacco_general_transaction_tree" model="ir.ui.view">
+        <field name="name">sacco.general.transaction.tree</field>
+        <field name="model">sacco.general.transaction</field>
+        <field name="arch" type="xml">
+            <tree delete="0">
+                <field name="name"/>
+                <field name="member_id"/>
+                <field name="transaction_date"/>
+                <field name="total_amount"/>
+                <field name="currency_id"/>
+                <field name="receiving_account_id"/>
+                <field name="state"/>
+                <!-- <button name="action_approve" string="Approve" type="object" class="oe_highlight" invisible="state != 'verified'"/> -->
+            </tree>
+        </field>
+    </record>
+
+    <record id="sacco_general_transaction_search" model="ir.ui.view">
+        <field name="name">sacco.general.transaction.search</field>
+        <field name="model">sacco.general.transaction</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="member_id"/>
+                <field name="transaction_date"/>
+                <field name="total_amount"/>
+                <field name="currency_id"/>
+                <field name="receiving_account_id"/>
+                <field name="state"/>
+                <filter string="Verified" name="verified" domain="[('state', '=', 'verified')]"/>
+                <filter string="Pending" name="pending" domain="[('state', '=', 'pending')]"/>
+                <filter string="Approved" name="approved" domain="[('state', '=', 'approved')]"/>
+                <filter string="Deleted" name="deleted" domain="[('state', '=', 'deleted')]"/>
+                <group expand="0" string="Group By">
+                    <filter name="state" string="Status" context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="sacco_general_transaction_form" model="ir.ui.view">
+        <field name="name">sacco.general.transaction.form</field>
+        <field name="model">sacco.general.transaction</field>
+        <field name="arch" type="xml">
+            <form edit="0" create="0">
+                <header>
+                    <button name="action_verify" string="Verify" type="object" class="oe_highlight" invisible="state not in ('pending', 'deleted')" groups="sacco_transactions_management.group_sacco_member_registrar,sacco_transactions_management.group_sacco_teller,sacco_transactions_management.group_sacco_accountant,sacco_transactions_management.group_sacco_super_user"/>
+                    <button name="action_approve" string="Approve" type="object" class="oe_highlight" invisible="state != 'verified'" groups="sacco_transactions_management.group_sacco_accountant,sacco_transactions_management.group_sacco_super_user"/>
+                    <button name="action_delete" string="Delete" type="object" class="oe_highlight" invisible="state in ('approved', 'deleted')" groups="sacco_transactions_management.group_sacco_accountant,sacco_transactions_management.group_sacco_super_user"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,pending,verified,approved"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_get_attachment_view" class="oe_stat_button" icon="fa-file-text-o" type="object">
+                            <field name="attachment_number" widget="statinfo" string="Documents" options="{'reload_on_button': true}"/>
+                        </button>
+                    </div>
+                    <group>
+                        <field name="name"/>
+                        <field name="member_id"/>
+                        <field name="transaction_date"/>
+                        <field name="total_amount"/>
+                        <field name="currency_id"/>
+                        <field name="receiving_account_id"/>
+                    </group>
+                    <notebook>
+                        <page string="Related Transactions">
+                            <field name="transaction_link_ids" nolabel="1">
+                                <tree edit="0">
+                                    <field name="transaction_type_display"/>
+                                    <field name="transaction_name"/>
+                                    <field name="transaction_amount"/>
+                                    <field name="transaction_status"/>
+                                    <button name="action_open_transaction" string="Open" type="object" icon="fa-external-link"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string='Attachments'>
+                            <field name="attachment_document_ids" mode="kanban" context="{'default_res_model': 'sacco.general.transaction', 'default_res_id': id, 'res_model': 'sacco.general.transaction', 'res_name': name}" domain="[('res_id', '=', id), ('res_model', '=', 'sacco.general.transaction')]" readonly="True">
+                                <kanban>
+                                    <field name="name"/>
+                                    <field name="res_id"/>
+                                    <field name="res_model"/>
+                                    <field name="datas"/>
+                                    <field name="id"/>
+                                    <field name="mimetype"/>
+                                    <field name="description"/>
+                                    <templates>
+		                                <t t-name="kanban-box">
+		                                    <div class="oe_kanban_global_click" style="max-width: 200px">
+		                                        <div class="o_kanban_record_top">
+		                                        	<img t-att-src="kanban_image('ir.attachment', 'datas', record.id.raw_value)" height="100" width="182" class="oe_avatar oe_kanban_avatar_smallbox mb0" t-att-alt="record.name.value"/>
+		                                        	
+                                                    <a t-if="! read_only_mode" type="delete" class="text-danger" title="Delete attachment">
+                                                        <i class="fa fa-times" role="img" aria-label="Delete"/>
+                                                    </a>
+		                                        </div>
+		                                        <div class="oe_kanban_details" style="text-align:center">
+									                <p><h5><field name="name"/></h5></p>
+                                                    <p class="text-muted small" t-if="record.description.value"><field name="description"/></p>
+											    </div>
+		                                    </div>
+		                                </t>
+		                            </templates>
+                                </kanban>
+                            </field>
+                        </page>
+                        <page string="Remarks">
+                            <group>
+                                <group string="Remarks">
+                                    <field name="remarks" readonly="state != 'draft'"/>
+                                </group>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_mass_approve_transactions" model="ir.actions.server">
+        <field name="name">Post to General Legder</field>
+        <field name="model_id" ref="sacco_transactions_management.model_sacco_general_transaction"/>
+        <field name="state">code</field>
+        <field name="code">
+            action = records.action_mass_approve()
+        </field>
+        <field name="binding_model_id" ref="sacco_transactions_management.model_sacco_general_transaction"/>
+        <field name="binding_view_types">list</field>
+        <field name="groups_id" eval="[(6, 0, [ref('sacco_transactions_management.group_sacco_accountant'), ref('sacco_transactions_management.group_sacco_super_user')])]"/>
+        <field name="sequence">10</field>
+    </record>
+    
+    <!-- <record id="action_mass_verify_transactions" model="ir.actions.server">
+        <field name="name">Verify Transactions</field>
+        <field name="model_id" ref="sacco_transactions_management.model_sacco_general_transaction"/>
+        <field name="state">code</field>
+        <field name="code">records.action_mass_verify() or {'type': 'ir.actions.client', 'tag': 'reload'}</field>
+        <field name="binding_model_id" ref="sacco_transactions_management.model_sacco_general_transaction"/>
+        <field name="binding_view_types">list</field>
+        <field name="groups_id" eval="[(6, 0, [ref('sacco_transactions_management.group_sacco_member_registrar'),ref('sacco_transactions_management.group_sacco_teller'),ref('sacco_transactions_management.group_sacco_accountant'), ref('sacco_transactions_management.group_sacco_super_user')])]"/>
+        <field name="sequence">15</field>
+    </record> -->
+
+    <record id="action_mass_delete_transactions" model="ir.actions.server">
+        <field name="name">Delete Transactions</field>
+        <field name="model_id" ref="sacco_transactions_management.model_sacco_general_transaction"/>
+        <field name="state">code</field>
+        <field name="code">records.action_mass_delete() or {'type': 'ir.actions.client', 'tag': 'reload'}</field>
+        <field name="binding_model_id" ref="sacco_transactions_management.model_sacco_general_transaction"/>
+        <field name="binding_view_types">list</field>
+        <field name="groups_id" eval="[(6, 0, [ref('sacco_transactions_management.group_sacco_accountant'), ref('sacco_transactions_management.group_sacco_super_user')])]"/>
+        <field name="sequence">20</field>
+    </record>
+
+
+    <record id="action_general_transactions_history" model="ir.actions.act_window">
+        <field name="name">Transactions List</field>
+        <field name="res_model">sacco.general.transaction</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">{'create': False, 'search_default_verified': 1, 'default_state': 'pending'}</field>
+        <field name="help" type="html">
+            <p>Click to create a new general transaction.</p>
+        </field>
+    </record>
+
+    <menuitem
+        id="menu_general_transactions_history"
+        name="Transactions List"
+        parent="menu_sacco_root"
+        action="action_general_transactions_history"
+        sequence="10"/>
+</odoo>

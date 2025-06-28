@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Define the Member Ledger Report -->
+    <record id="member_ledger_report" model="account.report">
+        <field name="name">Member Ledger</field>
+        <field name="filter_journals" eval="False"/> <!-- We hardcode the journal in the handler -->
+        <field name="filter_analytic" eval="True"/>
+        <field name="filter_period_comparison" eval="False"/>
+        <field name="filter_multi_company">selector</field>
+        <field name="filter_unfold_all" eval="True"/>
+        <field name="filter_hide_0_lines">never</field>
+        <field name="default_opening_date_filter">this_month</field>
+        <field name="search_bar" eval="True"/>
+        <field name="load_more_limit" eval="80"/>
+        <field name="custom_handler_model_id" ref="model_member_ledger_report_handler"/>
+        <field name="filter_partner" eval="True"/>
+        <field name="column_ids">
+            <record id="member_ledger_report_date" model="account.report.column">
+                <field name="name">Date</field>
+                <field name="expression_label">date</field>
+                <field name="figure_type">date</field>
+            </record>
+            <record id="member_ledger_report_move_name" model="account.report.column">
+                <field name="name">Journal Entry</field>
+                <field name="expression_label">move_name</field>
+                <field name="figure_type">string</field>
+            </record>
+            <record id="member_ledger_report_account_name" model="account.report.column">
+                <field name="name">Account</field>
+                <field name="expression_label">account_name</field>
+                <field name="figure_type">string</field>
+            </record>
+            <record id="member_ledger_report_partner_name" model="account.report.column">
+                <field name="name">Partner</field>
+                <field name="expression_label">partner_name</field>
+                <field name="figure_type">string</field>
+            </record>
+            <record id="member_ledger_report_member_id" model="account.report.column">
+                <field name="name">Member Id</field>
+                <field name="expression_label">member_id</field>
+                <field name="figure_type">string</field>
+            </record>
+            <!-- <record id="member_ledger_report_account_product_type" model="account.report.column">
+                <field name="name">Account Product Type</field>
+                <field name="expression_label">account_product_type</field>
+                <field name="figure_type">string</field>
+            </record> -->
+            <record id="member_ledger_report_communication" model="account.report.column">
+                <field name="name">Label</field>
+                <field name="expression_label">communication</field>
+                <field name="figure_type">string</field>
+            </record>
+            <record id="member_ledger_report_debit" model="account.report.column">
+                <field name="name">Debit</field>
+                <field name="expression_label">debit</field>
+            </record>
+            <record id="member_ledger_report_credit" model="account.report.column">
+                <field name="name">Credit</field>
+                <field name="expression_label">credit</field>
+            </record>
+            <record id="member_ledger_report_balance" model="account.report.column">
+                <field name="name">Balance</field>
+                <field name="expression_label">balance</field>
+            </record>
+        </field>
+    </record>
+
+    <!-- Define the Action for the Member Ledger Report -->
+    <record id="action_member_ledger_report" model="ir.actions.client">
+        <field name="name">Member Ledger</field>
+        <field name="tag">account_report</field>
+        <field name="context" eval="{'report_id': ref('sacco_transactions_management.member_ledger_report')}"/>
+    </record>
+
+    <!-- Add the Menu Item under Audit Reports -->
+    <menuitem
+        id="menu_action_member_ledger_report"
+        name="Member Ledger"
+        action="action_member_ledger_report"
+        parent="account_reports.account_reports_audit_reports_menu"
+        groups="account.group_account_readonly"
+        sequence="10"/>
+
+        
+</odoo>

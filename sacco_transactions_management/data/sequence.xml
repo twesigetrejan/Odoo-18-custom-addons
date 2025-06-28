@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Sequence for General Transactions -->
+        <record id="seq_sacco_general_transaction" model="ir.sequence">
+            <field name="name">General Transaction Sequence</field>
+            <field name="code">sacco.general.transaction</field>
+            <field name="prefix">GT/</field>
+            <field name="padding">4</field>
+            <field name="company_id" eval="False"/>
+        </record>
+    </data>
+</odoo>

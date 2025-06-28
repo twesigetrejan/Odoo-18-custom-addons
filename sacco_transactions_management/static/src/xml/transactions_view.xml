@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="savings_management.TransactionsView">
+        <div class="transactions-view">
+            <h1>New Transactions</h1>
+
+            <div class="header-info">
+                <div class="field">
+                    <label>Member</label>
+                    <input type="text" t-ref="memberInput" t-model="state.memberName" t-on-input="onMemberSearch" placeholder="Search by name or MemberID..." />
+                    <div class="suggestions" t-if="state.memberSuggestions.length > 0">
+                        <t t-foreach="state.memberSuggestions" t-as="suggestion" t-key="suggestion.id">
+                            <div t-on-click="() => this.onMemberSelect(suggestion.id, suggestion.name, suggestion.member_id)">
+                                <span t-esc="suggestion.name" />
+                                <t t-if="suggestion.member_id"> (MemberID: <span t-esc="suggestion.member_id" />)</t>
+                            </div>
+                        </t>
+                    </div>
+                </div>
+                <div class="field">
+                    <label>Transaction Date</label>
+                    <input type="date" t-model="state.date" />
+                </div>
+                <div class="field">
+                    <label>Currency</label>
+                    <select t-model="state.currencyId">
+                        <option value="">Select Currency</option>
+                        <t t-foreach="state.currencies" t-as="currency" t-key="currency.id">
+                            <option t-att-value="currency.id" t-esc="currency.name" />
+                        </t>
+                    </select>
+                </div>
+                <div class="field">
+                    <label>Receiving Account</label>
+                    <select t-model="state.receivingAccountId">
+                        <option value="">Select Account</option>
+                        <t t-foreach="state.receivingAccounts" t-as="account" t-key="account.id">
+                            <option t-att-value="account.id" t-esc="account.name" />
+                        </t>
+                    </select>
+                </div>
+                <div class="field">
+                    <label>Amount</label>
+                    <input type="text" t-att-value="this.formatAmount(state.amount)" t-on-input="onTotalAmountChange" />
+                </div>
+            </div>
+
+            <table class="transactions-table" t-if="state.availableTypes.length > 0">
+                <thead>
+                    <tr>
+                        <th>Type</th>
+                        <th>Product/Loan</th>
+                        <th>Amount</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <t t-foreach="state.transactions" t-as="trans" t-key="trans_index">
+                        <tr>
+                            <td>
+                                <select t-model="trans.type" t-on-change="onTypeChange.bind(this, trans_index)">
+                                    <t t-foreach="state.availableTypes" t-as="type" t-key="type">
+                                        <option t-att-value="type" t-esc="type.charAt(0).toUpperCase() + type.slice(1)" />
+                                    </t>
+                                </select>
+                            </td>
+                            <td>
+                                <select t-model="trans.productId">
+                                    <option value="">Select <t t-esc="trans.type === 'loans' ? 'Loan Type' : 'Product'" /></option>
+                                    <t t-foreach="state.availableProducts[trans.type]" t-as="product" t-key="product.id">
+                                        <option t-att-value="product.id">
+                                            <t t-esc="product.name" />
+                                            <t t-if="product.currency_id"> (<t t-esc="product.currency_id[1]" />)</t>
+                                        </option>
+                                    </t>
+                                </select>
+                            </td>
+                            <td>
+                                <input type="text" t-att-value="this.formatAmount(trans.amount)" t-on-input="onAmountChange.bind(this, trans_index)" />
+                            </td>
+                            <td>
+                                <button t-on-click="() => this.removeTransactionRow(trans_index)">Remove</button>
+                            </td>
+                        </tr>
+                    </t>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="2">TOTAL</td>
+                        <td t-esc="this.formatAmount(state.transactions.reduce((sum, t) => sum + (t.amount || 0), 0))" />
+                        <td></td>
+                    </tr>
+                </tfoot>
+            </table>
+            <p t-if="state.availableTypes.length === 0">No transaction types available. Please install a module (Savings, Investments, Loans, or Shares).</p>
+
+            <div class="button-container" t-if="state.availableTypes.length > 0">
+                <button t-on-click="addTransactionRow">Add Product Amount</button>
+                <button t-on-click="onPayClick" t-att-disabled="state.loading || !this.isFormValid()" t-if="state.isMemberRegistrar || state.isSaccoTeller || state.isSuperUser">
+                    <t t-if="state.loading">Processing...</t>
+                    <t t-else="">Submit Transaction</t>
+                </button>
+            </div>
+
+            <t t-if="state.lastTransactionSummary">
+                <div class="transaction-summary-card">
+                    <div class="card-header">
+                        <h2>Transaction Summary</h2>
+                        <button class="close-btn" t-on-click="closeSummaryCard">×</button>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Member:</strong> <span t-esc="state.lastTransactionSummary.memberName" />
+                            <t t-if="state.lastTransactionSummary.memberMemberID"> (MemberID: <span t-esc="state.lastTransactionSummary.memberMemberID" />)</t>
+                        </p>
+                        <p><strong>Date:</strong> <span t-esc="state.lastTransactionSummary.date" /></p>
+                        <p><strong>Total Amount:</strong> <span t-esc="this.formatAmount(state.lastTransactionSummary.totalAmount)" /></p>
+                        <p><strong>Transaction:</strong> 
+                            <span t-att-class="'o_link'" 
+                                  t-att-data-id="state.lastTransactionSummary.generalTransactionId" 
+                                  t-on-click="this.openGeneralTransaction"
+                                  t-esc="state.lastTransactionSummary.generalTransactionName || 'GT-' + state.lastTransactionSummary.generalTransactionId" />
+                        </p>
+                        <h3>Breakdown</h3>
+                        <ul>
+                            <t t-foreach="state.lastTransactionSummary.transactions" t-as="trans" t-key="trans_index">
+                                <li>
+                                    <strong t-esc="trans.type.charAt(0).toUpperCase() + trans.type.slice(1)" />: 
+                                    <span t-esc="trans.productName" /> 
+                                    (ID: <span t-att-class="'o_link'" 
+                                               t-att-data-id="trans.name" 
+                                               t-att-data-type="trans.type" 
+                                               t-on-click="this.openTransaction" 
+                                               t-esc="trans.name" />) 
+                                    - <span t-esc="this.formatAmount(trans.amount)" />
+                                </li>
+                            </t>
+                        </ul>
+                    </div>
+                </div>
+            </t>
+        </div>
+    </t>
+</templates>

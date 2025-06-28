@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Define the Member Statement Report Action -->
+    <record id="action_member_statement_report" model="ir.actions.report">
+        <field name="name">Member Statement</field>
+        <field name="model">member.ledger.report.handler</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">sacco_transactions_management.member_statement_report</field>
+    </record>
+
+    <!-- QWeb Template for the Member Statement -->
+    <template id="member_statement_report">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <!-- Header -->
+                        <div class="text-center">
+                            <h1 style="font-size: 24pt; font-weight: bold;">Individual Member Statement</h1>
+                            <h2 style="font-size: 18pt; font-weight: bold;">Member Id: <t t-esc="data['member_id']"/></h2>
+                            <h2 style="font-size: 18pt; font-weight: bold;">Member Name: <t t-esc="data['member_name']"/></h2>
+                            <h2 style="font-size: 18pt; font-weight: bold;">Start Date: <span t-esc="doc.date_from" t-options='{"widget": "date"}'/></h2>
+                            <h2 style="font-size: 18pt; font-weight: bold;">End Date: <span t-esc="doc.date_to" t-options='{"widget": "date"}'/></h2>
+                            <h2 style="font-size: 18pt; font-weight: bold;">Request Date: <span t-esc="data['request_date']" t-options='{"widget": "date"}'/></h2>
+                        </div>
+
+                        <!-- Statement Table -->
+                        <table class="table table-bordered mt-4">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Savings</th>
+                                    <th>Savings Interest</th>
+                                    <th>Loan</th>
+                                    <th>Loan Interest</th>
+                                    <th>Shares</th>
+                                    <th>Share Number</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="data['lines']" t-as="line">
+                                    <tr t-att-class="'font-weight-bold' if line['description'] == 'Brought Forward' else ''">
+                                        <td><span t-esc="line['date']" t-options='{"widget": "date"}'/></td>
+                                        <td><t t-if="line['savings'] != 0"><t t-esc="'{:,}'.format(float(line['savings']))"/></t></td>
+                                        <td><t t-if="line['savings_interest'] != 0"><t t-esc="'{:,}'.format(float(line['savings_interest']))"/></t></td>
+                                        <td><t t-if="line['loan'] != 0"><t t-esc="'{:,}'.format(float(line['loan']))"/></t></td>
+                                        <td><t t-if="line['loan_interest'] != 0"><t t-esc="'{:,}'.format(float(line['loan_interest']))"/></t></td>
+                                        <td><t t-if="line['shares'] != 0"><t t-esc="'{:,}'.format(float(line['shares']))"/></t></td>
+                                        <td><t t-if="line['share_number'] != 0"><t t-esc="'{:,}'.format(float(line['share_number']))"/></t></td>
+                                        <td><t t-esc="line['description']"/></td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td><strong>Totals</strong></td>
+                                    <td><strong><t t-esc="'{:,}'.format(float(data['totals']['savings']))"/></strong></td>
+                                    <td><strong><t t-esc="'{:,}'.format(float(data['totals']['savings_interest']))"/></strong></td>
+                                    <td><strong><t t-esc="'{:,}'.format(float(data['totals']['loan']))"/></strong></td>
+                                    <td><strong><t t-esc="'{:,}'.format(float(data['totals']['loan_interest']))"/></strong></td>
+                                    <td><strong><t t-esc="'{:,}'.format(float(data['totals']['shares']))"/></strong></td>
+                                    <td><strong><t t-esc="'{:,}'.format(float(data['totals']['share_number']))"/></strong></td>
+                                    <td></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

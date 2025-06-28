@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_transactions_view" model="ir.actions.client">
+        <field name="name">Transactions View</field>
+        <field name="tag">transactions_view</field>
+    </record>
+
+    <menuitem 
+        id="menu_transactions_view" 
+        name="New Transactions" 
+        parent="menu_sacco_root" 
+        action="action_transactions_view" 
+        sequence="1"/>
+</odoo>

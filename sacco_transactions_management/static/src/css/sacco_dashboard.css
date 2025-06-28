@@ -1,0 +1,27 @@
+.sacco-dashboard {
+    height: 100%;
+    overflow-y: auto;
+}
+
+.sacco-dashboard .card {
+    height: 100%;
+}
+
+.sacco-dashboard .card-body {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    /* justify-content: space-between; */
+}
+
+.sacco-dashboard .display-4 {
+    font-size: 2.5rem;
+    font-weight: 300;
+    line-height: 1.2;
+}
+
+@media (max-width: 991.98px) {
+    .sacco-dashboard .display-4 {
+        font-size: 2rem;
+    }
+}

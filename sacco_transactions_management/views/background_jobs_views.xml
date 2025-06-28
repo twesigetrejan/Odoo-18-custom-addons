@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Tree View for Cron Jobs -->
+    <record id="view_cron_jobs_tree" model="ir.ui.view">
+        <field name="name">ir.cron.jobs.tree</field>
+        <field name="model">ir.cron</field>
+        <field name="arch" type="xml">
+            <tree editable="bottom" create="false" >
+                <field name="priority"/>
+                <field name="name"/>
+                <field name="model_id" widget="many2one" options="{'no_create': True, 'no_open': True}"/>
+                <field name="nextcall"/>
+                <field name="interval_number"/>
+                <field name="interval_type"/>
+                <field name="numbercall"/>
+                <field name="active" widget="boolean_toggle"/>
+                <button name="run_manually" string="Run Manually" type="object" class="oe_highlight" confirm="Are you sure you want to run this job manually?" groups="base.group_system"/>
+            </tree>
+        </field>
+    </record>
+    
+    <!-- Action to Display SACCO-Related Cron Jobs -->
+    <record id="action_sacco_background_jobs" model="ir.actions.act_window">
+        <field name="name">SACCO Background Jobs</field>
+        <field name="res_model">ir.cron</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="view_cron_jobs_tree"/>
+        <field name="domain">[('ir_actions_server_id.model_name', 'in', ['general.member.statement.wizard', 'member.sync', 'sacco.savings.deposit.sync', 'sacco.savings.product.sync', 'sacco.withdrawal.request', 'sacco.savings.account', 'sacco.interest.posting', 'sacco.shares.account', 'sacco.transaction.sync', 'sacco.investments.deposit.sync', 'sacco.investments.product.sync', 'sacco.investments.account', 'sacco.loan.installment', 'loan.payment.sync', 'sacco.loan.product.sync', 'sacco.loan.application', 'sacco.loan.loan'])]</field>
+    </record>
+
+    <!-- Extend res.config.settings Form View -->
+    <record id="res_config_settings_view_form_inherit_background_jobs" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.background.jobs</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="inside">
+                <app data-string="Background Jobs" string="Background Jobs" name="background_jobs" groups="base.group_system">
+                    <block title="Background Jobs" name="background_jobs_container">
+                        <setting help="Manage scheduled jobs for SACCO-related modules">
+                            <div class="mt8">
+                                <button type="action" name="%(sacco_transactions_management.action_sacco_background_jobs)d" string="View All Background Jobs" icon="oi-arrow-right" class="oe_link"/>
+                            </div>
+                        </setting>
+                    </block>
+                </app>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Menu Item Under Settings -->
+    <menuitem id="menu_sacco_background_jobs" name="Background Jobs" parent="base.menu_config" action="action_sacco_background_jobs" sequence="10" groups="sacco_transactions_management.group_sacco_manager,sacco_transactions_management.group_sacco_super_user"/>
+</odoo>

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+    <t t-name="sacco_transactions_management.SaccoDashboardTemplate" owl="1">
+        <div class="sacco-dashboard h-100 overflow-auto">
+            <div class="container-fluid py-3">
+                <h1 class="mb-4">SACCO Dashboard</h1>
+                <div class="row mb-4">
+                    <div class="col-lg-4 mb-3">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">Total Loans Dispersed</h5>
+                                <p class="card-text display-4"><t t-esc="state.dashboardData.total_loans_dispersed"/></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 mb-3">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">Total Loans Paid Back</h5>
+                                <p class="card-text display-4"><t t-esc="state.dashboardData.total_loans_paid_back"/></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 mb-3">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">Total Deposits</h5>
+                                <p class="card-text display-4"><t t-esc="state.dashboardData.total_deposits"/></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Date filter controls -->
+                <div class="row mb-4">
+                    <div class="col-lg-4 mb-3">
+                        <select id="date_filter" class="form-control" t-on-change="onDateFilterChange">
+                            <option value="">All Time</option>
+                            <option value="today">Today</option>
+                            <option value="last_7_days">Last 7 Days</option>
+                            <option value="last_90_days">Last 90 Days</option>
+                            <option value="custom">Custom Range</option>
+                        </select>
+                    </div>
+                    <div class="col-lg-8 custom-date-range d-none">
+                        <div class="d-flex">
+                            <input type="date" id="custom_start_date" class="form-control mr-2"/>
+                            <input type="date" id="custom_end_date" class="form-control mr-2"/>
+                            <button id="apply_custom_filter" class="btn btn-primary" t-on-click="onApplyCustomFilter">Apply</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-6 mb-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Loans Status Distribution</h5>
+                                <canvas t-ref="pieChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 mb-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Loans and Deposits Over Time</h5>
+                                <canvas t-ref="lineChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </t>
+</templates>
