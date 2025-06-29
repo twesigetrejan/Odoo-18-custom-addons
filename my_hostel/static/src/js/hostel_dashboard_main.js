@@ -7,7 +7,8 @@ import { useService } from '@web/core/utils/hooks';
 export class HostelDashboardMain extends Component {
     setup() {
         super.setup();
-        this.rpc = useService('rpc');  // Ensure this resolves correctly
+        this.rpc = useService('rpc'); // Ensure this resolves the RPC service
+        console.log('RPC Service:', this.rpc); // Debug to check if rpc is defined
         this.state = useState({
             total_hostels: 0,
             total_rooms: 0,
@@ -16,15 +17,23 @@ export class HostelDashboardMain extends Component {
         });
 
         onWillStart(async () => {
-            const data = await this.rpc.query({
-                model: 'hostel.dashboard',
-                method: 'get_overview_metrics',
-                args: [],
-            });
-            this.state.total_hostels = data.total_hostels;
-            this.state.total_rooms = data.total_rooms;
-            this.state.total_students = data.total_students;
-            this.state.total_rent = data.total_rent;
+            if (this.rpc && typeof this.rpc.query === 'function') {
+                try {
+                    const data = await this.rpc.query({
+                        model: 'hostel.dashboard',
+                        method: 'get_overview_metrics',
+                        args: [],
+                    });
+                    this.state.total_hostels = data.total_hostels || 0;
+                    this.state.total_rooms = data.total_rooms || 0;
+                    this.state.total_students = data.total_students || 0;
+                    this.state.total_rent = data.total_rent || 0.0;
+                } catch (error) {
+                    console.error('RPC Error:', error);
+                }
+            } else {
+                console.error('RPC service not available');
+            }
         });
     }
 }
