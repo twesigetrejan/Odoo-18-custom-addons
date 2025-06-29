@@ -1,7 +1,5 @@
-
 {
     'name': "Hostel Management",
-    # 'post_init_hook': 'post_init_hook.create_default_categories',
     'summary': "Manage hostels easily within the school",
     'description': "Efficiently manage the entire residential facility in the school.",
     'author': "trejan_dev",
@@ -23,10 +21,12 @@
     'assets': {
         'web.assets_backend': [
             'my_hostel/static/src/css/hostel.css',
-            'https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css',
+            'my_hostel/static/src/js/lib/chart.js',  # Local Chart.js file
             'my_hostel/static/src/js/hostel_dashboard_main.js',
+            'my_hostel/static/src/xml/hostel_dashboard_main.xml',
             'https://cdn.jsdelivr.net/npm/chart.js',
-            'static/src/xml/template_hostel_dashboard_main.xml',
+        ],
+        'web.assets_qweb': [
         ],
     },
     'demo': [
