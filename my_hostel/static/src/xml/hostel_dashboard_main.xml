@@ -9,6 +9,32 @@
                     <t t-esc="state.error"/>
                 </div>
             </t>
+            <div class="row" style="margin-bottom: 20px;">
+                <div class="col-md-3">
+                    <div class="card" style="background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); border-radius: 15px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); padding: 20px; transition: transform 0.2s; text-align: center;">
+                        <h3 style="font-size: 1.5em; font-weight: bold; color: #2c3e50; margin-bottom: 10px;">Total Hostels</h3>
+                        <p style="font-size: 1.2em; color: #34495e;"><t t-esc="state.total_hostels"/></p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card" style="background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); border-radius: 15px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); padding: 20px; transition: transform 0.2s; text-align: center;">
+                        <h3 style="font-size: 1.5em; font-weight: bold; color: #2c3e50; margin-bottom: 10px;">Total Rooms</h3>
+                        <p style="font-size: 1.2em; color: #34495e;"><t t-esc="state.total_rooms"/></p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card" style="background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); border-radius: 15px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); padding: 20px; transition: transform 0.2s; text-align: center;">
+                        <h3 style="font-size: 1.5em; font-weight: bold; color: #2c3e50; margin-bottom: 10px;">Total Students</h3>
+                        <p style="font-size: 1.2em; color: #34495e;"><t t-esc="state.total_students"/></p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card" style="background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); border-radius: 15px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); padding: 20px; transition: transform 0.2s; text-align: center;">
+                        <h3 style="font-size: 1.5em; font-weight: bold; color: #2c3e50; margin-bottom: 10px;">Total Rent (USD)</h3>
+                        <p style="font-size: 1.2em; color: #34495e;"><t t-esc="state.total_rent.toFixed(2)"/></p>
+                    </div>
+                </div>
+            </div>
             <div class="row">
                 <div class="col-md-4">
                     <h4>Room and Student Counts</h4>
@@ -32,49 +58,3 @@
         </div>
     </t>
 </templates>
-
-<!-- <?xml version="1.0" encoding="UTF-8"?>
-<templates id="template" xml:space="preserve">
-    <t t-name="my_hostel.HostelDashboardMainTemplate">
-        <div class="hostel_dashboard_main">
-            <h1>🏠 Hostel Overview Dashboard</h1>
-            <t t-if="state.error">
-                <div class="alert alert-danger" role="alert">
-                    <t t-esc="state.error"/>
-                </div>
-            </t>
-            <div class="row">
-                <div class="col-md-3">
-                    <div class="card">
-                        <h3>Total Hostels</h3>
-                        <p><t t-esc="state.total_hostels"/></p>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="card">
-                        <h3>Total Rooms</h3>
-                        <p><t t-esc="state.total_rooms"/></p>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="card">
-                        <h3>Total Students</h3>
-                        <p><t t-esc="state.total_students"/></p>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="card">
-                        <h3>Total Rent (USD)</h3>
-                        <p><t t-esc="state.total_rent.toFixed(2)"/></p>
-                    </div>
-                </div>
-            </div>
-            <div class="mt-4">
-                <div style="max-width: 800px; max-height: 600px;">
-                    <canvas t-ref="chart" width="300" height="150"></canvas>
-                </div>
-            </div>
-        </div>
-        
-    </t>
-</templates> -->
