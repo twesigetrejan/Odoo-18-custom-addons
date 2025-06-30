@@ -21,10 +21,11 @@
     'assets': {
         'web.assets_backend': [
             'my_hostel/static/src/css/hostel.css',
-            'my_hostel/static/src/js/lib/chart.js',  # Local Chart.js file
+            'my_hostel/static/src/js/lib/chart.js',
             'my_hostel/static/src/js/hostel_dashboard_main.js',
             'my_hostel/static/src/xml/hostel_dashboard_main.xml',
             'https://cdn.jsdelivr.net/npm/chart.js',
+            'web/static/lib/owl/owl.js'
         ],
         'web.assets_qweb': [
         ],

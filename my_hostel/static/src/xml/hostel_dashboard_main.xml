@@ -3,6 +3,49 @@
     <t t-name="my_hostel.HostelDashboardMainTemplate">
         <div class="hostel_dashboard_main">
             <h1>🏠 Hostel Overview Dashboard</h1>
+            <t t-if="state.error">
+                <div class="alert alert-danger" role="alert">
+                    <t t-esc="state.error"/>
+                </div>
+            </t>
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="card">
+                        <h3>Total Hostels</h3>
+                        <p><t t-esc="state.total_hostels"/></p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card">
+                        <h3>Total Rooms</h3>
+                        <p><t t-esc="state.total_rooms"/></p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card">
+                        <h3>Total Students</h3>
+                        <p><t t-esc="state.total_students"/></p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card">
+                        <h3>Total Rent (USD)</h3>
+                        <p><t t-esc="state.total_rent.toFixed(2)"/></p>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-4">
+                <canvas t-ref="chart" width="400" height="200"></canvas>
+            </div>
+        </div>
+    </t>
+</templates>
+
+<!-- <?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+    <t t-name="my_hostel.HostelDashboardMainTemplate">
+        <div class="hostel_dashboard_main">
+            <h1>🏠 Hostel Overview Dashboard</h1>
             <div class="row">
                 <div class="col-md-3">
                     <div class="card">
@@ -25,10 +68,10 @@
                 <div class="col-md-3">
                     <div class="card">
                         <h3>Total Rent</h3>
-                        <p>UGX <t t-esc="state.total_rent"/></p>
+                        <p>USD <t t-esc="state.total_rent"/></p>
                     </div>
                 </div>
             </div>
         </div>
     </t>
-</templates>
+</templates> -->
