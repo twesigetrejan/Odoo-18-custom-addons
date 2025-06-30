@@ -35,9 +35,46 @@
                     </div>
                 </div>
             </div>
-            <div class="row">
-                <div class="col-md-12">
-                    <h4>Expected vs actual outstanding</h4>
+            <div class="row" style="padding:160px;">
+                
+                <div class="col-md-6">
+                    <h4>Loan Details</h4>
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Loan ID</th>
+                                <th>Member</th>
+                                <th>Loan Product</th>
+                                <th>Interest Rate (%)</th>
+                                <th>Disbursed Amount (UGX)</th>
+                                <th>Expected Outstanding (UGX)</th>
+                                <th>Actual Outstanding (UGX)</th>
+                                <th>Start Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="state.loanDetails" t-as="loan" t-key="loan.id">
+                                <tr>
+                                    <td><t t-esc="loan.loan_id"/></td>
+                                    <td><t t-esc="loan.member"/></td>
+                                    <td><t t-esc="loan.loan_product"/></td>
+                                    <td><t t-esc="loan.interest_rate"/></td>
+                                    <td><t t-esc="loan.disbursed_amount.toLocaleString('en-US', { style: 'currency', currency: 'UGX' })"/></td>
+                                    <td><t t-esc="loan.expected_outstanding.toLocaleString('en-US', { style: 'currency', currency: 'UGX' })"/></td>
+                                    <td><t t-esc="loan.actual_outstanding.toLocaleString('en-US', { style: 'currency', currency: 'UGX' })"/></td>
+                                    <td><t t-esc="loan.start_date"/></td>
+                                </tr>
+                            </t>
+                            <t t-if="state.loanDetails.length === 0">
+                                <tr>
+                                    <td colspan="8" class="text-center">No loan details available.</td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="col-md-6" style="padding-left:80px;">
+                    <h4>Expected vs Actual Outstanding</h4>
                     <div style="max-width: 600px; max-height: 600px;">
                         <canvas t-ref="barChart" width="600" height="450"></canvas>
                     </div>

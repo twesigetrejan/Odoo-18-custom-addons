@@ -1,9 +1,9 @@
 /** @odoo-module **/
 
-const { Component, onWillStart, onMounted, useState, useRef } = owl;
-const { registry } = require('@web/core/registry');
-const { useService } = require('@web/core/utils/hooks');
-const { loadJS } = require('@web/core/assets');
+import { Component, onWillStart, onMounted, useState, useRef } from '@odoo/owl';
+import { registry } from '@web/core/registry';
+import { useService } from '@web/core/utils/hooks';
+import { loadJS } from '@web/core/assets';
 
 export class LoanDashboardMain extends Component {
     setup() {
@@ -17,12 +17,14 @@ export class LoanDashboardMain extends Component {
             actual_outstanding: 0,
             loan_count: 0,
             error: null,
+            loanDetails: [],
         });
         this.barChartRef = useRef('barChart');
 
         onWillStart(async () => {
             await this.loadExternalLibraries();
             await this.fetchDashboardData();
+            await this.fetchLoanDetails();
         });
 
         onMounted(() => {
@@ -59,6 +61,27 @@ export class LoanDashboardMain extends Component {
         } catch (error) {
             console.error('Error fetching dashboard data:', error);
             this.state.error = 'Failed to fetch data: ' + error.message;
+        }
+    }
+
+    async fetchLoanDetails() {
+        try {
+            console.log('Fetching loan details...');
+            const loans = await this.orm.searchRead('loan.details', [], [
+                'loan_id',
+                'member',
+                'loan_product',
+                'interest_rate',
+                'disbursed_amount',
+                'expected_outstanding',
+                'actual_outstanding',
+                'start_date',
+            ]);
+            console.log('Loan details:', loans);
+            this.state.loanDetails = loans;
+        } catch (error) {
+            console.error('Error fetching loan details:', error);
+            this.state.error = 'Failed to fetch loan details: ' + error.message;
         }
     }
 
