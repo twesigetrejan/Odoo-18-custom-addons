@@ -82,4 +82,94 @@
             </div>
         </div>
     </t>
-</templates>
+</templates> 
+<!-- <?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+    <t t-name="my_hostel.LoanDashboardMainTemplate">
+        <div class="loan_dashboard_main">
+            <h1>💰 Loan Portfolio Performance</h1>
+            <button class="btn btn-primary mb-3" t-on-click="downloadReport">Download PDF Report</button>
+            <t t-if="state.error">
+                <div class="alert alert-danger" role="alert">
+                    <t t-esc="state.error"/>
+                </div>
+            </t>
+            <div class="row" style="margin-bottom: 20px;">
+                <div class="col-md-3">
+                    <div class="card" style="background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); border-radius: 15px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); padding: 20px; transition: transform 0.2s; text-align: center;">
+                        <h3 style="font-size: 1.5em; font-weight: bold; color: #2c3e50; margin-bottom: 10px;">Total Disbursed (UGX)</h3>
+                        <p style="font-size: 1.2em; color: #34495e;"><t t-esc="state.total_disbursed.toLocaleString('en-US', { style: 'currency', currency: 'UGX' })"/></p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card" style="background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); border-radius: 15px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); padding: 20px; transition: transform 0.2s; text-align: center;">
+                        <h3 style="font-size: 1.5em; font-weight: bold; color: #2c3e50; margin-bottom: 10px;">Expected Outstanding (UGX)</h3>
+                        <p style="font-size: 1.2em; color: #34495e;"><t t-esc="state.expected_outstanding.toLocaleString('en-US', { style: 'currency', currency: 'UGX' })"/></p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card" style="background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); border-radius: 15px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); padding: 20px; transition: transform 0.2s; text-align: center;">
+                        <h3 style="font-size: 1.5em; font-weight: bold; color: #2c3e50; margin-bottom: 10px;">Actual Outstanding (UGX)</h3>
+                        <p style="font-size: 1.2em; color: #34495e;"><t t-esc="state.actual_outstanding.toLocaleString('en-US', { style: 'currency', currency: 'UGX' })"/></p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card" style="background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); border-radius: 15px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); padding: 20px; transition: transform 0.2s; text-align: center;">
+                        <h3 style="font-size: 1.5em; font-weight: bold; color: #2c3e50; margin-bottom: 10px;">Total Loans</h3>
+                        <p style="font-size: 1.2em; color: #34495e;"><t t-esc="state.loan_count"/></p>
+                    </div>
+                </div>
+            </div>
+            <div class="row" style="padding: 20px;">
+                <div class="col-md-6">
+                    <h4>Overall loan details</h4>
+                    <div class="filter-controls mb-3" style="display:flex; gap:20px;">
+                        <input type="text" t-model="state.filterMember" t-att-placeholder="'Filter by Member...'" class="form-control"/>
+                        <input type="text" t-model="state.filterProduct" t-att-placeholder="'Filter by Loan Product...'" class="form-control" />
+                    </div>
+                    <h4>Loan Details</h4>
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Loan ID</th>
+                                <th>Member</th>
+                                <th>Loan Product</th>
+                                <th>Interest Rate (%)</th>
+                                <th>Disbursed Amount (UGX)</th>
+                                <th>Expected Outstanding (UGX)</th>
+                                <th>Actual Outstanding (UGX)</th>
+                                <th>Start Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="state.loanDetails" t-as="loan" t-key="loan.id">
+                                <tr>
+                                    <td><t t-esc="loan.loan_id"/></td>
+                                    <td><t t-esc="loan.member"/></td>
+                                    <td><t t-esc="loan.loan_product"/></td>
+                                    <td><t t-esc="loan.interest_rate"/></td>
+                                    <td><t t-esc="loan.disbursed_amount.toLocaleString('en-US', { style: 'currency', currency: 'UGX' })"/></td>
+                                    <td><t t-esc="loan.expected_outstanding.toLocaleString('en-US', { style: 'currency', currency: 'UGX' })"/></td>
+                                    <td><t t-esc="loan.actual_outstanding.toLocaleString('en-US', { style: 'currency', currency: 'UGX' })"/></td>
+                                    <td><t t-esc="loan.start_date"/></td>
+                                </tr>
+                            </t>
+                            <t t-if="state.loanDetails.length === 0">
+                                <tr>
+                                    <td colspan="8" class="text-center">No loan details available.</td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="col-md-6" style="padding-left: 80px;">
+                    <h4>Expected vs Actual Outstanding</h4>
+                    <div style="max-width: 600px; max-height: 600px;" t-ref="chartContainer">
+                        <canvas t-ref="barChart"></canvas>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </t>
+</templates> -->
