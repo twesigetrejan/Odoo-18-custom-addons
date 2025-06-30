@@ -2,6 +2,11 @@ from odoo import models, api
 import os
 from pathlib import Path
 from datetime import datetime, timedelta
+import subprocess
+import logging
+from odoo.exceptions import ValidationError, UserError
+
+_logger = logging.getLogger(__name__)
 
 class HostelDashboard(models.Model):
     _name = 'hostel.dashboard'
@@ -14,14 +19,12 @@ class HostelDashboard(models.Model):
         total_students = self.env['hostel.student'].search_count([])
         rooms = self.env['hostel.room'].search([])
         total_rent = sum(room.rent_amount for room in rooms if room.rent_amount is not None) or 0.0
-        total_amenities = self.env['hostel.room.amenity'].search_count([])
+        total_amenities = self.env['hostel.room.amenity'].search_count([('active', '=', True)])  # Count active amenities
         avg_rent = total_rent / total_rooms if total_rooms else 0.0
         occupancy_rate = (total_students / (total_rooms * self.env['hostel.room'].search([], limit=1).student_per_room or 1) * 100) if total_rooms else 0.0
 
-        # Existing metric
         occupied_rooms = self.env['hostel.room'].search_count([('student_ids', '!=', False)])
 
-        # New metrics
         hostels = self.env['hostel.hostel'].search([])
         avg_room_occupancy_rate = sum(
             (self.env['hostel.room'].search_count([('hostel_id', '=', hostel.id), ('student_ids', '!=', False)]) /
@@ -33,13 +36,12 @@ class HostelDashboard(models.Model):
         amenity_counts = self.env['hostel.room.amenity'].read_group(
             [('active', '=', True)], ['amenity_type_id'], ['amenity_type_id']
         )
+        _logger.info("Amenity counts: %s", amenity_counts)  # Debug log
         most_common_amenity = max(amenity_counts, key=lambda x: x['amenity_type_id_count'], default={'amenity_type_id': False})
-        most_common_amenity_name = self.env['hostel.amenity.type'].browse(most_common_amenity['amenity_type_id'][0]).name if most_common_amenity['amenity_type_id'] else 'None'
+        most_common_amenity_name = self.env['hostel.amenity.type'].browse(most_common_amenity['amenity_type_id'][0]).name if most_common_amenity['amenity_type_id'] else 'Wi-Fi'
 
-        # Updated unpaid rent calculation
         unpaid_rent = sum(room.rent_amount for room in rooms if room.rent_amount and not room.is_rent_paid) or 0.0
 
-        # Simulate unpaid rent over time with ISO strings
         unpaid_rent_data = [
             {'date': (datetime.now() - timedelta(days=i)).isoformat(), 'amount': unpaid_rent * (1 + i * 0.1)}
             for i in range(30)  # Last 30 days
@@ -68,7 +70,7 @@ class HostelDashboard(models.Model):
     def generate_pdf_report(self):
         metrics = self._compute_metrics()
         latex_content = r"""
-\documentclass[a4paper,12pt]{article}
+\documentclass[a4paper]{article}
 \usepackage[utf8]{inputenc}
 \usepackage{geometry}
 \geometry{a4paper, margin=1in}
@@ -129,12 +131,27 @@ Unpaid Rent (UGX) & {unpaid_rent:.2f} \\
         temp_file.write_text(latex_content, encoding='utf-8')
 
         pdf_path = '/tmp/hostel_report.pdf'
-        os.system(f"latexmk -pdf {temp_file}")
-        with open(pdf_path, 'rb') as f:
-            pdf_data = f.read()
-
-        return {
-            'type': 'ir.actions.act_url',
-            'url': 'data:application/pdf;base64,' + pdf_data.decode('utf-8').encode('base64').decode('utf-8'),
-            'target': 'self',
-        }
+        try:
+            result = subprocess.run(['latexmk', '-pdf', str(temp_file)], capture_output=True, text=True, check=True)
+            _logger.info("LaTeX compilation output: %s", result.stdout)
+            if os.path.exists(pdf_path):
+                with open(pdf_path, 'rb') as f:
+                    pdf_data = f.read()
+                return {
+                    'type': 'ir.actions.act_url',
+                    'url': 'data:application/pdf;base64,' + pdf_data.decode('utf-8').encode('base64').decode('utf-8'),
+                    'target': 'self',
+                }
+            else:
+                raise Exception("PDF file not generated")
+        except subprocess.CalledProcessError as e:
+            _logger.error("LaTeX compilation failed: %s\n%s", e.stderr, latex_content)
+            raise UserError("Failed to generate PDF report. Check LaTeX installation and logs.")
+        except Exception as e:
+            _logger.error("Error generating PDF: %s\n%s", str(e), latex_content)
+            raise UserError("Failed to generate PDF report. Check logs for details.")
+        finally:
+            if os.path.exists(temp_file):
+                os.remove(temp_file)
+            if os.path.exists(pdf_path):
+                os.remove(pdf_path)

@@ -35,6 +35,59 @@
                     </div>
                 </div>
             </div>
+            <div class="row" style="margin-bottom: 20px;">
+                <div class="col-md-3">
+                    <div class="card" style="background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); border-radius: 15px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); padding: 20px; transition: transform 0.2s; text-align: center;">
+                        <h3 style="font-size: 1.5em; font-weight: bold; color: #2c3e50; margin-bottom: 10px;">Total Amenities</h3>
+                        <p style="font-size: 1.2em; color: #34495e;"><t t-esc="state.total_amenities"/></p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card" style="background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); border-radius: 15px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); padding: 20px; transition: transform 0.2s; text-align: center;">
+                        <h3 style="font-size: 1.5em; font-weight: bold; color: #2c3e50; margin-bottom: 10px;">Average Rent (USD)</h3>
+                        <p style="font-size: 1.2em; color: #34495e;"><t t-esc="state.avg_rent.toFixed(2)"/></p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card" style="background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); border-radius: 15px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); padding: 20px; transition: transform 0.2s; text-align: center;">
+                        <h3 style="font-size: 1.5em; font-weight: bold; color: #2c3e50; margin-bottom: 10px;">Occupancy Rate (%)</h3>
+                        <p style="font-size: 1.2em; color: #34495e;"><t t-esc="state.occupancy_rate.toFixed(2)"/></p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card" style="background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); border-radius: 15px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); padding: 20px; transition: transform 0.2s; text-align: center;">
+                        <h3 style="font-size: 1.5em; font-weight: bold; color: #2c3e50; margin-bottom: 10px;">Occupied Rooms</h3>
+                        <p style="font-size: 1.2em; color: #34495e;"><t t-esc="state.occupied_rooms"/></p>
+                    </div>
+                </div>
+            </div>
+            <div class="row" style="margin-bottom: 20px;">
+                <div class="col-md-3">
+                    <div class="card" style="background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); border-radius: 15px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); padding: 20px; transition: transform 0.2s; text-align: center;">
+                        <h3 style="font-size: 1.5em; font-weight: bold; color: #2c3e50; margin-bottom: 10px;">Avg Room Occupancy (%)</h3>
+                        <p style="font-size: 1.2em; color: #34495e;"><t t-esc="state.avg_room_occupancy_rate.toFixed(2)"/></p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card" style="background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); border-radius: 15px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); padding: 20px; transition: transform 0.2s; text-align: center;">
+                        <h3 style="font-size: 1.5em; font-weight: bold; color: #2c3e50; margin-bottom: 10px;">Most Common Amenity</h3>
+                        <p style="font-size: 1.2em; color: #34495e;"><t t-esc="state.most_common_amenity"/></p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card" style="background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); border-radius: 15px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); padding: 20px; transition: transform 0.2s; text-align: center;">
+                        <h3 style="font-size: 1.5em; font-weight: bold; color: #2c3e50; margin-bottom: 10px;">Unpaid Rent (USD)</h3>
+                        <p style="font-size: 1.2em; color: #34495e;"><t t-esc="state.unpaid_rent.toFixed(2)"/></p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <!-- Placeholder for symmetry -->
+                    <div class="card" style="background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); border-radius: 15px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); padding: 20px; transition: transform 0.2s; text-align: center; visibility: hidden;">
+                        <h3 style="font-size: 1.5em; font-weight: bold; color: #2c3e50; margin-bottom: 10px;">Placeholder</h3>
+                        <p style="font-size: 1.2em; color: #34495e;">-</p>
+                    </div>
+                </div>
+            </div>
             <div class="row">
                 <div class="col-md-4">
                     <h4>Room and Student Counts</h4>

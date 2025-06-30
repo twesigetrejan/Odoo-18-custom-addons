@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+    <t t-name="my_hostel.LoanDashboardMainTemplate">
+        <div class="loan_dashboard_main">
+            <h1>💰 Loan Portfolio Dashboard</h1>
+            <button class="btn btn-primary mb-3" t-on-click="downloadReport">Download PDF Report</button>
+            <t t-if="state.error">
+                <div class="alert alert-danger" role="alert">
+                    <t t-esc="state.error"/>
+                </div>
+            </t>
+            <div class="row" style="margin-bottom: 20px;">
+                <div class="col-md-3">
+                    <div class="card" style="background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); border-radius: 15px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); padding: 20px; transition: transform 0.2s; text-align: center;">
+                        <h3 style="font-size: 1.5em; font-weight: bold; color: #2c3e50; margin-bottom: 10px;">Total Disbursed (UGX)</h3>
+                        <p style="font-size: 1.2em; color: #34495e;"><t t-esc="state.total_disbursed.toLocaleString('en-US', { style: 'currency', currency: 'UGX' })"/></p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card" style="background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); border-radius: 15px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); padding: 20px; transition: transform 0.2s; text-align: center;">
+                        <h3 style="font-size: 1.5em; font-weight: bold; color: #2c3e50; margin-bottom: 10px;">Expected Outstanding (UGX)</h3>
+                        <p style="font-size: 1.2em; color: #34495e;"><t t-esc="state.expected_outstanding.toLocaleString('en-US', { style: 'currency', currency: 'UGX' })"/></p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card" style="background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); border-radius: 15px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); padding: 20px; transition: transform 0.2s; text-align: center;">
+                        <h3 style="font-size: 1.5em; font-weight: bold; color: #2c3e50; margin-bottom: 10px;">Actual Outstanding (UGX)</h3>
+                        <p style="font-size: 1.2em; color: #34495e;"><t t-esc="state.actual_outstanding.toLocaleString('en-US', { style: 'currency', currency: 'UGX' })"/></p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card" style="background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); border-radius: 15px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); padding: 20px; transition: transform 0.2s; text-align: center;">
+                        <h3 style="font-size: 1.5em; font-weight: bold; color: #2c3e50; margin-bottom: 10px;">Total Loans</h3>
+                        <p style="font-size: 1.2em; color: #34495e;"><t t-esc="state.loan_count"/></p>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <h4>Outstanding Comparison</h4>
+                    <div style="max-width: 600px; max-height: 600px;">
+                        <canvas t-ref="barChart" width="600" height="450"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </t>
+</templates>

@@ -13,5 +13,4 @@ from . import room_category
 from . import hostel_maintenance_request
 from . import hostel_amenity_type
 from . import hostel_dashboard
-
-
+from . import loan_portfolio
