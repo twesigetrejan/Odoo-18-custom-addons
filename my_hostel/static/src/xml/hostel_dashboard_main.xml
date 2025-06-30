@@ -3,6 +3,41 @@
     <t t-name="my_hostel.HostelDashboardMainTemplate">
         <div class="hostel_dashboard_main">
             <h1>🏠 Hostel Overview Dashboard</h1>
+            <button class="btn btn-primary mb-3" t-on-click="downloadReport">Download PDF Report</button>
+            <t t-if="state.error">
+                <div class="alert alert-danger" role="alert">
+                    <t t-esc="state.error"/>
+                </div>
+            </t>
+            <div class="row">
+                <div class="col-md-4">
+                    <h4>Room and Student Counts</h4>
+                    <div style="max-width: 600px; max-height: 600px;">
+                        <canvas t-ref="barChart" width="600" height="450"></canvas>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <h4>Occupancy Rate Distribution</h4>
+                    <div style="max-width: 600px; max-height: 600px;">
+                        <canvas t-ref="doughnutChart" width="600" height="450"></canvas>
+                    </div>
+                </div>
+                <!-- <div class="col-md-4">
+                    <h4>Unpaid Rent Trend</h4>
+                    <div style="max-width: 600px; max-height: 300px;">
+                        <canvas t-ref="lineChart" width="300" height="150"></canvas>
+                    </div>
+                </div> -->
+            </div>
+        </div>
+    </t>
+</templates>
+
+<!-- <?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+    <t t-name="my_hostel.HostelDashboardMainTemplate">
+        <div class="hostel_dashboard_main">
+            <h1>🏠 Hostel Overview Dashboard</h1>
             <t t-if="state.error">
                 <div class="alert alert-danger" role="alert">
                     <t t-esc="state.error"/>
@@ -42,4 +77,4 @@
         </div>
         
     </t>
-</templates>
+</templates> -->

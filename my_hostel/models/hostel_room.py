@@ -12,10 +12,10 @@ class HostelRoom(models.Model):
     _order = 'id desc, room_code'
     _rec_name = 'room_code'
     _sql_constraints = [
-        ('room_code_unique', 'UNIQUE(room_code)', 'Room number must be unique!'),]
+        ('room_code_unique', 'UNIQUE(room_code)', 'Room number must be unique!'),
+    ]
     _inherit = ['base.archive']
 
-    
     room_no = fields.Char(string='Room number', required=True)
     room_code = fields.Char(string='Room unique number')
     hostel_id = fields.Many2one('hostel.hostel', string='Hostel', required=True, help='Hostel to which the room belongs')
@@ -27,7 +27,6 @@ class HostelRoom(models.Model):
         required=False
     )
     floor_number = fields.Integer(string='Floor Number')
-    # capacity = fields.Integer(string='Capacity', help='Number of occupants the room can hold')
     rent_amount = fields.Monetary(
         string='Rent amount', 
         currency_field='currency_id',
@@ -39,15 +38,13 @@ class HostelRoom(models.Model):
     active = fields.Boolean(string='Active', default=True)
     notes = fields.Text(string='Notes')
     student_per_room = fields.Integer("Room capacity", required=True, help="Number of students allowed in this room")
-    availability = fields.Float(compute = '_compute_check_availability', string='Availability', help="Room availability in hostel", store=True)
+    availability = fields.Float(compute='_compute_check_availability', string='Availability', help="Room availability in hostel", store=True)
     date_terminate = fields.Date(string='Date of Termination', help='Date when the room was terminated or closed')
-    # cost_price = fields.Float('Room cost', help='Cost of the room per month', default=0.0)
-    
+    is_rent_paid = fields.Boolean(string='Rent Paid', default=False, help='Indicates if the rent for this room is fully paid')
     student_ids = fields.One2many(
         'hostel.student', 'room_id', string='Students',
         help='Students assigned to this room'
     )
-
     hostel_amenities_ids = fields.Many2many(
         "hostel.amenities",
         "hostel_room_amenities_rel",
@@ -58,8 +55,6 @@ class HostelRoom(models.Model):
         help="Amenities available in this room"
     )
     previous_room_id = fields.Many2one('hostel.room', string='Previous Room')
-
-
     state = fields.Selection(
         [('draft', 'Unavailable'), ('available', 'Available'), ('closed', 'Closed'),], string='State', default='draft', help='State of the room')
     remarks = fields.Text(string='Remarks', help='Additional remarks about the room')
@@ -74,7 +69,7 @@ class HostelRoom(models.Model):
     @api.model
     def is_allowed_transition(self, old_state, new_state):
         """Check if the transition from old_state to new_state is allowed."""
-        allowed  = [('draft', 'available'), ('available', 'Available'), ('closed', 'Closed')]
+        allowed = [('draft', 'available'), ('available', 'available'), ('closed', 'closed')]
         return (old_state, new_state) in allowed
     
     def change_state(self, new_state):
@@ -111,7 +106,6 @@ class HostelRoom(models.Model):
         for record in self:
            record.availability = record.student_per_room - len(record.student_ids.ids)
 
-
     def log_all_room_members(self):
         """Log all students assigned to this room."""
         for room in self:
@@ -123,7 +117,6 @@ class HostelRoom(models.Model):
                 _logger.info(f"Room {room.room_no} has no members assigned.")
         return True
     
-
     def find_room(self):
         """Find a room based on the room number and name."""
         domain = [ 
@@ -146,7 +139,6 @@ class HostelRoom(models.Model):
             return False
         return all_rooms.filtered(predicate)
 
-
     @api.model
     def get_members_names(self, rooms):
         """Get names of all members in the given rooms."""
@@ -154,30 +146,28 @@ class HostelRoom(models.Model):
 
     @api.model
     def create(self, values):
-        """Override create method to ensure users who arent part of the hostel managers cannot create room remarks."""
+        """Override create method to ensure users who aren't part of the hostel managers cannot create room remarks."""
         if not self.env.user.has_group('my_hostel.group_hostel_manager'):
             if values.get('remarks'):
                 raise UserError(_("You are not allowed to create remarks for rooms."))
         return super(HostelRoom, self).create(values)
     
     def write(self, values):
-        """Override write method to ensure users who arent part of the hostel managers cannot create room remarks."""
+        """Override write method to ensure users who aren't part of the hostel managers cannot create room remarks."""
         if not self.env.user.has_group('my_hostel.group_hostel_manager'):
             if values.get('remarks'):
                 raise UserError(_("You are not allowed to create remarks for rooms."))
         return super(HostelRoom, self).write(values)
-    
 
     def name_get(self, name):
         """Override name_get to return room code and hostel name."""
         result = []
         for room in self:
-            member = room.member_ids.mapped('name')
-            name = '%s (%s)' % (room.name, ', '.join(member))
+            member = room.student_ids.mapped('name')  # Corrected to student_ids
+            name = '%s (%s)' % (room.room_no, ', '.join(member) if member else 'No Students')
             result.append((room.id, name))
-            return result
+        return result
         
-                
     @api.depends('category_id')
     def _compute_rent_amount(self):
         for room in self:
@@ -188,9 +178,8 @@ class HostelRoom(models.Model):
                 room.rent_amount = 0.0
                 room.currency_id = self.env.company.currency_id.id  # fallback default currency
 
-    
     def get_average_cost(self):
-        grouped_result  = self.read_group(
+        grouped_result = self.read_group(
             [('cost_price', '!=', False)],
             ['category_id', 'cost_price:avg'],
             ['category_id']
