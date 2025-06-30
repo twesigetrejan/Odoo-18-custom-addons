@@ -2,7 +2,7 @@
 <templates id="template" xml:space="preserve">
     <t t-name="my_hostel.LoanDashboardMainTemplate">
         <div class="loan_dashboard_main">
-            <h1>💰 Loan Portfolio Dashboard</h1>
+            <h1>💰 Loan Portfolio Performance</h1>
             <button class="btn btn-primary mb-3" t-on-click="downloadReport">Download PDF Report</button>
             <t t-if="state.error">
                 <div class="alert alert-danger" role="alert">
@@ -37,7 +37,7 @@
             </div>
             <div class="row">
                 <div class="col-md-12">
-                    <h4>Outstanding Comparison</h4>
+                    <h4>Expected vs actual outstanding</h4>
                     <div style="max-width: 600px; max-height: 600px;">
                         <canvas t-ref="barChart" width="600" height="450"></canvas>
                     </div>

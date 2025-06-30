@@ -16,6 +16,7 @@
         'views/hostel_student.xml',
         'views/room_category.xml',
         'views/hostel_dashboard_menu.xml',
+        'views/loan_portfolio.xml',
         'data/data.xml',
     ],
     'assets': {
