@@ -156,20 +156,13 @@
                             </div>
                         </div>
                     </div>
-                  
-                    <div class="row" style= "margin-top:200px;">
+
+                    <div class="row mt-4" style="margin-top: 180px;">
                         <div class="col-12">
-                            <h3>Performance Chart</h3>
-                            <div style="height: 400px; width: 100%;">
-                    
-                                <img t-att-src="'data:image/png;base64,' + chart_data.get('image')" 
-                                    style="width: 100%; height: 100%; object-fit: contain;" 
-                                    alt="Performance Chart" t-if="chart_data.get('image')"/>
-                                
-                           
-                                <div class="alert alert-warning" t-if="not chart_data.get('image')">
-                                    Chart could not be generated for this report.
-                                </div>
+                            <h3>Performance Comparison</h3>
+                            <div t-raw="svg_chart" t-if="svg_chart"/>
+                            <div class="alert alert-warning" t-if="not svg_chart">
+                                Chart could not be generated for this report.
                             </div>
                         </div>
                     </div>

@@ -97,18 +97,21 @@ class LoanPortfolio(models.Model):
         """Generate PDF report for loan portfolio data."""
         report_data = self.get_filtered_metrics(member_filter, loan_product_filter)
         
-        chart_data = {
-        'labels': ['Expected', 'Actual'],
-        'datasets': [{
-            'label': 'Outstanding Amount (UGX)',
-            'data': [
-                report_data.get('expected_outstanding', 0),
-                report_data.get('actual_outstanding', 0)
-            ],
-            'backgroundColor': ['#36A2EB', '#FF6384']
-            }]
-        }
-    
+        # chart_data = {
+        # 'labels': ['Expected', 'Actual'],
+        # 'datasets': [{
+        #     'label': 'Outstanding Amount (UGX)',
+        #     'data': [
+        #         report_data.get('expected_outstanding', 0),
+        #         report_data.get('actual_outstanding', 0)
+        #     ],
+        #     'backgroundColor': ['#36A2EB', '#FF6384']
+        #     }]
+        # }
+        svg_chart = self.generate_svg_chart(
+        report_data.get('expected_outstanding', 0),
+        report_data.get('actual_outstanding', 0)
+        )
         
         return {
             'type': 'ir.actions.report',
@@ -116,18 +119,38 @@ class LoanPortfolio(models.Model):
             'report_type': 'qweb-pdf',
             'data': {
                 'report_data': report_data,
-                'chart_data': chart_data, 
+                # 'chart_data': chart_data, 
+                'svg_chart': svg_chart,
                 'member_filter': member_filter,
                 'loan_product_filter': loan_product_filter,
             },
             'context': {
                 'active_model': 'loan.portfolio',
                 'report_data': report_data,
-                'chart_data': chart_data, 
+                # 'chart_data': chart_data, 
                 'member_filter': member_filter,
                 'loan_product_filter': loan_product_filter,
             }
         }
+    def generate_svg_chart(self, expected, actual):
+        """Generate SVG chart string"""
+        max_value = max(expected, actual, 1)
+        expected_height = (expected / max_value) * 200
+        actual_height = (actual / max_value) * 200
+        
+        return f"""
+        <svg width="100%" height="300" viewBox="0 0 400 300">
+            <rect x="100" y="{300 - expected_height}" width="80" height="{expected_height}" fill="#36A2EB"/>
+            <text x="140" y="{280 - expected_height}" text-anchor="middle" fill="black">Expected</text>
+            <text x="140" y="{295 - expected_height}" text-anchor="middle" fill="black">{'{:,.0f}'.format(expected)}</text>
+            
+            <rect x="220" y="{300 - actual_height}" width="80" height="{actual_height}" fill="#FF6384"/>
+            <text x="260" y="{280 - actual_height}" text-anchor="middle" fill="black">Actual</text>
+            <text x="260" y="{295 - actual_height}" text-anchor="middle" fill="black">{'{:,.0f}'.format(actual)}</text>
+            
+            <line x1="50" y1="250" x2="350" y2="250" stroke="black" stroke-width="2"/>
+        </svg>
+        """
 
 class LoanDetails(models.Model):
     _name = 'loan.details'
