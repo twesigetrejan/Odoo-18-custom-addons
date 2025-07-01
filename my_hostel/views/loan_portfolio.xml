@@ -33,7 +33,7 @@
               sequence="1"/>
 
     <menuitem id="menu_loan_portfolio_dashboard"
-              name="Dashboard"
+              name="Loan Dashboard"
               parent="menu_loan_portfolio_root"
               action="action_loan_portfolio_dashboard"
               sequence="2"/>
@@ -129,7 +129,7 @@
     <menuitem id="menu_loan_details"
               name="Loan Details"
               parent="menu_loan_portfolio_root"
-              action="action_loan_details_list"
+              action="action_loan_portfolio_list"
               sequence="3"/>
 
     <!-- Tree View for Loan Details -->
