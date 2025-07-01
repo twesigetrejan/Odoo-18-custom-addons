@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_shares_account_form" model="ir.ui.view">
+        <field name="name">sacco.shares.account.form</field>
+        <field name="model">sacco.shares.account</field>
+        <field name="arch" type="xml">
+            <form string='Shares Account'>
+                <header>
+                    <button name="action_activate_shares_account" invisible="state in ('active')" string="Activate"
+                            class="btn-primary" type="object" confirm="Are you sure you want to activate the account?" groups="shares_management.group_shares_user"/>
+                    <button name="action_deactivate_shares_account" invisible="state in ('draft', 'inactive')" string="Deactivate"
+                            class="btn-primary" type="object" confirm="Are you sure you want to deactivate the account?" groups="shares_management.group_shares_user"/>
+                    <button name="action_refresh_journal_lines" string="Refresh Shares Journal Lines"
+                            type="object" class="btn-secondary" groups="shares_management.group_shares_user"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,active,inactive"/>
+                </header>
+                <sheet>
+                    <label for="name" class="oe_edit_only"/>
+                	<h1><field name="name" readonly="True"/></h1>
+                    <group>
+                        <field name="member_id" readonly="state != 'draft'"/>
+                        <field name="product_id" readonly="state != 'draft'"/>
+                        <field name="currency_id" readonly="True" groups="base.group_multi_currency" options="{'no_create': True, 'no_open': True}"
+                            force_save="1"/>
+                        <field name="share_number"/>
+                    </group>
+                    <notebook>
+                        <page string="Journal Account Lines">
+                            <field name="shares_journal_account_lines" readonly='True'>
+                                <tree default_order="date asc, id asc">
+                                    <field name="name"/>
+                                    <field name="date"/>
+                                    <field name="transaction_type"/>
+                                    <field name="original_shares_amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                                    <field name="premium_shares_amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                                    <field name="total_amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                                    <field name="number_of_shares"/>
+                                    <button name="action_view_journal_entry" string="View Journal Entry" 
+                                            type="object" class="btn-link"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_shares_account_tree" model="ir.ui.view">
+        <field name="name">sacco.shares.account.tree</field>
+        <field name="model">sacco.shares.account</field>
+        <field name="arch" type="xml">
+            <tree string="Shares Account" >
+                <field name="name"/>
+                <field name="member_id"/>
+                <field name="state" widget="badge"
+                decoration-success="state=='active'" decoration-danger="state=='inactive'" decoration-muted="state=='draft'"/>
+                <field name="product_id"/>
+                <field name="currency_id" groups="base.group_multi_currency"/>
+                <field name="share_number" />
+            </tree>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_sacco_shares_account_search" model="ir.ui.view">
+        <field name="name">sacco.shares.account.search</field>
+        <field name="model">sacco.shares.account</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="member_id"/>
+                <field name="currency_id"/>
+                <field name="product_id"/>
+                <group expand="0" string="Group By">
+                    <filter string="Member" name="group_by_member" context="{'group_by': 'member_id'}"/>
+                    <filter string="Currency" name="group_by_currency" context="{'group_by': 'currency_id'}"/>
+                    <filter string="Product" name="group_by_product" context="{'group_by': 'product_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+
+    <record id="action_shares_account" model="ir.actions.act_window">
+        <field name="name">Shares Accounts</field>
+        <field name="res_model">sacco.shares.account</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first shares account!
+            </p>
+        </field>
+    </record>
+    <menuitem id="menu_sacco_shares_accounts" name="Shares Accounts" parent="menu_sacco_shares" action="action_shares_account" sequence="10"/>
+</odoo>

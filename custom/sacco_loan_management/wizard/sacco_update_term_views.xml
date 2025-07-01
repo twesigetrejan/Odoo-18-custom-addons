@@ -1,0 +1,30 @@
+<odoo>
+    <record id="view_sacco_update_term_form" model="ir.ui.view">
+        <field name="name">view.sacco.update.term.form</field>
+        <field name="model">sacco.update.term</field>
+        <field name="arch" type="xml">
+            <form string="Update Term">
+                <group>
+                    <group>
+                        <field name="months"/>
+                    </group>
+                </group>
+                <footer>
+                    <button name="update_term" string="Update" type="object" class="btn-primary"
+                            groups="sacco_loan_management.group_loan_accountant,sacco_loan_management.group_loan_loans_officer,sacco_loan_management.group_loan_super_user"
+                            confirm="Are you sure you want to update the number of months?"/>
+                    or
+                    <button string="Cancel" class="btn-default" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_update_term" model="ir.actions.act_window">
+        <field name="name">Update Term</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">sacco.update.term</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>

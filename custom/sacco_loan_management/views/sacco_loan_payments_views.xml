@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Loan Payments Action -->
+    <record id="loan_payments_action" model="ir.actions.act_window">
+        <field name="name">Loan Payments</field>
+        <field name="res_model">sacco.loan.payments</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <!-- Loan Payments Tree View -->
+    <record id="loan_payments_view_tree" model="ir.ui.view">
+        <field name="name">sacco.loan.payments.view.tree</field>
+        <field name="model">sacco.loan.payments</field>
+        <field name="arch" type="xml">
+            <tree string="Loan Payments" default_order="payment_date desc">
+                <field name="loan_id" />
+                <field name="client_id" />
+                <field name="loan_type_id" />
+                <field name="amount" />
+                <field name="currency_id" groups="base.group_multi_currency"/>
+                <field name="payment_date" />
+                <field name="status" />
+            </tree>
+        </field>
+    </record>
+
+    <!-- Loan Payments Form View -->
+    <record id="loan_payments_view_form" model="ir.ui.view">
+        <field name="name">sacco.loan.payments.view.form</field>
+        <field name="model">sacco.loan.payments</field>
+        <field name="arch" type="xml">
+            <form string="Loan Payments">
+                <header>
+                    <button name="action_approve_payment" string="Approve" type="object"
+                            invisible="status == 'approved'" class="oe_highlight"
+                            groups="sacco_loan_management.group_loan_manager,sacco_loan_management.group_loan_loans_officer,sacco_loan_management.group_loan_super_user"
+                            confirm="Are you sure you want to approve the payment?"/>
+                    <button name="action_reverse" string="Reverse" type="object"
+                            invisible="status != 'approved'" class="oe_highlight"
+                            groups="sacco_loan_management.group_loan_accountant,sacco_loan_management.group_loan_loans_officer,sacco_loan_management.group_loan_super_user"
+                            confirm="Are you sure you want to reverse this payment?"/>
+                    <field name="status" widget="statusbar" statusbar_visible="pending,approved"/>
+                </header>
+                <sheet>
+                    <div invisible="not missing_loan" role="alert" class="alert alert-warning">
+                        <strong>Warning:</strong> This payment is incomplete because the corresponding loan record is not found in the local database. Please create the loan for this payment to enable processing.
+                    </div>
+                    <h1><field name="client_id" readonly="status == 'approved'" /></h1>      
+                    <h1><field name="loan_type_id" readonly="status == 'approved'" /></h1>
+                    <h1><field name="loan_id" readonly="status == 'approved'" /></h1>
+                    <group>
+                        <field name="name" invisible="1"/>     
+                        <field name="amount" readonly="status == 'approved'" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                        <field name="currency_id" readonly="True" groups="base.group_multi_currency"/>
+                        <field name="payment_date" readonly="status == 'approved'"/>
+                        <field name="receiving_account_id" readonly="status == 'confirmed'"/>
+                        <field name="receipt_account" invisible="1"/>
+                        <field name="principal_paid" invisible="status != 'approved'"/>
+                        <field name="interest_paid" invisible="status != 'approved'"/>
+                        <field name="available_product_ids" invisible="True"/>
+                        <field name="available_loan_ids" invisible="True"/>
+                        <field name="general_transaction_id" widget="many2one" options="{'no_open': True, 'no_create': True}"/>
+                        <field name="missing_loan" readonly="1"/>
+                    </group>
+                    <notebook>
+                        <page string='Accounting'
+                        invisible="status != 'approved'">
+                        <group>
+                            <group>
+                                <field name="journal_entry_id" readonly="True"/>
+                            </group>
+                        </group>
+                    </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="sacco_loan_payments_search" model="ir.ui.view">
+        <field name="name">sacco.loan.payments.search</field>
+        <field name="model">sacco.loan.payments</field>
+        <field name="arch" type="xml"> 
+            <search>
+                <field name="client_id"/>
+                <field name="loan_id"/>
+                <field name="loan_type_id"/>
+                <field name="currency_id"/>
+                <field name="status"/>
+                <field name="payment_date"/>
+                <group expand="0" string="Group By">
+                    <filter string="Loan" name="group_by_loan" context="{'group_by': 'loan_id'}"/>
+                    <filter string="Member" name="group_by_client_id" context="{'group_by': 'client_id'}"/>
+                    <filter string="Loan Type" name="group_by_loan_type_id" context="{'group_by': 'loan_type_id'}"/>
+                    <filter string="Currency" name="group_by_currency" context="{'group_by': 'currency_id'}"/>
+                    <filter string="Status" name="group_by_status" context="{'group_by': 'status'}"/>
+                    <filter string="Payment Date" name="group_by_payment_date" context="{'group_by': 'payment_date'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <menuitem name="Transactions" id="menu_sacco_loan_payments_account" parent="sacco_loan_management.menu_sacco_loan_payments_main" action="loan_payments_action" sequence="5"/>
+
+
+</odoo>

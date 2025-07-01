@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Extend the Membership Configuration Form View -->
+        <record id="view_membership_config_form_birthday_pack" model="ir.ui.view">
+            <field name="name">sacco.membership.config.form.birthday.pack</field>
+            <field name="model">sacco.membership.config</field>
+            <field name="inherit_id" ref="member_management.view_membership_config_form"/>
+            <field name="arch" type="xml">
+                <header>
+                    <button name="action_reset_birthday_template" string="Reset to Default Birthday Template" type="object" class="oe_link" invisible="use_default_birthday_template or not send_birthday_packs"/>
+                </header>
+                <xpath expr="//notebook" position="inside">
+                    <page string="Birthday Pack Configuration" sequence="1">
+                        <group>
+                            <field name="send_birthday_packs" widget="boolean_toggle" string="Send Birthday Packs"/>
+                            <field name="use_default_birthday_template" widget="boolean_toggle" string="Use Default Birthday Template" invisible="not send_birthday_packs"/>
+                            <field name="birthday_template_id" widget="selection" string="Birthday Template" invisible="use_default_birthday_template or not send_birthday_packs"/>
+                            <field name="birthday_attachments" widget="many2many_binary" string="Birthday Attachments" invisible="not send_birthday_packs"/>
+                            <field name="birthday_body" widget="html" class="oe-bordered-editor"
+                                   options="{'style-inline': true, 'codeview': true, 'dynamic_placeholder': true}" string="Birthday Email Body" invisible="use_default_birthday_template or not send_birthday_packs"/>
+                        </group>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

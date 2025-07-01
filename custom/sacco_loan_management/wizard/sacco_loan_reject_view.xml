@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <record id="view_sacco_loan_reject_form" model="ir.ui.view">
+         <field name="name">view.sacco.loan.reject.form</field>
+         <field name="model">sacco.loan.reject</field>
+         <field name="arch" type="xml">
+            <form string="Reject Loan">
+                <label for="reason"/>
+                <field name="reason" />
+                
+                <footer>
+                    <button name="action_reject_loan" string="Reject Loan" type="object" class="btn-primary"
+                            groups="sacco_loan_management.group_loan_manager,sacco_loan_management.group_loan_loans_officer,sacco_loan_management.group_loan_super_user"/>
+                    or
+                    <button string="Cancel" class="btn-default" special="cancel"/>
+                </footer>
+            </form>
+         </field>
+    </record>
+    
+    <record id="action_sacco_loan_reject_form" model="ir.actions.act_window">
+        <field name="name">Loan Reject Reason</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">sacco.loan.reject</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+</odoo>

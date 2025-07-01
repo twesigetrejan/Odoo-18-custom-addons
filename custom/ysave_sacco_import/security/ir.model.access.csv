@@ -1,0 +1,12 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_import_wizard,access_import_wizard,model_import_wizard,base.group_user,1,1,1,1
+access_theadid_import_wizard,access.theadid.import.wizard,model_theadid_import_wizard,base.group_user,1,1,1,1
+access_savings_product_wizard,access_savings_product_wizard,model_savings_product_wizard,base.group_user,1,1,1,1
+access_investments_product_wizard,access_investments_product_wizard,model_investments_product_wizard,base.group_user,1,1,1,1
+access_loan_product_wizard,access_loan_product_wizard,model_loan_product_wizard,base.group_user,1,1,1,1
+access_process_journal_entries_wizard,access.process.journal.entries.wizard,model_process_journal_entries_wizard,base.group_user,1,1,1,1
+access_process_loan_journal_entries_wizard,access.process.loan.journal.entries.wizard,model_process_loan_journal_entries_wizard,base.group_user,1,1,1,1
+access_member_import_wizard,access_member_import_wizard,model_member_import_wizard,base.group_user,1,1,1,1
+access_chart_accounts_import_wizard,access_chart_accounts_import_wizard,model_chart_accounts_import_wizard,base.group_user,1,1,1,1
+access_product_accounts_import_wizard,access_product_accounts_import_wizard,model_product_accounts_import_wizard,base.group_user,1,1,1,1
+access_loans_import_wizard,access_loans_import_wizard,model_loans_import_wizard,base.group_user,1,1,1,1

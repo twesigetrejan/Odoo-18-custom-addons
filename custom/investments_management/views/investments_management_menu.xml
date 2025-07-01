@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Main Menu -->
+    <menuitem id="menu_sacco_investments_management_root" name="Investment" sequence="4"/>
+
+    <!-- Members Menu -->
+    <menuitem id="menu_sacco_investments"  name="Investment" parent="menu_sacco_investments_management_root" sequence="2"/>
+
+    <menuitem name="Withdrawal" parent="menu_sacco_investments_management_root" id="menu_investments_withdrawal_request_main" sequence="3" />
+
+    <!-- New Reporting Menu -->
+    <menuitem id="menu_sacco_investments_reporting" name="Reporting" parent="menu_sacco_investments_management_root" sequence="4"/>
+
+    <!-- Configuration menu -->
+    <menuitem id="menu_sacco_investments_config" name="Configuration" parent="menu_sacco_investments_management_root" sequence="5"/>
+
+</odoo>

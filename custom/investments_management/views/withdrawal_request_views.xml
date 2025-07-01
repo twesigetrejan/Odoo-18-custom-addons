@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_investments_withdrawal_request_form" model="ir.ui.view">
+        <field name="name">sacco.investments.withdrawal.request.form</field>
+        <field name="model">sacco.investments.withdrawal.request</field>
+        <field name="arch" type="xml">
+            <form string='Investments Account'>
+                <header>
+                    <button name="action_confirm_withdrawal_request" invisible="state != 'draft'"   string="Confirm"
+                    class="btn-primary" type="object" groups="investments_management.group_investments_user" confirm="Are you sure you want to confirm the following withdrawal request?"/>
+                    <button name="action_set_to_draft" type="object" invisible="state != 'reject'"  string='Set to Draft' groups="investments_management.group_investments_user"/>
+                    <button name="action_approve_withdrawal_request" invisible="state != 'confirm'"  string="Approve"
+                    class="btn-primary" type="object" groups="investments_management.group_investments_manager" confirm="Are you sure you want to approve the following withdrawal request?"/>     
+                    <button name="%(action_sacco_investments_withdrawal_request_reject_form)d" invisible="state != 'confirm'"  string="Reject"
+                    type="action" groups="investments_management.group_investments_manager"/>
+                    <button name="action_disburse_withdrawal" invisible="state != 'approve'"  string="Disburse Withdrawal"
+                            class="btn-primary" type="object" groups="investments_management.group_investments_accountant"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,confirm,approve"/> 
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_get_attachment_view" class="oe_stat_button" icon="fa-file-text-o" type="object">
+                            <field name="attachment_number" widget="statinfo" string="Documents" options="{'reload_on_button': true}"/>
+                        </button>
+                    </div>
+                    <div class="alert alert-warning" role="alert" invisible="not below_minimum_balance">
+                        Warning: This withdrawal request would result in a balance below the minimum required for the investments account.
+                    </div>
+                    <label for="name" class="oe_edit_only"/>
+                	<h1><field name="name" readonly="True"/></h1>
+                    <group>
+                        <field name="member_id" readonly="state != 'draft'" force_save="1"/>   
+                        <field name="product_type" 
+                            domain="[('id', 'in', available_product_ids)]" readonly="state != 'draft'"/>
+                        <field name="investments_account_id" readonly="True" force_save="1"/>
+                        <field name="available_product_ids" invisible="1"/>
+                        <field name="account_balance" invisible="state == 'disburse'"/>
+                        <field name="withdrawal_amount" readonly="state != 'draft'" />
+                         <field name="currency_id" readonly="True" groups="base.group_multi_currency"/>
+                        <field name="paying_account_id" readonly="state != 'draft'"/>
+                        <field name="pay_account" invisible="1"/>
+                        <field name="request_date" readonly="state != 'draft'"/>
+                        <field name="approve_date"
+                             invisible="state in ['draft','confirm','cancel']"
+                             readonly="True"/>
+                        <field name="disbursement_date" 
+                             invisible="state not in ['disburse']"
+                             readonly="True"/>
+                        <field name="user_id" readonly="True"/>
+                        <field name="company_id" readonly="True"/>
+                        <field name="withdrawal_request_url" invisible="1"/>
+                        <field name="below_minimum_balance" invisible="1"/>
+                    </group>
+                    <notebook>
+                        <page string='Attachments'>
+                            <field name="attachment_document_ids" mode="kanban" context="{'default_res_id': active_id,'default_res_model': 'sacco.investments.withdrawal.request','res_model':'sacco.investments.withdrawal.request','res_name':name}" domain="[('res_id','=',active_id),('res_model','=','sacco.investments.withdrawal.request')]" readonly="True">
+                                <kanban>
+                                    <field name="name"/>
+                                    <field name="res_id"/>
+                                    <field name="res_model"/>
+                                    <field name="datas"/>
+                                    <field name="id"/>
+                                    <field name="mimetype"/>
+                                    <templates>
+		                                <t t-name="kanban-box">
+		                                    <div class="oe_kanban_global_click" style="max-width: 200px">
+		                                        <div class="o_kanban_record_top">
+		                                        	<img t-att-src="kanban_image('ir.attachment', 'datas', record.id.raw_value)" height="100" width="182" class="oe_avatar oe_kanban_avatar_smallbox mb0" t-att-alt="record.name.value"/>
+		                                        	
+                                                    <a t-if="! read_only_mode" type="delete" class="text-danger" title="Delete attachment">
+                                                        <i class="fa fa-times" role="img" aria-label="Delete"/>
+                                                    </a>
+		                                        </div>
+		                                        <div class="oe_kanban_details" style="text-align:center">
+									                <p><h5><field name="name"/></h5></p>
+											    </div>
+		                                    </div>
+		                                </t>
+		                            </templates>
+                                </kanban>
+                            </field>
+                        </page>
+                        <page string='Reject Reason' invisible="state != 'reject'" >
+                            <group>
+                                <field name="reject_user_id" readonly="True"/>
+                            </group>
+                            <br/>
+                            <field name="reject_reason" readonly="True"/>
+                        </page>
+                        <page string='Accounting' groups="investments_management.group_investments_accountant"
+                            invisible="state in ['draft','confirm', 'cancel','reject'] "
+                            >
+                            <group>
+                                <group>
+                                    <field name="disburse_journal_entry_id" readonly="True"/>
+                                </group>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_investments_withdrawal_request_tree" model="ir.ui.view">
+        <field name="name">sacco.investments.withdrawal.request.tree</field>
+        <field name="model">sacco.investments.withdrawal.request</field>
+        <field name="arch" type="xml">
+            <tree string="Withdrawal Request" decoration-danger="state=='reject'" decoration-muted="state=='cancel'" >
+                <field name="name"/>
+                <field name="investments_account_id" />
+                <field name="product_type" />
+                <field name="member_id"/>
+                <field name="withdrawal_amount" />
+                <field name="currency_id" groups="base.group_multi_currency"/>
+                <field name="request_date"/>
+                <field name="state"/>
+                <field name="approve_date" />
+            </tree>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_investments_withdrawal_request_search" model="ir.ui.view">
+        <field name="name">sacco.investments.withdrawal.request.search</field>
+        <field name="model">sacco.investments.withdrawal.request</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="member_id"/>
+                <field name="investments_account_id"/>
+                <field name="currency_id"/>
+                <field name="product_type"/>
+                <field name="state"/>
+                <field name="request_date"/>
+                <field name="approve_date"/>
+                <filter string="Active Requests" name="active_requests" domain="[('state', '!=', 'disburse')]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Investments Account" name="group_by_investments_account" context="{'group_by': 'investments_account_id'}"/>
+                    <filter string="Currency" name="group_by_currency" context="{'group_by': 'currency_id'}"/>
+                    <filter string="Product Type" name="group_by_product_type" context="{'group_by': 'product_type'}"/>
+                    <filter string="State" name="group_by_state" context="{'group_by': 'state'}"/>
+                    <filter string="Transaction Date" name="group_by_request_date" context="{'group_by': 'request_date'}"/>
+                    <filter string="Approve Date" name="group_by_approve_date" context="{'group_by': 'approve_date'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_investments_withdrawal_request" model="ir.actions.act_window">
+        <field name="name">Withdrawal Requests</field>
+        <field name="res_model">sacco.investments.withdrawal.request</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{'search_default_active_requests': 1}</field>
+        <!-- <field name="domain">[('state', '!=', 'disburse')]</field> -->
+        <field name="domain">[]</field>
+    </record>
+
+    <!--  Menu Items-->
+
+    <menuitem name="Withdrawal Request" id="menu_investments_withdrawal_request" parent="investments_management.menu_investments_withdrawal_request_main" action="action_investments_withdrawal_request" sequence="1"/>
+
+</odoo>

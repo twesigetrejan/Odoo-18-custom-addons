@@ -1,0 +1,31 @@
+{
+    'name': 'Shares Management',
+    'version': '1.0',
+    'sequence': 4,
+    'summary': 'Helps You To Manage Shares operations',
+    'description': 'Manage Shares operations',
+    'category': 'Accounting',
+    'author': "Omni Software Ltd",
+    'company': "Omni Software Ltd",
+    'website': "https://www.omnitech.co.ug",
+    'depends': ['base','mail', 'web', 'sacco_transactions_management'],
+    'data': [
+        'security/security.xml',
+        'security/ir.model.access.csv',
+        'data/sequence.xml',
+        'views/shares_management_menu.xml',
+        'wizards/shares_statement_wizard_view.xml',
+        'views/shares_product_views.xml',
+        'views/shares_account_views.xml',
+        'views/shares_transaction_views.xml',
+        # 'views/account_move_views.xml',
+        'views/res_partner_views.xml',
+        'report/shares_statement_templates.xml'
+    ],
+    'demo': [],
+    'license': 'LGPL-3',
+    'installable': True,
+    'application': True,
+    'auto_install': False,
+}
+

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- SACCO Members Mailing List -->
+    <record id="mailing_list_sacco_members" model="mailing.list">
+        <field name="name">SACCO Members</field>
+        <field name="active">True</field>
+    </record>
+
+    <!-- SACCO Birthday Mailing List -->
+    <record id="mailing_list_sacco_birthday" model="mailing.list">
+        <field name="name">SACCO Birthday List</field>
+        <field name="active">True</field>
+    </record>
+</odoo>

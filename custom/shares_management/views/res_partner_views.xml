@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_res_partner_shares_balance_form" model="ir.ui.view">
+        <field name="name">view.res.partner.shares.balance.form</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="member_management.view_res_partner_is_sacco_member_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='membership_page']/group[@name='balances_group']/group[@name='balances_left']" position="inside">
+                <field name="shares_balance" readonly="True" invisible="not balance_currency_id or shares_balance == 0"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

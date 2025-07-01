@@ -1,0 +1,436 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_res_partner_is_sacco_member_form" model="ir.ui.view">
+        <field name="name">view.res.partner.is.sacco.member.form</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <!-- Add Needs Attention banner -->
+            <xpath expr="//div[@name='button_box']" position="before">
+                <widget name="web_ribbon" title="Inactive" bg_color="text-bg-danger" invisible="not is_sacco_member or activation_status != 'deactivated' or member_onboarded"/>
+                <widget name="web_ribbon" title="Joining Fee Outstanding" bg_color="text-bg-warning" invisible="not is_sacco_member or membership_fee_paid or member_onboarded"/>
+            </xpath>
+
+            <xpath expr="//form" position="attributes">
+                <attribute name="js_class">button_in_form</attribute>
+            </xpath>
+
+            <!-- Add Header for Action Buttons -->
+            <xpath expr="//sheet" position="before">
+                <header>
+                    <button name="set_to_edit_mode" type="object" string="Edit Mode" invisible="not is_sacco_member or membership_status != 'active'" class="oe_highlight" confirm="Are you sure you want to edit this member? This will deactivate the member." groups="member_management.group_member_user, member_management.group_member_super_user"/>
+                    <button name="action_activate_member" type="object" string="Activate" invisible="not is_sacco_member or not member_onboarded or membership_status == 'active'" class="oe_highlight" confirm="Are you sure you want to activate the member?" groups="member_management.group_member_user,member_management.group_member_super_user"/>
+                    <button name="action_process_membership_fee" type="object" string="Process Membership Fee" invisible="not is_sacco_member or membership_status != 'details_processing'" class="oe_highlight" confirm="Are you sure you want to proceed to process the membership fee?" groups="member_management.group_member_user, member_management.group_member_super_user"/>
+                    <button name="action_pay_membership_fee" type="object" string="Pay Membership Fee" invisible="not is_sacco_member or membership_status != 'fee_processing' or membership_fee_paid" class="oe_highlight" confirm="Are you sure you want to record the membership fee payment for this member?" groups="member_management.group_member_user, member_management.group_member_super_user"/>
+                    <button name="action_onboard_member" type="object" string="Onboard Member" invisible="not is_sacco_member or not membership_fee_paid or member_onboarded" class="oe_highlight" confirm="Are you sure you want to onboard this member?" groups="member_management.group_member_user, member_management.group_member_super_user"/>
+                    <button name="action_send_welcome_pack" type="object" string="Send Welcome Pack" invisible="not is_sacco_member or not member_onboarded" class="oe_highlight" confirm="Are you sure you want to send the welcome pack?" groups="member_management.group_member_user, member_management.group_member_super_user"/>
+                    <button name="action_send_birthday_email" string="Send Birthday Email" type="object" invisible="not is_sacco_member or not is_birthday_this_month or not member_onboarded"/>
+                    <button name="action_deactivate_member" type="object" string="Deactivate Member" invisible="not is_sacco_member or activation_status == 'deactivated'" class="oe_highlight" confirm="Are you sure you want to deactivate the member?" groups="member_management.group_member_user, member_management.group_member_super_user"/>
+                    <field name="membership_status" widget="statusbar" statusbar_visible="details_processing,fee_processing,active,inactive" invisible="not is_sacco_member or member_onboarded"/>
+                    <field name="membership_status" widget="statusbar" statusbar_visible="active,inactive,closed" invisible="not is_sacco_member or not member_onboarded"/>
+                </header>
+            </xpath>
+
+            <!-- Add View Membership Payment and Attachments Stat Button -->
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <div class="oe_button_box" name="button_box">
+                    <button name="action_get_attachment_view" class="oe_stat_button" icon="fa-file-text-o" type="object">
+                        <field name="attachment_number" widget="statinfo" string="Documents" options="{'reload_on_button': true}"/>
+                    </button>
+                </div>
+                <button name="action_view_membership_payment" type="object" class="oe_stat_button" icon="fa-money-check-alt"
+                        invisible="not is_sacco_member or not membership_fee_journal_entry_id">
+                    <field string="Membership Payment" name="membership_fee_journal_entry_id" widget="statinfo"/>
+                </button>
+            </xpath>
+
+            <!-- Hide company and individual name fields -->
+            <xpath expr="//field[@id='company']" position="attributes">
+                <attribute name="invisible">is_sacco_member or not is_company</attribute>
+            </xpath>
+            <xpath expr="//field[@id='individual']" position="attributes">
+                <attribute name="invisible">is_sacco_member or is_company</attribute>
+            </xpath>
+
+            <!-- Custom name fields with asterisk for required -->
+            <xpath expr="//h1" position="inside">
+                <div invisible="not is_sacco_member">
+                    <field name="first_name" string="First Name *" placeholder="First Name" required="is_sacco_member" readonly="member_onboarded and membership_status == 'active' or membership_status == 'closed'"/>
+                    <field name="middle_name" string="Middle Name" placeholder="Middle Name" readonly="member_onboarded and membership_status == 'active' or membership_status == 'closed'"/>
+                    <field name="last_name" string="Last Name *" placeholder="Last Name" required="is_sacco_member" readonly="member_onboarded and membership_status == 'active' or membership_status == 'closed'"/>
+                </div>
+            </xpath>
+
+            <!-- Additional fields with asterisk for required -->
+            <xpath expr="//span[@class='o_form_label o_td_label']" position="before">
+                <field name="member_id" string="Member Id *" required="is_sacco_member" invisible="not is_sacco_member" readonly="1"/>
+                <field name="username" string="Username *" readonly="1" invisible="not is_sacco_member"/>
+                <field name="member_type" invisible="not is_sacco_member" readonly="member_onboarded and membership_status == 'active' or membership_status == 'closed'"/>
+                <field name="has_username" invisible="1"/>
+                <field name="id_type" invisible="not is_sacco_member" readonly="member_onboarded and membership_status == 'active' or membership_status == 'closed'"/>
+                <field name="id_number" invisible="not is_sacco_member or not id_type" readonly="member_onboarded and membership_status == 'active' or membership_status == 'closed'"/>
+                <field name="celebration_point" invisible="not is_sacco_member" readonly="member_onboarded and membership_status == 'active' or membership_status == 'closed'"/>
+                <field name="employment_status" invisible="not is_sacco_member" readonly="member_onboarded and membership_status == 'active' or membership_status == 'closed'"/>
+                <field name="marital_status" invisible="not is_sacco_member" readonly="member_onboarded and membership_status == 'active' or membership_status == 'closed'"/>
+            </xpath>
+            <xpath expr="//field[@name='vat']" position="after">
+                <field name="is_sacco_member" readonly="1" invisible="1"/>
+                <field name="is_birthday_this_month" invisible="1"/>
+                <field name="birthday_day" invisible="1"/>
+                <field name="birthday_month" invisible="1"/>
+                <field name="membership_status" invisible="1"/>
+                <field name="activation_status" invisible="1"/>
+                <field name="date_of_birth" invisible="not is_sacco_member" readonly="member_onboarded and membership_status == 'active' or membership_status == 'closed'"/>
+                <field name="secondary_date_of_birth" string="Secondary Contact's Date of Birth" invisible="not is_sacco_member or member_type != 'joint'" readonly="member_onboarded and membership_status == 'active' or membership_status == 'closed'"/>
+                <field name="registration_date" invisible="not is_sacco_member" readonly="member_onboarded and membership_status == 'active' or membership_status == 'closed'"/>
+                <field name="gender" invisible="not is_sacco_member" readonly="member_onboarded and membership_status == 'active' or membership_status == 'closed'"/>
+                <field name="mongo_db_id" invisible="1"/>
+                <field name="ref_id" invisible="1"/>
+                <field name="needs_attention" invisible="1"/>
+            </xpath>
+
+            <!-- Notebook pages with controlled visibility and order -->
+            <xpath expr="//notebook" position="inside">
+                    <page name="membership_page" string="Membership" invisible="not is_sacco_member or membership_status == 'details_processing'" sequence="0">
+                        <group>
+                            <group>
+                                <field name="joining_date" readonly="member_onboarded and membership_status == 'active' or membership_status == 'closed'"/>
+                            <field name="exit_date" readonly="member_onboarded and membership_status == 'active' or membership_status == 'closed'"/>
+                            <field name="branch_code" readonly="member_id"/>
+                        </group>
+                    </group>
+                    <group string="Membership Fee" invisible="not is_sacco_member">
+                        <group>
+                            <field name="membership_fee_amount" string="Membership Fee Amount" readonly="1"/>
+                            <field name="membership_fee_paid" invisible="1"/>
+                            <field name="member_onboarded" invisible="1"/>
+                            <field name="membership_fee_journal_entry_id" readonly="1"/>
+                            <field name="paying_account_id" string="Paying Account *" readonly="member_onboarded or membership_fee_paid" required="membership_status == 'fee_processing'" autofocus="autofocus"/>
+                            <button name="action_print_member_receipt" 
+                                    type="object" 
+                                    icon="fa-print"
+                                    invisible="not membership_fee_journal_entry_id" 
+                                    class="btn-secondary" string="Print Receipt"/>
+                        </group>
+                    </group>
+                    <group name="balances_group" string="Account Balances" invisible="not (membership_fee_paid and member_onboarded) or not is_sacco_member">
+                        <group name="balances_left">
+                            <field name="balance_currency_id" readonly="member_onboarded and membership_status == 'active' or membership_status == 'closed'"/>
+                        </group>
+                        <group name="balances_right">
+                        </group>
+                    </group>
+                </page>
+                <page name="contact" string="Contact" invisible="not is_sacco_member" sequence="1">
+                    <group>
+                        <group>
+                            <field name="res_address_line1" readonly="member_onboarded and membership_status == 'active' or membership_status == 'closed'"/>
+                            <field name="res_address_line2" readonly="member_onboarded and membership_status == 'active' or membership_status == 'closed'"/>
+                            <field name="primary_phone" readonly="member_onboarded and membership_status == 'active'" placeholder="+1234567890"/>
+                            <field name="secondary_phone" readonly="member_onboarded and membership_status == 'active'" placeholder="+1234567890"/>
+                        </group>
+                        <group>
+                            <field name="village" readonly="member_onboarded and membership_status == 'active' or membership_status == 'closed'"/>
+                            <field name="parish" readonly="member_onboarded and membership_status == 'active' or membership_status == 'closed'"/>
+                            <field name="sub_county" readonly="member_onboarded and membership_status == 'active' or membership_status == 'closed'"/>
+                            <field name="district" readonly="member_onboarded and membership_status == 'active' or membership_status == 'closed'"/>
+                            <field name="postal_address" readonly="member_onboarded and membership_status == 'active' or membership_status == 'closed'"/>
+                        </group>
+                    </group>
+                </page>
+                <page name="next_of_kin" string="Next of Kin" invisible="not is_sacco_member">
+                    <group>
+                        <group>
+                            <field name="next_of_kin_name" readonly="member_onboarded and membership_status == 'active' or membership_status == 'closed'"/>
+                            <field name="next_of_kin_relationship" readonly="member_onboarded and membership_status == 'active' or membership_status == 'closed'"/>
+                            <field name="next_of_kin_dob" readonly="member_onboarded and membership_status == 'active' or membership_status == 'closed'"/>
+                            <field name="next_of_kin_phone" readonly="member_onboarded and membership_status == 'active' or membership_status == 'closed'"/>
+                        </group>
+                        <group>
+                            <field name="next_of_kin_address" invisible="1"/>
+                            <field name="next_of_kin_email" invisible="1"/>
+                            <field name="next_of_kin_id_type" invisible="member_onboarded"/>
+                            <field name="next_of_kin_id_number" invisible="1"/>
+                        </group>
+                    </group>
+                </page>
+                <page string='Attachments' invisible="not is_sacco_member" name="attachments">
+                    <field name="attachment_document_ids" mode="kanban" context="{'default_res_model': 'res.partner', 'default_res_id': id, 'res_model': 'res.partner', 'res_name': name}" domain="[('res_id', '=', id), ('res_model', '=', 'res.partner')]" readonly="True">
+                        <kanban>
+                            <field name="name"/>
+                            <field name="res_id"/>
+                            <field name="res_model"/>
+                            <field name="datas"/>
+                            <field name="id"/>
+                            <field name="mimetype"/>
+                            <field name="description"/>
+                            <templates>
+                                <t t-name="kanban-box">
+                                    <div class="oe_kanban_global_click" style="max-width: 200px">
+                                        <div class="o_kanban_record_top">
+                                            <img t-att-src="kanban_image('ir.attachment', 'datas', record.id.raw_value)" height="100" width="182" class="oe_avatar oe_kanban_avatar_smallbox mb0" t-att-alt="record.name.value"/>
+                                            
+                                            <a t-if="! read_only_mode" type="delete" class="text-danger" title="Delete attachment">
+                                                <i class="fa fa-times" role="img" aria-label="Delete"/>
+                                            </a>
+                                        </div>
+                                        <div class="oe_kanban_details" style="text-align:center">
+                                            <p><h5><field name="name"/></h5></p>
+                                            <p class="text-muted small" t-if="record.description.value"><field name="description"/></p>
+                                        </div>
+                                    </div>
+                                </t>
+                            </templates>
+                        </kanban>
+                    </field>
+                </page>
+            </xpath>
+
+            <!-- Field visibility and required email with asterisk -->
+            <xpath expr="//field[@name='email']" position="replace"/>
+            <xpath expr="//label[@for='email']" position="replace"/>
+            <xpath expr="//field[@name='res_address_line1']" position="before">
+                <field name="email" string="Email *" widget="email" context="{'gravatar_image': True}" required="is_sacco_member" readonly="membership_status == 'active'"/>
+                <field name="secondary_email" string="Secondary Email *" widget="email" invisible="not is_sacco_member" readonly="membership_status == 'active'"/>
+            </xpath>
+
+            <xpath expr="//field[@name='phone']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='mobile']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='street']" position="attributes">
+                <attribute name="invisible">is_sacco_member</attribute>
+            </xpath>
+            <xpath expr="//field[@name='street2']" position="attributes">
+                <attribute name="invisible">is_sacco_member</attribute>
+            </xpath>
+            <xpath expr="//field[@name='city']" position="attributes">
+                <attribute name="invisible">is_sacco_member</attribute>
+            </xpath>
+            <xpath expr="//field[@name='state_id']" position="attributes">
+                <attribute name="invisible">is_sacco_member</attribute>
+            </xpath>
+            <xpath expr="//field[@name='zip']" position="attributes">
+                <attribute name="invisible">is_sacco_member</attribute>
+            </xpath>
+            <xpath expr="//div[@name='partner_address_country']" position="attributes">
+                <attribute name="invisible">is_sacco_member</attribute>
+            </xpath>
+            <xpath expr="//field[@name='function']" position="attributes">
+                <attribute name="invisible">is_sacco_member</attribute>
+            </xpath>
+            <xpath expr="//field[@name='website']" position="attributes">
+                <attribute name="invisible">is_sacco_member</attribute>
+            </xpath>
+            <xpath expr="//field[@name='title']" position="attributes">
+                <attribute name="invisible">is_sacco_member</attribute>
+            </xpath>
+            <xpath expr="//field[@name='type']" position="attributes">
+                <attribute name="invisible">is_sacco_member</attribute>
+            </xpath>
+            <xpath expr="//field[@name='company_type']" position="attributes">
+                <attribute name="invisible">is_sacco_member</attribute>
+            </xpath>
+            <xpath expr="//field[@name='category_id']" position="attributes">
+                <attribute name="invisible">is_sacco_member</attribute>
+            </xpath>
+            <xpath expr="//field[@name='parent_id']" position="attributes">
+                <attribute name="invisible">context.get('default_is_sacco_member', False) or is_sacco_member</attribute>
+            </xpath>
+            <xpath expr="//page[@name='contact_addresses']" position="attributes">
+                <attribute name="invisible">is_sacco_member</attribute>
+            </xpath>
+            <xpath expr="//page[@name='sales_purchases']" position="attributes">
+                <attribute name="invisible">is_sacco_member</attribute>
+            </xpath>
+            <xpath expr="//page[@name='internal_notes']" position="attributes">
+                <attribute name="invisible">is_sacco_member</attribute>
+            </xpath>
+            <xpath expr="//page[@name='accounting']" position="attributes">
+                <attribute name="invisible">is_sacco_member</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Modify Tree View to Hide Phone Field and Add Username and Needs Attention -->
+    <record id="view_res_partner_is_sacco_member_tree" model="ir.ui.view">
+        <field name="name">view.res.partner.is.sacco.member.tree</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//tree" position="inside">
+                <field name="is_sacco_member" column_invisible="1"/>
+                <field name="is_birthday_this_month" column_invisible="1"/>
+                <field name="birthday_day" column_invisible="1"/>
+                <field name="birthday_month" column_invisible="1"/>
+                <field name="has_username" column_invisible="1"/>
+                <field name="username" column_invisible="[('has_username', '=', False)]"/>
+                <field name="needs_attention" column_invisible="1"/>
+            </xpath>
+            <xpath expr="//field[@name='phone']" position="attributes">
+                <attribute name="invisible">is_sacco_member</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Custom Search View for SACCO Members -->
+    <record id="view_res_partner_sacco_member_search" model="ir.ui.view">
+        <field name="name">view.res.partner.sacco.member.search</field>
+        <field name="model">res.partner</field>
+        <field name="arch" type="xml">
+            <search string="SACCO Members">
+                <!-- Search Fields -->
+                <field name="name" string="Member Name"/>
+                <field name="member_id" string="Member Id"/>
+                <field name="username" string="Username"/>
+                <!-- Filters -->
+                <filter string="Active" name="active" domain="[('membership_status', '=', 'active')]"/>
+                <filter string="Inactive" name="inactive" domain="[('membership_status', '=', 'inactive')]"/>
+                <filter string="Needs Attention" name="needs_attention" domain="[('needs_attention', '=', True)]"/>
+                <!-- Group By -->
+                <group expand="0" string="Group By">
+                    <filter string="Activation Status" name="group_by_membership_status" context="{'group_by': 'membership_status'}"/>
+                    <filter string="Member Type" name="group_by_member_type" context="{'group_by': 'member_type'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Existing Action and Menu -->
+    <record id="action_member_management_form" model="ir.actions.act_window">
+        <field name="name">Member</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">res.partner</field>
+        <field name="view_mode">kanban,tree,form</field>
+        <field name="context">{"default_is_sacco_member":1,'search_default_active': 1}</field>
+        <field name="domain">[('is_sacco_member','=',True)]</field>
+        <field name="search_view_id" ref="view_res_partner_sacco_member_search"/>
+        <field name="help" type="html">
+            <p class="oe_view_nocontent_create">
+                Click to add a SACCO Member in your address book.
+            </p>
+        </field>
+    </record>
+
+    <!-- Update Action to Include Tree View -->
+    <record id="action_member_management_form_view3" model="ir.actions.act_window.view">
+        <field name="sequence" eval="1"/>
+        <field name="view_mode">tree</field>
+        <field name="view_id" ref="view_res_partner_is_sacco_member_tree"/>
+        <field name="act_window_id" ref="action_member_management_form"/>
+    </record>
+
+    <!-- Tree view for members with birthdays in the current month -->
+    <record id="view_partner_birthday_tree" model="ir.ui.view">
+        <field name="name">res.partner.birthday.tree</field>
+        <field name="model">res.partner</field>
+        <field name="arch" type="xml">
+            <tree string="Members with Birthdays This Month" create="false" default_order="birthday_month asc, birthday_day asc">
+                <field name="username"/>
+                <field name="name"/>
+                <field name="date_of_birth"/>
+                <field name="email"/>
+                <field name="primary_phone"/>
+                <field name="membership_status"/>
+                <button name="action_send_birthday_email" string="Send Birthday Email" type="object" icon="fa-envelope"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Action for the birthday tree view -->
+    <record id="action_view_birthday_members" model="ir.actions.act_window">
+        <field name="name">Members with Birthdays This Month</field>
+        <field name="res_model">res.partner</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('is_sacco_member', '=', True), ('date_of_birth', '!=', False)]</field>
+        <field name="view_id" ref="view_partner_birthday_tree"/>
+        <field name="context">{'create': False, 'search_default_is_sacco_member': 1}</field>
+        <field name="help" type="html">
+            <p class="oe_view_nocontent_create">
+                No members with birthdays this month found.
+            </p>
+        </field>
+    </record>
+
+    <!-- Mass Upload Server Action -->
+    <record id="action_mass_upload_members" model="ir.actions.server">
+        <field name="name">Mass Upload Member(s)</field>
+        <field name="model_id" ref="base.model_res_partner"/>
+        <field name="state">code</field>
+        <field name="code">
+            action = records.action_mass_upload_members()
+        </field>
+        <field name="binding_model_id" ref="base.model_res_partner"/>
+        <field name="binding_view_types">list</field>
+        <field name="groups_id" eval="[(4, ref('member_management.group_member_user')), (4, ref('member_management.group_member_super_user'))]"/>
+    </record>
+
+    <!-- Mass Update Server Action -->
+    <record id="action_mass_update_members" model="ir.actions.server">
+        <field name="name">Mass Update Member(s)</field>
+        <field name="model_id" ref="base.model_res_partner"/>
+        <field name="state">code</field>
+        <field name="code">
+            action = records.action_mass_update_members()
+        </field>
+        <field name="binding_model_id" ref="base.model_res_partner"/>
+        <field name="binding_view_types">list</field>
+        <field name="groups_id" eval="[(4, ref('member_management.group_member_user')), (4, ref('member_management.group_member_super_user'))]"/>
+    </record>
+
+    <!-- Mass Send Welcome Pack Server Action -->
+    <record id="action_mass_send_welcome_pack" model="ir.actions.server">
+        <field name="name">Mass Send Welcome Pack</field>
+        <field name="model_id" ref="base.model_res_partner"/>
+        <field name="state">code</field>
+        <field name="code">
+            action = records.action_mass_send_welcome_pack()
+        </field>
+        <field name="binding_model_id" ref="base.model_res_partner"/>
+        <field name="binding_view_types">list</field>
+        <field name="groups_id" eval="[(4, ref('member_management.group_member_user')), (4, ref('member_management.group_member_super_user'))]"/>
+    </record>
+
+    <!-- Mass Send Birthday Emails Action -->
+    <record id="action_mass_send_birthday_emails" model="ir.actions.server">
+        <field name="name">Mass Send Birthday Emails</field>
+        <field name="model_id" ref="base.model_res_partner"/>
+        <field name="state">code</field>
+        <field name="code">
+            action = records.action_mass_send_birthday_emails()
+        </field>
+        <field name="binding_model_id" ref="base.model_res_partner"/>
+        <field name="binding_view_types">list</field>
+        <field name="groups_id" eval="[(4, ref('member_management.group_member_user')), (4, ref('member_management.group_member_super_user'))]"/>
+    </record>
+    
+    <record id="action_member_management_form_view1" model="ir.actions.act_window.view">
+        <field eval="0" name="sequence"/>
+        <field name="view_mode">kanban</field>
+        <field name="view_id" ref="base.res_partner_kanban_view"/>
+        <field name="act_window_id" ref="action_member_management_form"/>
+    </record>
+    <record id="action_member_management_form_view2" model="ir.actions.act_window.view">
+        <field eval="2" name="sequence"/>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_res_partner_is_sacco_member_form"/>
+        <field name="act_window_id" ref="action_member_management_form"/>
+    </record>
+    
+    <menuitem name="Member" parent="menu_member_management_main" id="menu_member_management_main2" action="action_member_management_form" sequence="1"/>
+
+    <record id="action_view_birthday_popup_server" model="ir.actions.server">
+        <field name="name">Members with Birthdays This Month</field>
+        <field name="model_id" ref="base.model_res_partner"/>
+        <field name="state">code</field>
+        <field name="code">action = env['res.partner'].action_view_birthday_members()</field>
+    </record>
+    
+    <menuitem id="menu_birthday_members"
+              name="Birthdays"
+              parent="menu_member_management_main"
+              action="action_view_birthday_popup_server"
+              sequence="2"/>
+</odoo>

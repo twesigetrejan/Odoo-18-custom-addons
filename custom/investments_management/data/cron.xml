@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="ir_cron_sync_investment_deposits" model="ir.cron">
+            <field name="name">Sync Investment Deposits</field>
+            <field name="model_id" ref="model_sacco_investments_deposit_sync"/>
+            <field name="state">code</field>
+            <field name="code">model.sync_deposits()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">minutes</field>
+            <field name="numbercall">-1</field>
+            <field name="doall" eval="False"/>
+            <field name="active" eval="False"/>
+        </record>
+
+        <record id="ir_cron_sync_investment_products" model="ir.cron">
+            <field name="name">Sync Investment Products</field>
+            <field name="model_id" ref="model_sacco_investments_product_sync"/>
+            <field name="state">code</field>
+            <field name="code">model.action_sync_investment_products()</field>
+            <field name="interval_number">10</field>
+            <field name="interval_type">minutes</field>
+            <field name="numbercall">-1</field>
+            <field name="doall" eval="False"/>
+            <field name="active" eval="False"/>
+        </record>
+
+        <record id="ir_cron_refresh_sacco_investment_account_journal_lines" model="ir.cron">
+            <field name="name">Refresh SACCO Investment Account Journal Lines</field>
+            <field name="model_id" ref="model_sacco_investments_account"/>
+            <field name="state">code</field>
+            <field name="code">model.action_refresh_journal_lines()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">hours</field>
+            <field name="numbercall">-1</field>
+            <field name="doall" eval="False"/>
+            <field name="active" eval="True"/>
+        </record>
+
+        <record id="ir_cron_sync_investments_statements" model="ir.cron">
+            <field name="name">Sync Investments Statements</field>
+            <field name="model_id" ref="model_sacco_investments_account" />
+            <field name="state">code</field>
+            <field name="code">model.sync_all_pending_statements()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <field name="numbercall">-1</field>
+            <field name="doall" eval="False"/>
+            <field name="active" eval="True"/>
+            <field name="nextcall" eval="(datetime.now() + timedelta(days=1)).replace(hour=2, minute=0, second=0, microsecond=0)"/>
+        </record>
+
+    </data>
+    
+</odoo>

@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_sacco_loan_type_form" model="ir.ui.view">
+        <field name="name">view.sacco.loan.type.form</field>
+        <field name="model">sacco.loan.type</field>
+        <field name="arch" type="xml">
+            <form string="Loan Product">
+                <header>
+                    <button name="action_create_account_journals" string="Create Accounts &amp; Journals"
+                            type="object" class="oe_highlight"
+                            groups="sacco_loan_management.group_loan_manager,sacco_loan_management.group_loan_loans_officer,sacco_loan_management.group_loan_super_user"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="product_code"/>
+                            <field name="loan_amount" invisible="True"/>
+                            <field name="currency_id"/>
+                            <field name="loan_term_by_month" invisible="True"/>
+                            <field name="default_receiving_account_id" options="{'no_create': True}"/>
+                            <field name="default_paying_account_id" options="{'no_create': True}"/>
+                            <field name="loan_account_id"/>
+                            <field name="installment_account_id" invisible="True"/>
+                            <field name="interest_account_id"/>
+                        </group>
+                        <group>
+                            <field name="is_interest_apply"/>
+                            <field name="interest_mode"
+                                   invisible="not is_interest_apply" 
+                                   required="is_interest_apply"/>
+                            <field name="rate" 
+                                   invisible="not is_interest_apply" 
+                                   required="is_interest_apply"/>
+                            <field name="none_interest_month" invisible="is_interest_apply"/>
+                            <field name="disburse_journal_id" string="Product Journal" readonly="True"/>
+                            <field name="loan_payment_journal_id" invisible="True"/>
+                        </group>
+                        <notebook>
+                            <page string="Description">
+                                <field name="description" nolabel="1" placeholder="Enter product description..."/>
+                            </page>
+                        </notebook>
+                    </group>
+                    <group>
+                        <field name="proof_ids" widget="many2many_tags" options="{'no_create_edit': True}"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_mass_sync_loan_products" model="ir.actions.server">
+        <field name="name">Mass Sync Loan Products</field>
+        <field name="model_id" ref="model_sacco_loan_type"/>
+        <field name="state">code</field>
+        <field name="code">
+            action = env['sacco.loan.product.mis'].action_mass_sync_products(records)
+        </field>
+        <field name="binding_model_id" ref="model_sacco_loan_type"/>
+        <field name="binding_view_types">list</field>
+    </record>
+
+    <record id="view_sacco_loan_type_tree" model="ir.ui.view">
+        <field name="name">view.sacco.loan.type.tree</field>
+        <field name="model">sacco.loan.type</field>
+        <field name="arch" type="xml">
+            <tree string="Loan Proofs">
+                <field name="name"/>
+                <field name="product_code"/>
+                <field name="currency_id"/>
+                <field name="is_interest_apply"/>
+                <field name="interest_mode"/>
+                <field name="rate"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_sacco_loan_type" model="ir.actions.act_window">
+        <field name="name">Loan Product</field>
+        <field name="res_model">sacco.loan.type</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem name="Loan Product" 
+              id="menu_sacco_loan_type" 
+              parent="sacco_loan_management.menu_sacco_loan_configration" 
+              action="action_sacco_loan_type" 
+              sequence="2"/>
+</odoo>

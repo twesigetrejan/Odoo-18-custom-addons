@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Extend the Membership Configuration Form View -->
+        <record id="view_membership_config_form_welcome_pack" model="ir.ui.view">
+            <field name="name">sacco.membership.config.form.welcome.pack</field>
+            <field name="model">sacco.membership.config</field>
+            <field name="inherit_id" ref="member_management.view_membership_config_form"/>
+            <field name="arch" type="xml">
+                <header>
+                    <button name="action_reset_custom_template" string="Reset Custom Template" type="object" 
+                            invisible="use_default_template"/>
+                </header>
+                <xpath expr="//notebook" position="inside">
+                    <page string="Welcome Pack Configuration" sequence="0">
+                        <group>
+                            <field name="use_default_template" widget="boolean_toggle" string="Use Default Template"/>
+                            <field name="welcome_pack_template_id" widget="selection" string="Welcome Pack Template" invisible="use_default_template"/>
+                            <field name="welcome_pack_attachments" widget="many2many_binary" string="Welcome Pack Attachments"/>
+                            <field name="welcome_pack_body" widget="html" class="oe-bordered-editor"
+                                   options="{'style-inline': true, 'codeview': true, 'dynamic_placeholder': true}" string="Welcome Pack Email Body" invisible="use_default_template"/>
+                        </group>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

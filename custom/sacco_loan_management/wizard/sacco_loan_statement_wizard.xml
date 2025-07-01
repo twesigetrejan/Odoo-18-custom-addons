@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <record id="view_loan_statement_wizard_form" model="ir.ui.view">
+        <field name="name">sacco.loan.statement.form</field>
+        <field name="model">sacco.loan.statement</field>
+        <field name="arch" type="xml">
+            <form string="Generate Loan Statement">
+                <group>
+                    <field name="member_id"/>
+                    <field name="product_id"/>
+                    <field name="loan_id"/>
+                    <field name="start_date" readonly="True"/>
+                    <field name="end_date"/>
+                    <field name="request_date" readonly="True"/>
+                    <field name="available_product_ids" invisible="True"/>
+                    <field name="available_loan_ids" invisible="True"/>
+                </group>
+                <footer>
+                    <button name="generate_statement" string="Generate Statement" type="object" class="btn-primary"
+                            groups="sacco_loan_management.group_loan_accountant,sacco_loan_management.group_loan_loans_officer,sacco_loan_management.group_loan_manager,sacco_loan_management.group_loan_super_user"/>
+                    <button name="action_post_statement" string="Post Statement" type="object" class="btn-primary"
+                            groups="sacco_loan_management.group_loan_accountant,sacco_loan_management.group_loan_loans_officer,sacco_loan_management.group_loan_manager,sacco_loan_management.group_loan_super_user"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_loan_statement_wizard" model="ir.actions.act_window">
+        <field name="name">Generate Loan Statement</field>
+        <field name="res_model">sacco.loan.statement</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem id="menu_loan_statement_wizard"
+              name="Statements"
+              action="action_loan_statement_wizard"
+              parent="sacco_loan_management.menu_sacco_installment_report"
+              sequence="20"/>
+</odoo>

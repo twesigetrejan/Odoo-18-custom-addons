@@ -1,0 +1,131 @@
+<?xml version="1.0"?>
+<odoo>
+        <!--Email template -->
+        <record id="withdrawal_request_email" model="mail.template">
+            <field name="name">Request to Investments Manager</field>
+
+			<field name="email_from">{{(object.user_id.email and '%s &lt;%s&gt;' % (object.user_id.company_id.name, object.user_id.email))}}</field>
+
+
+            <field name="subject">Withdrawal Request {{object.name}} Request from {{object.investments_account_id.member_id.name}}</field>
+            <field name="partner_to"></field>
+            <field name="model_id" ref="investments_management.model_sacco_investments_withdrawal_request"/>
+            <field name="auto_delete" eval="True"/>
+            <field name="body_html"><![CDATA[
+            	<p><b>To Manager</b>,</p>
+            	<p></p>
+            	<p> Withdrawal request from <b><i><t t-out="object.investments_account_id.member_id.name"></t> </i></b> MemberID <b><i><t t-out="object.investments_account_id.member_id.member_id"></t> </i></b></p>  
+				<table class="table-bordered"  width=100% style='margin-top: 10px;'>
+			        <tr>
+			         	<th width=20% style='text-align:center;background:#e0e1e2;padding:5px'>Investments Account ID</th>
+					 	<th width=20% style='text-align:center;background:#e0e1e2;padding:5px'>Request Date</th>
+					 	<th width=20% style='text-align:right;background:#e0e1e2;padding:5px'>Amount</th>
+					 	<th width=20% style='text-align:right;background:#e0e1e2;padding:5px'>Current Balance</th>
+			        </tr>    
+		  			<tr>
+			         	<td style='text-align:center;'><t t-out="object.investments_account_id.name"></t></td>
+					 	<td style='text-align:center;'><t t-out="object.request_date"></t></td>
+					 	<td style='text-align:right;'><t t-out="object.withdrawal_amount"></t></td>
+						 <td style='text-align:center;'><t t-out="object.investments_account_id.balance"></t></td>
+	            	</tr>    
+		   
+		</table>        	
+
+            	<p>You can access Withdrawal Request From Below URL</p>
+            	<br/><br/>
+            	<p><a t-attf-href="{{object.withdrawal_request_url}}" style="background-color: #0DAC9E; padding: 8px; text-decoration: none; color: #fff; border-radius: 5px; font-size: 16px;" class="o_default_snippet_text">View Withdrawal Request</a><p>
+            	<br/><br/>
+            	<b>Regards,</b><br/>
+        		<t t-out="object.user_id.name">
+                ]]></field>
+         </record>
+         
+         <record id="withdrawal_request_reject_email" model="mail.template">
+            <field name="name">Withdrawal Request Rejected by Manager</field>
+            <field name="email_from">{{(object.user_id.email and '%s &lt;%s&gt;' % (object.user_id.company_id.name, object.user_id.email))}}</field>
+            <field name="subject">Withdrawal Request {{object.name}} has been Rejected</field>
+            <field name="email_to">{{object.user_id.email}}</field>
+            <field name="model_id" ref="investments_management.model_sacco_investments_withdrawal_request"/>
+            <field name="auto_delete" eval="True"/>
+            <field name="body_html"><![CDATA[
+            	<p><b>To <t t-out="object.user_id.name"></t></b>,</p>
+            	
+            	
+            	<p> The withdrawal request <b><t t-out="object.name"></b> has been Rejected</p>
+            	<p><b>Reject Reason</b> : <t t-out="object.reject_reason"> </p>
+            	<p>You can access Withdrawal From Below URL</p>
+            	<br/>
+            	<p><a t-attf-href="{{object.withdrawal_request_url}}" style="background-color: #0DAC9E; padding: 8px; text-decoration: none; color: #fff; border-radius: 5px; font-size: 16px;" class="o_default_snippet_text">View Withdrawal Request</a><p>
+            	<br/><br/>
+            	<b>Regards,</b><br/>
+        		<t t-out="object.user_id.name">
+                ]]></field>
+         </record>
+         
+         <record id="withdrawal_request_approve_email" model="mail.template">
+            <field name="name">Withdrawal Request Approved by Manager</field>
+            <field name="email_from">{{(object.user_id.email and '%s &lt;%s&gt;' % (object.user_id.company_id.name, object.user_id.email))}}</field>
+            <field name="subject">Withdrawal Request {{object.name}} has been Approved</field>
+            <field name="model_id" ref="investments_management.model_sacco_investments_withdrawal_request"/>
+            <field name="auto_delete" eval="True"/>
+            <field name="body_html"><![CDATA[
+            	<p><b>To <t t-out="object.user_id.name"></t></b>,</p>
+            	
+            	
+            	<p> The withdrawal request <b><t t-out="object.name"></b> has been Approved</p>
+            	<p>You can access Withdrawal From Below URL</p>
+            	<br/>
+            	<p><a t-attf-href="{{object.withdrawal_request_url}}" style="background-color: #0DAC9E; padding: 8px; text-decoration: none; color: #fff; border-radius: 5px; font-size: 16px;" class="o_default_snippet_text">View Withdrawal Request</a><p>
+            	<br/><br/>
+            	<b>Regards,</b><br/>
+        		<t t-out="object.user_id.name">
+                ]]></field>
+         </record>
+
+		<record id="withdrawal_request_accountant_email" model="mail.template">
+			<field name="name">Withdrawal Request Notice to Accountant</field>
+			<field name="email_from">{{(object.user_id.email and '%s &lt;%s&gt;' % (object.user_id.company_id.name, object.user_id.email))}}</field>
+			<field name="subject">Withdrawal Request {{object.name}} Ready for Processing</field>
+			<field name="model_id" ref="investments_management.model_sacco_investments_withdrawal_request"/>
+			<field name="auto_delete" eval="True"/>
+			<field name="body_html"><![CDATA[
+				<p><b>Dear Accountant,</b></p>
+				
+				<p>A withdrawal request has been approved and requires processing:</p>
+				
+				<table class="table-bordered" width=100% style='margin-top: 10px;'>
+					<tr>
+						<th style='text-align:left;background:#e0e1e2;padding:5px'>Request ID</th>
+						<td style='padding:5px'><t t-out="object.name"/></td>
+					</tr>
+					<tr>
+						<th style='text-align:left;background:#e0e1e2;padding:5px'>Member</th>
+						<td style='padding:5px'><t t-out="object.investments_account_id.member_id.name"/></td>
+					</tr>
+					<tr>
+						<th style='text-align:left;background:#e0e1e2;padding:5px'>Amount</th>
+						<td style='padding:5px'><t t-out="object.withdrawal_amount"/></td>
+					</tr>
+					<tr>
+						<th style='text-align:left;background:#e0e1e2;padding:5px'>Approval Date</th>
+						<td style='padding:5px'><t t-out="object.approve_date"/></td>
+					</tr>
+				</table>
+
+				<p>Please process this request according to standard procedures.</p>
+				
+				<p><a t-attf-href="{{object.withdrawal_request_url}}" style="background-color: #0DAC9E; padding: 8px; text-decoration: none; color: #fff; border-radius: 5px; font-size: 16px;" class="o_default_snippet_text">View Request Details</a></p>
+				
+				<br/>
+				<b>Regards,</b><br/>
+				<t t-out="object.company_id.name"/>
+			]]></field>
+		</record>
+</odoo>
+        
+        
+        
+      
+        
+        
+    

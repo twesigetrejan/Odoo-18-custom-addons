@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_investments_statement">
+        <t t-call="web.html_container">
+            <t t-call="web.external_layout">
+                <div class="page">
+                    <div class="row">
+                        <div class="col-12 text-center">
+                            <h3>Investment Statement</h3>
+                        </div>
+                    </div>
+                    
+                    <div class="row mt-4">
+                        <div class="col-6">
+                            <strong>Member Name:</strong> <span t-esc="member_name"/>
+                            <br/>
+                            <strong>Member ID:</strong> <span t-esc="member_id"/>
+                            <br/>
+                            <strong>Currency:</strong> <span t-esc="currency"/>                       </div>
+                        <div class="col-6 text-right">
+                            <strong>Statement Period:</strong>
+                            <br/>
+                            <span t-esc="start_date"/> to <span t-esc="end_date"/>
+                            <br/>
+                            <strong>Date Generated:</strong> <span t-esc="request_date"/>
+                        </div>
+                    </div>
+
+                    <t t-foreach="statement_data" t-as="statement">
+                        <div class="row mt-4 mb-4">
+                            <div class="col-12">
+                                <div class="mb-4">
+                                    <h4><t t-esc="statement['product']"/></h4>
+                                </div>  
+                                <div class="mb-4">
+                                    <strong>Cash Balance:</strong>
+                                    <span t-esc="'{:,.2f}'.format(statement['cash_balance'])"/>
+                                </div>
+                                <div class="mb-4">
+                                    <strong>Investment Balance:</strong>
+                                    <span t-esc="'{:,.2f}'.format(statement['investment_balance'])"/>
+                                </div>
+                                <div class="mb-4">
+                                    <strong>Total Profit:</strong>
+                                    <span t-esc="'{:,.2f}'.format(statement['total_profit'])"/>
+                                </div>                              
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12">
+                                <table class="table table-sm table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Transaction Type</th>
+                                            <th>Opening Cash Balance</th>
+                                            <th>Opening Investment Balance</th>
+                                            <th>Amount</th>
+                                            <th>Closing Cash Balance</th>
+                                            <th>Closing Investment Balance</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr t-foreach="statement['lines']" t-as="line">
+                                            <td><span t-esc="line['date']"/></td>
+                                            <td><span t-esc="line['type']"/></td>
+                                            <td class="text-right">
+                                                <span t-esc="'{:,.2f}'.format(line['opening_cash_balance'])"/>
+                                            </td>
+                                            <td class="text-right">
+                                                <span t-esc="'{:,.2f}'.format(line['opening_investment_balance'])"/>
+                                            </td>
+                                            <td class="text-right">
+                                                <span t-esc="'{:,.2f}'.format(line['amount'])"/>
+                                            </td>
+                                            <td class="text-right">
+                                                <span t-esc="'{:,.2f}'.format(line['closing_cash_balance'])"/>
+                                            </td>
+                                            <td class="text-right">
+                                                <span t-esc="'{:,.2f}'.format(line['closing_investment_balance'])"/>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        
+
+                    </t>
+                </div>
+            </t>
+        </t>
+    </template>
+
+    <record id="action_report_investments_statement" model="ir.actions.report">
+        <field name="name">Investment Statement</field>
+        <field name="model">sacco.investments.statement.wizard</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">investments_management.report_investments_statement</field>
+        <field name="report_file">investments_management.report_investments_statement</field>
+        <field name="binding_model_id" ref="model_sacco_investments_statement_wizard"/>
+        <field name="binding_type">report</field>
+    </record>
+</odoo>

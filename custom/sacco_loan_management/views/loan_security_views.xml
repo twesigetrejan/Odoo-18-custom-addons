@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Tree View for Securities (Non-editable) -->
+    <record id="view_sacco_loan_security_tree" model="ir.ui.view">
+        <field name="name">view.sacco.loan.security.tree</field>
+        <field name="model">sacco.loan.security</field>
+        <field name="arch" type="xml">
+            <tree string="Securities">
+                <field name="name" readonly="1"/>
+                <field name="loan_id" readonly="1"/>
+                <field name="security_type"/>
+                <field name="description"/>
+                <field name="owner_name"/>
+                <field name="registered_asset_no"/>
+                <field name="location"/>
+                <field name="market_value"/>
+                <field name="valuation_date"/>
+                <field name="forced_sale_value"/>
+                <field name="encumbrance_flag" readonly="1"/>
+                <field name="encumbrance_details" readonly="1"/>
+                <field name="security_status" 
+                       decoration-success="security_status == 'verified'" 
+                       decoration-warning="security_status == 'pending_verification'" 
+                       decoration-info="security_status == 'released'"/>
+                <field name="release_date"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Form View for Securities (Similar to Loan Form) -->
+    <record id="view_sacco_loan_security_form" model="ir.ui.view">
+        <field name="name">view.sacco.loan.security.form</field>
+        <field name="model">sacco.loan.security</field>
+        <field name="arch" type="xml">
+            <form string="Security">
+                <header>
+                    <button name="action_verify" string="Verify" type="object" class="btn-primary" 
+                            groups="sacco_loan_management.group_loan_loans_officer,sacco_loan_management.group_loan_super_user"
+                            invisible="security_status != 'pending_verification'"/>
+                    <button name="action_release" string="Release" type="object" class="btn-primary" 
+                            groups="sacco_loan_management.group_loan_loans_officer,sacco_loan_management.group_loan_super_user"
+                            invisible="security_status == 'released'"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_get_attachment_view" class="oe_stat_button" icon="fa-file-text-o" type="object">
+                            <field name="attachment_number" widget="statinfo" string="Attachments" options="{'reload_on_button': true}"/>
+                        </button>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="name" readonly="1"/>
+                            <field name="loan_id" readonly="1"/>
+                            <field name="security_type"/>
+                            <field name="description"/>
+                            <field name="owner_name"/>
+                        </group>
+                        <group>
+                            <field name="registered_asset_no"/>
+                            <field name="location"/>
+                            <field name="market_value"/>
+                            <field name="valuation_date"/>
+                            <field name="forced_sale_value"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Details">
+                            <group>
+                                <field name="encumbrance_flag" readonly="1"/>
+                                <field name="encumbrance_details" readonly="1"/>
+                                <field name="security_status" readonly="1"/>
+                                <field name="release_date" readonly="1"/>
+                            </group>
+                        </page>
+                        <page string="Ownership Proofs (Attachments)">
+                            <field name="ownership_proof_ref" mode="kanban" context="{'default_res_id': active_id,'default_res_model': 'sacco.loan.security','res_model':'sacco.loan.security','res_name':name}" domain="[('id','in',ownership_proof_ref.ids),('res_model','=','sacco.loan.security')]" readonly="True">
+                                <kanban>
+                                    <field name="name"/>
+                                    <field name="res_id"/>
+                                    <field name="res_model"/>
+                                    <field name="datas"/>
+                                    <field name="id"/>
+                                    <field name="mimetype"/>
+                                    <field name="description"/>
+                                    <templates>
+                                        <t t-name="kanban-box">
+                                            <div class="oe_kanban_global_click" style="max-width: 200px">
+                                                <div class="o_kanban_record_top">
+                                                    <img t-att-src="kanban_image('ir.attachment', 'datas', record.id.raw_value)" height="100" width="182" class="oe_avatar oe_kanban_avatar_smallbox mb0" t-att-alt="record.name.value"/>
+                                                    <a t-if="! read_only_mode" type="delete" class="text-danger" title="Delete attachment">
+                                                        <i class="fa fa-times" role="img" aria-label="Delete"/>
+                                                    </a>
+                                                </div>
+                                                <div class="oe_kanban_details" style="text-align:center">
+                                                    <p><h5><field name="name"/></h5></p>
+                                                    <p class="text-muted small" t-if="record.description.value"><field name="description"/></p>
+                                                </div>
+                                            </div>
+                                        </t>
+                                    </templates>
+                                </kanban>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers" groups="base.group_user"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action to View Securities -->
+    <record id="action_view_securities" model="ir.actions.act_window">
+        <field name="name">Securities</field>
+        <field name="res_model">sacco.loan.security</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('loan_id', 'in', active_ids)]</field>
+        <field name="context">{'default_loan_id': active_id}</field>
+    </record>
+
+    <!-- Filter for Securities -->
+    <record id="filter_sacco_loan_security" model="ir.ui.view">
+        <field name="name">filter.sacco.loan.security</field>
+        <field name="model">sacco.loan.security</field>
+        <field name="arch" type="xml">
+            <search string="Search Securities">
+                <field name="loan_id"/>
+                <field name="name"/>
+                <group expand="0" string="Group By">
+                    <filter string="Loan" name="loan_id" context="{'group_by':'loan_id'}"/>
+                    <filter string="Status" name="security_status" context="{'group_by':'security_status'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Menu Item for Securities -->
+    <!-- <menuitem name="Securities" id="menu_sacco_loan_security" parent="sacco_loan_management.menu_sacco_loan_request_main" action="action_view_securities" sequence="3"/> -->
+</odoo>

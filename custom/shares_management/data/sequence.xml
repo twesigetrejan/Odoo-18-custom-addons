@@ -1,0 +1,25 @@
+<odoo>
+    <data noupdate="1">
+        <record id="shares_account_sequence_number" model="ir.sequence">
+            <field name="name">Shares Account Sequence</field>
+            <field name="code">sacco.shares.account</field>
+            <field name="prefix">SHAR/</field>
+            <field name="padding">3</field>
+            <field name="use_date_range">True</field>
+        </record>
+
+        <record id="shares_transaction_sequence_number" model="ir.sequence">
+            <field name="name">Shares Transaction Sequence</field>
+            <field name="code">shares.transaction</field>
+            <field name="prefix">TRANS-SH/%(year)s/</field>
+            <field name="padding">3</field>
+        </record>
+        
+        <record id="seq_shares_product_code" model="ir.sequence">
+            <field name="name">Shares Product Code</field>
+            <field name="code">sacco.shares.product.code</field>
+            <field name="padding">3</field>
+            <field name="prefix">SHP</field>
+        </record>
+    </data>
+</odoo>

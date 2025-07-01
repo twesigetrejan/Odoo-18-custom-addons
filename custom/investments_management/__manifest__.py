@@ -1,0 +1,37 @@
+# -*- coding: utf-8 -*-
+{
+    'name': "Investments Management",
+    'summary': "Helps You to Manage Investments Operations",
+    'description': 'Manage Investment operations',
+    'category': 'Accounting',
+    'version': '1.0',
+    'sequence': 5,
+    'author': "Omni Software Ltd",
+    'company': "Omni Software Ltd",
+    'website': "https://www.omnitech.co.ug",
+    'depends': ['base','mail', 'account', 'web', 'sacco_transactions_management'],
+    'data': [
+        'security/security.xml',
+        'security/ir.model.access.csv',
+        'data/sequence.xml',
+        'data/cron.xml',
+        'edi/mail_template.xml',
+        'views/investments_management_menu.xml',
+        'wizards/withdrawal_request_reject_view.xml',
+        'wizards/investments_statement_wizard_view.xml',
+        'views/investments_product_views.xml',
+        'views/investments_account_views.xml',
+        'views/withdrawal_request_views.xml',
+        'views/investments_transaction_views.xml',
+        'views/investments_pool_views.xml',
+        'views/investments_pool_profit_views.xml',
+        'views/res_partner_views.xml',
+        'report/investments_statement_templates.xml'
+    ],
+    'demo': [],
+    'license': 'LGPL-3',
+    'installable': True,
+    'application': True,
+    'auto_install': False,
+}
+

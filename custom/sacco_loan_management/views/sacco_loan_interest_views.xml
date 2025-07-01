@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Loan Interest Action -->
+    <record id="loan_interest_action" model="ir.actions.act_window">
+        <field name="name">Loan Interest Records</field>
+        <field name="res_model">sacco.loan.interest</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <!-- Loan Interest Tree View -->
+    <record id="loan_interest_view_tree" model="ir.ui.view">
+        <field name="name">sacco.loan.interest.view.tree</field>
+        <field name="model">sacco.loan.interest</field>
+        <field name="arch" type="xml">
+            <tree string="Loan Interest Records">
+                <field name="name" />
+                <field name="client_id" />
+                <field name="loan_id" />
+                <field name="interest_amount" widget="monetary" options="{'currency_field': 'currency_id'}" />
+                <field name="currency_id" groups="base.group_multi_currency" />
+                <field name="posting_date" />
+                <field name="state" />
+            </tree>
+        </field>
+    </record>
+
+    <!-- Loan Interest Form View -->
+    <record id="loan_interest_view_form" model="ir.ui.view">
+        <field name="name">sacco.loan.interest.view.form</field>
+        <field name="model">sacco.loan.interest</field>
+        <field name="arch" type="xml">
+            <form string="Loan Interest Record">
+                <header>
+                    <button name="action_post" string="Post Interest" type="object"
+                            invisible="state != 'draft'" class="oe_highlight"
+                            groups="sacco_loan_management.group_loan_accountant,sacco_loan_management.group_loan_loans_officer,sacco_loan_management.group_loan_super_user"
+                            confirm="Are you sure you want to post this interest?"/>
+                    <button name="action_cancel" string="Cancel" type="object"
+                            invisible="state != 'posted'"
+                            groups="sacco_loan_management.group_loan_accountant,sacco_loan_management.group_loan_loans_officer,sacco_loan_management.group_loan_super_user"
+                            confirm="Are you sure you want to cancel this interest record?"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,posted,cancelled"/>
+                </header>
+                <sheet>
+                    <h1><field name="name" readonly="True" /></h1>
+                    <group>
+                        <group>
+                            <field name="client_id" readonly="state != 'draft'" />
+                            <field name="loan_id" readonly="state != 'draft'" />
+                            <field name="available_loan_ids" invisible="True" />
+                        </group>
+                        <group>
+                            <field name="posting_date" readonly="state != 'draft'" />
+                            <field name="calculation_from_date" readonly="True" force_save="1"/>
+                            <field name="calculation_to_date" readonly="True" force_save="1"/>
+                            <field name="days_calculated" readonly="True" />
+                        </group>
+                    </group>
+                    <group>
+                        <group>
+                            <field name="paying_account_id" readonly="state != 'draft'" />
+                            <field name="pay_account" invisible="1" />
+                            <field name="interest_amount" readonly="True" widget="monetary" options="{'currency_field': 'currency_id'}" force_save="1"/>
+                            <field name="currency_id" readonly="True" groups="base.group_multi_currency" />
+                            <field name="principal_balance" readonly="True" widget="monetary" options="{'currency_field': 'currency_id'}" force_save="1"/>
+                        </group>
+                        <group>
+                            <field name="interest_rate" readonly="True" />
+                            <field name="interest_mode" readonly="True" />
+                            <field name="previous_interest_id" readonly="True" />
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Accounting" invisible="state != 'posted'">
+                            <group>
+                                <group>
+                                    <field name="journal_entry_id" readonly="True" />
+                                </group>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" />
+                    <field name="activity_ids" />
+                    <field name="message_ids" />
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="sacco_loan_interest_search" model="ir.ui.view">
+        <field name="name">sacco.loan.interest.search</field>
+        <field name="model">sacco.loan.interest</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="client_id" />
+                <field name="loan_id" />
+                <field name="posting_date" />
+                <field name="state" />
+                <group expand="0" string="Group By">
+                    <filter string="Member" name="group_by_client_id" context="{'group_by': 'client_id'}" />
+                    <filter string="Loan" name="group_by_loan_id" context="{'group_by': 'loan_id'}" />
+                    <filter string="State" name="group_by_state" context="{'group_by': 'state'}" />
+                    <filter string="Posting Date" name="group_by_posting_date" context="{'group_by': 'posting_date'}" />
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Menu Item -->
+    <menuitem name="Interest" id="menu_sacco_loan_interest" parent="sacco_loan_management.menu_sacco_loan_payments_main" action="loan_interest_action" sequence="6" />
+</odoo>

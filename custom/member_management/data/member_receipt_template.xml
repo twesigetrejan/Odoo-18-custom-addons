@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_member_registration_payment_receipt">
+        <t t-call="web.html_container">
+            <t t-call="web.external_layout">
+                <div class="page">
+                    <h2 style="font-size: 24px;"><strong>Member Registration Payment Receipt: <t t-esc="payment_ref"/></strong></h2>
+                    <div class="mb-4 mt-3" style="font-size: 16px;">
+                        <table style="width: 100%; border-collapse: collapse;">
+                            <tr>
+                                <td style="width: 50%; padding: 10px; border: 1px solid #000; text-align: left; font-weight: bold;">Payment Date:</td>
+                                <td style="width: 50%; padding: 10px; border: 1px solid #000;" t-if="date"><t t-esc="date"/></td>
+                            </tr>
+                            <tr>
+                                <td style="width: 50%; padding: 10px; border: 1px solid #000; text-align: left; font-weight: bold;">Member ID:</td>
+                                <td style="width: 50%; padding: 10px; border: 1px solid #000;"><t t-esc="member_id"/></td>
+                            </tr>
+                            <tr>
+                                <td style="width: 50%; padding: 10px; border: 1px solid #000; text-align: left; font-weight: bold;">Member:</td>
+                                <td style="width: 50%; padding: 10px; border: 1px solid #000;"><t t-esc="member_name"/></td>
+                            </tr>
+                            <tr>
+                                <td style="width: 50%; padding: 10px; border: 1px solid #000; text-align: left; font-weight: bold;">Payment Amount:</td>
+                                <td style="width: 50%; padding: 10px; border: 1px solid #000;" t-if="amount_total"><t t-esc="amount_total" t-options='{"widget": "float", "precision": 2}'/></td>
+                            </tr>
+                            <tr>
+                                <td style="width: 50%; padding: 10px; border: 1px solid #000; text-align: left; font-weight: bold;">Currency:</td>
+                                <td style="width: 50%; padding: 10px; border: 1px solid #000;" t-if="currency"><t t-esc="currency"/></td>
+                            </tr>
+                            <tr>
+                                <td style="width: 50%; padding: 10px; border: 1px solid #000; text-align: left; font-weight: bold;">Received By:</td>
+                                <td style="width: 50%; padding: 10px; border: 1px solid #000;" t-if="creator_name"><t t-esc="creator_name"/></td>
+                            </tr>
+                            <tr>
+                                <td style="width: 50%; padding: 10px; border: 1px solid #000; text-align: left; font-weight: bold;">Receipt Date:</td>
+                                <td style="width: 50%; padding: 10px; border: 1px solid #000;"><t t-esc="time.strftime('%Y-%m-%d')"/></td>
+                            </tr>
+                        </table>
+                    <div style="margin-top: 20px; text-align: center; font-size: 14px;">
+                        <p>Thank you for your payment. This receipt serves as proof of your membership registration fee payment.</p>
+                        <p>For any inquiries, contact us at: <span t-esc="company_email or ''"/> | <span t-esc="company_phone or ''"/></p>
+                    </div>
+                    </div>
+                </div>
+            </t>
+        </t>
+    </template>
+
+    <!-- Report Action -->
+    <record id="action_report_member_registration_payment_receipt" model="ir.actions.report">
+        <field name="name">Member Registration Payment Receipt</field>
+        <field name="model">res.partner</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">member_management.report_member_registration_payment_receipt</field>
+        <field name="report_file">member_management.report_member_registration_payment_receipt</field>
+        <field name="print_report_name">'Membership Receipt- %s' %(object.name)</field>
+        <field name="binding_model_id" ref="model_res_partner"/>
+        <field name="binding_type">report</field>
+    </record>
+</odoo>

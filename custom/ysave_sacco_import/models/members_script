@@ -1,0 +1,25 @@
+-- Begin transaction to ensure atomicity
+BEGIN;
+
+-- Create a temporary table to hold the input member_ids
+CREATE TEMPORARY TABLE temp_member_ids (member_id VARCHAR(255));
+INSERT INTO temp_member_ids (member_id) VALUES ('0029'), ('0041'), ('0171'), ('0197'), ('0199'), ('0216'), ('0249'), ('0272'), ('0345'), ('0359'), ('0426'), ('0458'), ('0617'), ('0667'), ('0669'), ('0672'), ('0683'), ('0684'), ('0694'), ('0695'), ('0714'), ('0729'), ('0804'), ('0810'), ('0835'), ('0889'), ('0893'), ('0900'), ('0911'), ('0913'), ('0918'), ('0919'), ('0920'), ('0923'), ('0929'), ('0949'), ('0970'), ('1001'), ('1002'), ('1003'), ('1004'), ('1005'), ('1014'), ('1019'), ('1048'), ('1049'), ('1084'), ('1098'), ('1125'), ('1126'), ('1133'), ('1139'), ('1140'), ('1142'), ('1143'), ('1144'), ('1145'), ('1148'), ('1149'), ('1150'), ('1164'), ('1165'), ('1167'), ('1168'), ('1170'), ('1183'), ('1188'), ('1189'), ('1257'), ('1258'), ('1259'), ('1282'), ('1283'), ('1297'), ('1309'), ('1315'), ('1318'), ('1328'), ('1352'), ('1353'), ('1378'), ('1379'), ('1415'), ('1425'), ('1439'), ('1440'), ('1477'), ('1499'), ('1561'), ('1582'), ('1595'), ('1617'), ('1618'), ('1619'), ('1710'), ('1737'), ('1739'), ('1742'), ('1754'), ('1762'), ('1776'), ('1816'), ('1849'), ('1855'), ('1868'), ('1869'), ('1872'), ('1873'), ('1885'), ('1901'), ('1902'), ('1903'), ('1904'), ('1905'), ('1906'), ('1907'), ('1910'), ('1921'), ('1922'), ('1930'), ('1932'), ('1936'), ('1939'), ('1943'), ('1953'), ('2017'), ('2031'), ('2046'), ('2062'), ('2093'), ('2094'), ('2098'), ('2103'), ('2167'), ('2175'), ('2184'), ('2195'), ('2202'), ('2203');
+
+-- Update membership_status to 'inactive' for matching res_partner records
+UPDATE res_partner
+SET membership_status = 'inactive'
+WHERE member_id IN (SELECT member_id FROM temp_member_ids);
+
+-- Select member_ids from the input array that were not found in res_partner
+SELECT member_id
+FROM temp_member_ids
+WHERE member_id NOT IN (SELECT member_id FROM res_partner WHERE member_id IS NOT NULL);
+
+-- Drop the temporary table
+DROP TABLE temp_member_ids;
+
+-- Commit the transaction
+COMMIT;
+
+-- Optional: Rollback in case of issues (uncomment to use instead of COMMIT)
+-- ROLLBACK;

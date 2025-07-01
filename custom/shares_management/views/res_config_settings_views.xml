@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright (C) 2015 DevIntelle Consulting Service Pvt.Ltd (<http://www.devintellecs.com>).
+
+For Module Support : devintelle@gmail.com  or Skype : devintelle
+ -->
+<odoo>
+	<record id="view_savings_module_config_form" model="ir.ui.view">
+        <field name="name">Savings Configuration Form</field>
+        <field name="model">res.config.settings</field>
+        <field name="priority" eval="50"/>
+        <field name="inherit_id" ref="base.res_config_settings_view_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="inside">
+                <block title="Sync" name="sync_setting_container">
+                    <setting string="Sync Savings Products" company_dependent="1" help="Sync savings products with external system.">
+                        <div class="content-group">
+                            <div class="mt16">
+                                <div>
+                                    <button name="action_sync_savings_products" type="object" icon="fa-refresh" string="Sync Products" />
+                                </div>
+                            </div>
+                        </div>
+                    </setting>
+                    <div class="row mt16 o_settings_container">
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane"/>
+                            <div class="o_setting_right_pane">
+                                <span class="o_form_label">Sync Interval</span>
+                                <div class="text-muted">
+                                    Set the interval for syncing savings deposits (in seconds)
+                                </div>
+                                <div class="content-group">
+                                    <div class="mt16">
+                                        <field name="sync_interval" class="o_light_label" widget="integer"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </block>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="action_saving_config" model="ir.actions.act_window">
+        <field name="name">Loan</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">res.config.settings</field>
+        <field name="view_id" ref="view_savings_module_config_form"/>
+        <field name="view_mode">form</field>
+        <field name="target">inline</field>
+        <field name="context">{'module' : 'savings_management'}</field>
+    </record>
+
+    <!-- <menuitem id="menu_savings_setting" name="Settings" parent="savings_management.menu_sacco_savings_config" action="action_saving_config" sequence="1" /> -->
+
+
+</odoo>

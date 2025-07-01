@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_import_wizard_form" model="ir.ui.view">
+        <field name="name">import.wizard.form</field>
+        <field name="model">import.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Import Sacco Transactions">
+                <sheet>
+                    <group>
+                        <field name="file" filename="file_name"/>
+                        <field name="file_name" invisible="1"/>
+                    </group>
+                    <notebook>
+                        <!-- Savings Page -->
+                        <page string="Savings Accounts">
+                            <group>
+                                <group string="Principal Savings Accounts">
+                                    <field name="savings_account_ids" widget="many2many_tags" 
+                                           domain="[('account_product_type', '=', 'savings')]"/>
+                                    <field name="savings_product_ids"/>
+                                    <field name="savings_journal_id"/>
+                                </group>
+                                <group string="Savings Interest Accounts">
+                                    <field name="savings_interest_account_ids" widget="many2many_tags" 
+                                           domain="[('account_product_type', '=', 'savings_interest')]"/>
+                                    <field name="savings_interest_product_ids"/>
+                                    <field name="savings_interest_journal_id"/>
+                                </group>
+                            </group>
+                        </page>
+                        <!-- Shares Page -->
+                        <page string="Shares Accounts">
+                            <group>
+                                <group string="Shares Accounts">
+                                    <field name="shares_account_ids" widget="many2many_tags" 
+                                           domain="[('account_product_type', '=', 'shares')]"/>
+                                    <field name="shares_product_ids"/>
+                                    <field name="shares_journal_id"/>
+                                </group>
+                            </group>
+                        </page>
+                        <!-- Loans Page -->
+                        <page string="Loan Accounts">
+                            <group>
+                                <group string="Principal Loan Accounts">
+                                    <field name="loan_account_ids" widget="many2many_tags" 
+                                           domain="[('account_product_type', '=', 'loans')]"/>
+                                    <field name="loan_product_ids"/>
+                                    <field name="loan_journal_id"/>
+                                </group>
+                                <group string="Loan Interest Accounts">
+                                    <field name="loan_interest_account_ids" widget="many2many_tags" 
+                                           domain="[('account_product_type', '=', 'loans_interest')]"/>
+                                    <field name="loan_interest_product_ids"/>
+                                    <field name="loan_interest_journal_id"/>
+                                </group>
+                            </group>
+                        </page>
+                        <!-- Default Accounts Page -->
+                        <page string="Default Accounts">
+                            <group>
+                                <field name="default_receiving_account_id"/>
+                                <field name="default_paying_account_id"/>
+                            </group>
+                        </page>
+                    </notebook>
+                    <footer>
+                        <button name="action_import" string="Import" type="object" class="btn-primary"/>
+                        <button string="Cancel" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_import_wizard" model="ir.actions.act_window">
+        <field name="name">Import Sacco Transactions</field>
+        <field name="res_model">import.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem id="menu_import_wizard" name="Import Transactions" parent="account.menu_finance_entries" action="action_import_wizard"/>
+</odoo>

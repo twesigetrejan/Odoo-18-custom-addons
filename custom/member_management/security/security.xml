@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+
+        <record model="ir.module.category" id="category_member">
+            <field name="name">Member</field>
+            <field name="description">Helps you handle your Member Access.</field>
+            <field name="sequence">4</field>
+        </record>
+
+        <!-- Member Registrar -->
+        <record id="group_member_user" model="res.groups">
+            <field name="name">Member Registrar</field>
+            <field name="category_id" ref="member_management.category_member"/>
+            <field name="comment">User can create and edit member details and access KYC wizard.</field>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        </record>
+
+        <!-- SACCO Teller (Receptionist) -->
+        <record id="group_member_teller" model="res.groups">
+            <field name="name">SACCO Teller</field>
+            <field name="category_id" ref="member_management.category_member"/>
+            <field name="comment">User has read-only access to member details.</field>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        </record>
+
+        <!-- Accounts Assistant / Reviewer -->
+        <record id="group_member_accounts_assistant" model="res.groups">
+            <field name="name">Accounts Assistant</field>
+            <field name="category_id" ref="member_management.category_member"/>
+            <field name="comment">User has read-only access to member details.</field>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        </record>
+
+        <!-- Loans Officer -->
+        <record id="group_member_loans_officer" model="res.groups">
+            <field name="name">Loans Officer</field>
+            <field name="category_id" ref="member_management.category_member"/>
+            <field name="comment">User has read-only access to member details.</field>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        </record>
+
+        <!-- Accountant -->
+        <record id="group_member_accountant" model="res.groups">
+            <field name="name">Accountant</field>
+            <field name="category_id" ref="member_management.category_member"/>
+            <field name="comment">User has read-only access to member details.</field>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        </record>
+
+        <!-- Manager / Approver -->
+        <record id="group_member_manager" model="res.groups">
+            <field name="name">Manager</field>
+            <field name="category_id" ref="member_management.category_member"/>
+            <field name="comment">User has read-only access to all member details.</field>
+            <field name="implied_ids" eval="[(4, ref('base.group_erp_manager'))]"/>
+        </record>
+
+        <!-- Audit Viewer -->
+        <record id="group_member_audit_viewer" model="res.groups">
+            <field name="name">Audit Viewer</field>
+            <field name="category_id" ref="member_management.category_member"/>
+            <field name="comment">User has read-only access to all models in the Member module.</field>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        </record>
+
+        <!-- Super User / System Administrator -->
+        <record id="group_member_super_user" model="res.groups">
+            <field name="name">Super User</field>
+            <field name="category_id" ref="member_management.category_member"/>
+            <field name="comment">Super user with full access rights to all member models.</field>
+            <field name="implied_ids" eval="[
+                (4, ref('member_management.group_member_user')),
+                (4, ref('member_management.group_member_teller')),
+                (4, ref('member_management.group_member_accounts_assistant')),
+                (4, ref('member_management.group_member_loans_officer')),
+                (4, ref('member_management.group_member_accountant')),
+                (4, ref('member_management.group_member_manager')),
+                (4, ref('member_management.group_member_audit_viewer')),
+                (4, ref('base.group_erp_manager'))
+            ]"/>
+        </record>
+
+    </data>
+</odoo>

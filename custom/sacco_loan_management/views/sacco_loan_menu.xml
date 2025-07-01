@@ -1,0 +1,12 @@
+<odoo>
+    <menuitem name="Loans" id="menu_sacco_loan_main" sequence="3"/>
+
+    <menuitem name="Loan Menu" parent="menu_sacco_loan_main" id="menu_sacco_loan_request_main" sequence="1"/>
+
+    <menuitem name="Payments" parent="menu_sacco_loan_main" id="menu_sacco_loan_payments_main" sequence="2"/>
+
+    <menuitem name="Reports" parent="menu_sacco_loan_main" id="menu_sacco_installment_report" sequence="3"/>
+
+    <menuitem name="Configuration" parent="menu_sacco_loan_main" id="menu_sacco_loan_configration" sequence="4"/>
+
+</odoo>

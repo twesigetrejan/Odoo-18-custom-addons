@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_savings_product_form" model="ir.ui.view">
+        <field name="name">sacco.savings.product.form</field>
+        <field name="model">sacco.savings.product</field>
+        <field name="arch" type="xml">
+            <form>
+            <header>
+            <button name="action_create_account_journals" 
+                string="Create Accounts &amp; Journals" 
+                type="object"
+                class="oe_highlight"
+                invisible="True"/>            
+            </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="product_code"/>
+                            <field name="minimum_balance"/>
+                            <field name="interest_rate"/>
+                            <field name="period"/>
+                            <field name="currency_id"/>
+                            <field name="default_receiving_account_id" options="{'no_create': True}"/>
+                            <field name="default_paying_account_id" options="{'no_create': True}"/>
+                        </group>
+                        <group>
+                            <field name="interest_account_id" options="{'no_create': True}"/>
+                            <field name="interest_disbursement_account_id" options="{'no_create': True}"/>
+                            <field name="savings_product_account_id" options="{'no_create': True}"/>
+                            <field name="savings_product_journal_id" readonly="True" options="{'no_create': True}"/>
+                        </group>
+                        <notebook>
+                            <page string="Description">
+                                <field name="description" nolabel="1" placeholder="Enter product description..."/>
+                            </page>
+                        </notebook>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Add to existing savings_product_views.xml -->
+    <record id="action_mass_sync_products" model="ir.actions.server">
+        <field name="name">Mass Sync Products</field>
+        <field name="model_id" ref="model_sacco_savings_product"/>
+        <field name="state">code</field>
+        <field name="code">
+            action = env['sacco.savings.product.mis'].action_mass_sync_products(records)
+        </field>
+        <field name="binding_model_id" ref="model_sacco_savings_product"/>
+        <field name="binding_view_types">list</field>
+    </record>
+
+    <record id="view_savings_product_tree" model="ir.ui.view">
+        <field name="name">sacco.savings.product.tree</field>
+        <field name="model">sacco.savings.product</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="product_code"/>
+                <field name="interest_rate"/>
+                <field name="period"/>
+                <field name="currency_id"/>
+                <field name="minimum_balance"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_savings_product" model="ir.actions.act_window">
+        <field name="name">Savings Products</field>
+        <field name="res_model">sacco.savings.product</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem id="menu_sacco_savings_products" name="Savings Products" parent="menu_sacco_savings_config" action="action_savings_product" sequence="20"/>
+</odoo>

@@ -1,0 +1,231 @@
+<?xml version="1.0"?>
+<odoo>
+        <!--Email template -->
+        <record id="sacco_loan_loan_request" model="mail.template">
+            <field name="name">Request to Loan Manager</field>
+
+			<field name="email_from">{{(object.user_id.email and '%s &lt;%s&gt;' % (object.user_id.company_id.name, object.user_id.email))}}</field>
+
+
+            <field name="subject">Loan {{object.name}} Request form {{object.client_id.name}}</field>
+            <field name="partner_to"></field>
+            <field name="model_id" ref="sacco_loan_management.model_sacco_loan_loan"/>
+            <field name="auto_delete" eval="True"/>
+            <field name="body_html"><![CDATA[
+            	<p><b>To Manager</b>,</p>
+            	<p></p>
+            	<p> Loan request from <b><i><t t-out="object.client_id.name"></t> </i></b></p>  
+				<table class="table-bordered"  width=100% style='margin-top: 10px;'>
+			        <tr>
+			         	<th width=20% style='text-align:center;background:#e0e1e2;padding:5px'>Loan Type</th>
+					 	<th width=20% style='text-align:center;background:#e0e1e2;padding:5px'>Disbursement Date</th>
+					 	<th width=20% style='text-align:right;background:#e0e1e2;padding:5px'>Loan Amount</th>
+					 	<th width=20% style='text-align:right;background:#e0e1e2;padding:5px'>Loan Term</th>
+			        </tr>    
+		  			<tr>
+			         	<td style='text-align:center;'><t t-out="object.loan_type_id.name"></t></td>
+					 	<td style='text-align:center;'><t t-out="object.disbursement_date"></t></td>
+					 	<td style='text-align:right;'><t t-out="object.loan_amount"></t></td>
+					 	<td style='text-align:right;'><t t-out="object.loan_term"></t></td>
+	            	</tr>    
+		   
+		</table>        	
+
+            	<p>You can access Loan From Bellow URL</p>
+            	<br/><br/>
+            	<p><a t-attf-href="{{object.loan_url}}" style="background-color: #0DAC9E; padding: 8px; text-decoration: none; color: #fff; border-radius: 5px; font-size: 16px;" class="o_default_snippet_text">View Loan</a><p>
+            	<br/><br/>
+            	<b>Regards,</b><br/>
+        		<t t-out="object.user_id.name">
+                ]]></field>
+         </record>
+         
+         <record id="sacco_loan_loan_request_reject" model="mail.template">
+            <field name="name">Loan Request Rejected Manager</field>
+            <field name="email_from">{{(object.user_id.email and '%s &lt;%s&gt;' % (object.user_id.company_id.name, object.user_id.email))}}</field>
+            <field name="subject">Loan {{object.name}} has been Rejected</field>
+            <field name="email_to">{{object.user_id.email}}</field>
+            <field name="model_id" ref="sacco_loan_management.model_sacco_loan_loan"/>
+            <field name="auto_delete" eval="True"/>
+            <field name="body_html"><![CDATA[
+            	<p><b>To <t t-out="object.user_id.name"></t></b>,</p>
+            	
+            	
+            	<p> Your loan request <b><t t-out="object.name"></b> has been Rejected</p>
+            	<p><b>Reject Reason</b> : <t t-out="object.reject_reason"> </p>
+            	<p>You can access Loan From Bellow URL</p>
+            	<br/>
+            	<p><a t-attf-href="{{object.loan_url}}" style="background-color: #0DAC9E; padding: 8px; text-decoration: none; color: #fff; border-radius: 5px; font-size: 16px;" class="o_default_snippet_text">View Loan</a><p>
+            	<br/><br/>
+            	<b>Regards,</b><br/>
+        		<t t-out="object.user_id.name">
+                ]]></field>
+         </record>
+
+		 <record id="sacco_loan_approval_accountant_notification" model="mail.template">
+			<field name="name">Loan Approval Notification to Accountant</field>
+			<field name="email_from">{{(object.company_id.email and '%s &lt;%s&gt;' % (object.company_id.name, object.company_id.email))}}</field>
+			<field name="subject">Loan {{object.name}} has been Approved for {{object.client_id.name}}</field>
+			<field name="model_id" ref="sacco_loan_management.model_sacco_loan_loan"/>
+			<field name="email_to">{{object.company_id.accountant_email}}</field>
+			<field name="auto_delete" eval="True"/>
+			<field name="body_html"><![CDATA[
+				<p><b>Dear Accountant,</b></p>
+				
+				<p>A loan has been approved with the following details:</p>
+				
+				<table class="table-bordered" width=100% style='margin-top: 10px;'>
+					<tr>
+						<th style='text-align:left;background:#e0e1e2;padding:5px'>Loan Reference</th>
+						<td style='padding:5px'><t t-out="object.name"/></td>
+					</tr>
+					<tr>
+						<th style='text-align:left;background:#e0e1e2;padding:5px'>Member</th>
+						<td style='padding:5px'><t t-out="object.client_id.name"/></td>
+					</tr>
+					<tr>
+						<th style='text-align:left;background:#e0e1e2;padding:5px'>Loan Type</th>
+						<td style='padding:5px'><t t-out="object.loan_type_id.name"/></td>
+					</tr>
+					<tr>
+						<th style='text-align:left;background:#e0e1e2;padding:5px'>Loan Amount</th>
+						<td style='padding:5px'><t t-out="object.currency_id.symbol"/><t t-out="'{:,.2f}'.format(object.loan_amount)"/></td>
+					</tr>
+					<tr>
+						<th style='text-align:left;background:#e0e1e2;padding:5px'>Approval Date</th>
+						<td style='padding:5px'><t t-out="object.approve_date"/></td>
+					</tr>
+				</table>
+
+				<p>Please proceed with the necessary accounting entries and disbursement process.</p>
+
+				<p><a t-attf-href="{{object.loan_url}}" style="background-color: #0DAC9E; padding: 8px; text-decoration: none; color: #fff; border-radius: 5px; font-size: 16px;" class="o_default_snippet_text">View Loan Details</a></p>
+				
+				<br/>
+				<p>Best regards,<br/>
+				<t t-out="object.company_id.name"/></p>
+			]]></field>
+		</record>
+
+		<record id="sacco_loan_cancellation_notification" model="mail.template">
+			<field name="name">Loan Cancellation Notification</field>
+			<field name="email_from">{{(object.user_id.email and '%s &lt;%s&gt;' % (object.user_id.company_id.name, object.user_id.email))}}</field>
+			<field name="subject">Loan {{object.name}} has been Cancelled</field>
+			<field name="model_id" ref="sacco_loan_management.model_sacco_loan_loan"/>
+			<field name="auto_delete" eval="True"/>
+			<field name="body_html"><![CDATA[
+				<p><b>Dear Manager,</b></p>
+				
+				<p>This is to inform you that the following loan has been cancelled:</p>
+				
+				<table class="table-bordered" width=100% style='margin-top: 10px;'>
+					<tr>
+						<th style='text-align:left;background:#e0e1e2;padding:5px'>Loan Reference</th>
+						<td style='padding:5px'><t t-out="object.name"/></td>
+					</tr>
+					<tr>
+						<th style='text-align:left;background:#e0e1e2;padding:5px'>Member</th>
+						<td style='padding:5px'><t t-out="object.client_id.name"/></td>
+					</tr>
+					<tr>
+						<th style='text-align:left;background:#e0e1e2;padding:5px'>Loan Type</th>
+						<td style='padding:5px'><t t-out="object.loan_type_id.name"/></td>
+					</tr>
+					<tr>
+						<th style='text-align:left;background:#e0e1e2;padding:5px'>Loan Amount</th>
+						<td style='padding:5px'><t t-out="object.currency_id.symbol"/><t t-out="'{:,.2f}'.format(object.loan_amount)"/></td>
+					</tr>
+					<tr>
+						<th style='text-align:left;background:#e0e1e2;padding:5px'>Cancellation Date</th>
+						<td style='padding:5px'><t t-out="context_timestamp(datetime.datetime.now()).strftime('%Y-%m-%d')"/></td>
+					</tr>
+				</table>
+
+				<p>Please review the cancellation details by clicking the link below:</p>
+				<p><a t-attf-href="{{object.loan_url}}" style="background-color: #0DAC9E; padding: 8px; text-decoration: none; color: #fff; border-radius: 5px; font-size: 16px;" class="o_default_snippet_text">View Loan Details</a></p>
+				
+				<br/>
+				<p>Best regards,<br/>
+				<t t-out="object.user_id.name"/></p>
+			]]></field>
+		</record>
+
+		<record id="sacco_loan_disbursement_notification" model="mail.template">
+			<field name="name">Loan Disbursement Notification to Loans Officer</field>
+			<field name="email_from">{{(object.company_id.email and '%s &lt;%s&gt;' % (object.company_id.name, object.company_id.email))}}</field>
+			<field name="subject">Loan {{object.name}} has been Disbursed to {{object.client_id.name}}</field>
+			<field name="model_id" ref="sacco_loan_management.model_sacco_loan_loan"/>
+			<field name="email_to">{{object.company_id.loan_officer_email}}</field>
+			<field name="auto_delete" eval="True"/>
+			<field name="body_html"><![CDATA[
+				<p><b>Dear Loans Officer,</b></p>
+				
+				<p>A loan has been successfully disbursed with the following details:</p>
+				
+				<table class="table-bordered" width=100% style='margin-top: 10px;'>
+					<tr>
+						<th style='text-align:left;background:#e0e1e2;padding:5px'>Loan Reference</th>
+						<td style='padding:5px'><t t-out="object.name"/></td>
+					</tr>
+					<tr>
+						<th style='text-align:left;background:#e0e1e2;padding:5px'>Member</th>
+						<td style='padding:5px'><t t-out="object.client_id.name"/></td>
+					</tr>
+					<tr>
+						<th style='text-align:left;background:#e0e1e2;padding:5px'>Loan Type</th>
+						<td style='padding:5px'><t t-out="object.loan_type_id.name"/></td>
+					</tr>
+					<tr>
+						<th style='text-align:left;background:#e0e1e2;padding:5px'>Loan Amount</th>
+						<td style='padding:5px'><t t-out="object.currency_id.symbol"/><t t-out="'{:,.2f}'.format(object.loan_amount)"/></td>
+					</tr>
+					<tr>
+						<th style='text-align:left;background:#e0e1e2;padding:5px'>Disbursement Date</th>
+						<td style='padding:5px'><t t-out="object.disbursement_date"/></td>
+					</tr>
+					<tr>
+						<th style='text-align:left;background:#e0e1e2;padding:5px'>Disbursal Account</th>
+						<td style='padding:5px'><t t-out="object.loan_account_id.name"/></td>
+					</tr>
+					<tr>
+						<th style='text-align:left;background:#e0e1e2;padding:5px'>Journal Entry</th>
+						<td style='padding:5px'><t t-out="object.disburse_journal_entry_id.name"/></td>
+					</tr>
+				</table>
+
+				<p>Please verify the disbursement details and begin monitoring loan repayments.</p>
+
+				<p><a t-attf-href="{{object.loan_url}}" style="background-color: #0DAC9E; padding: 8px; text-decoration: none; color: #fff; border-radius: 5px; font-size: 16px;" class="o_default_snippet_text">View Loan Details</a></p>
+				
+				<br/>
+				<p>Best regards,<br/>
+				<t t-out="object.company_id.name"/></p>
+			]]></field>
+		</record>
+         
+         
+         <record id="installment_reminder_email_template" model="mail.template">
+            <field name="name">Loan  Installment Reminder</field>
+            <field name="email_from">{{(object.loan_id.company_id.email and '%s &lt;%s&gt;' % (object.loan_id.company_id.name, object.loan_id.company_id.email))}}</field>
+            <field name="subject">Installment {{object.name}} is Due on {{object.date}}</field>
+            <field name="email_to">{{object.client_id.email}}</field>
+            <field name="model_id" ref="sacco_loan_management.model_sacco_loan_installment"/>
+            <field name="auto_delete" eval="True"/>
+            <field name="body_html"><![CDATA[
+            	<p><b>Dear <t t-out="object.client_id.name"></b>,</p>  
+            	<p> Your loan <t t-out="object.loan_id.name"> of installment <t t-out="object.name"> due on <b><t t-out="object.date">	</b> </p>
+            	<p>Please Pay immediately, Ignore if already paid.</p>
+			
+            	<b>Regards,</b><br/>
+        		<t t-out="object.loan_id.company_id.name">	
+                ]]></field>
+         </record>
+
+</odoo>
+        
+        
+        
+      
+        
+        
+    

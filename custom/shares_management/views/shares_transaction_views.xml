@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_shares_transaction_form" model="ir.ui.view">
+        <field name="name">shares.transaction.form</field>
+        <field name="model">shares.transaction</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>                    
+                    <button name="action_confirm_transaction"
+                        type="object"
+                        string="Confirm"
+                        invisible="status in ('confirmed', 'rejected')"
+                        class="btn-primary"
+                        confirm="Are you sure you want to confirm the transaction?"/>
+                    <button name="action_reverse"
+                        type="object"
+                        string="Reverse"
+                        invisible="status != 'confirmed'"
+                        class="btn-primary"
+                        confirm="Are you sure you want to reverse this transaction?"/>
+                    <field name="status" widget="statusbar" statusbar_visible="pending" invisible="status != 'pending'"/>
+                    <field name="status" widget="statusbar" statusbar_visible="pending,confirmed" invisible="status != 'rejected'"/>
+                    <field name="status" widget="statusbar" statusbar_visible="pending,rejected" invisible="status != 'confirmed'"/>
+                </header>
+                <sheet>
+                    <div class="alert alert-info" role="alert" invisible="status != 'pending'">
+                        <field name="account_status" readonly="1" nolabel="1"/>
+                    </div>
+                    <label for="name" class="oe_edit_only"/>
+                	<h1><field name="name" readonly="True"/></h1>
+                    <group>                 
+                        <field name="member_id" readonly="status == 'confirmed'"/>
+                        <field name="product_id" readonly="status == 'confirmed'"/>
+                        <field name="shares_account_id" invisible="1"/>
+                        <field name="has_shares_account" invisible="1"/>
+                        <field name="amount" readonly="status == 'confirmed'" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                        <field name="currency_id" readonly="True" groups="base.group_multi_currency"/>                        
+                        <field name="number_of_shares"/>
+                        <field name="receiving_account_id" readonly="status == 'confirmed'"/>
+                        <field name="receipt_account" invisible="1"/>
+                        <field name="transaction_type" readonly="True" force_save="True"/>
+                        <field name="transaction_date" readonly="status == 'confirmed'"/>
+                    </group>
+                    <notebook>
+                        <page name="accounting" string='Journal Entry'>
+                            <group>
+                                <group>
+                                    <field name="journal_entry_id" readonly="True"/>
+                                </group>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_shares_transaction_tree" model="ir.ui.view">
+        <field name="name">shares.transaction.tree</field>
+        <field name="model">shares.transaction</field>
+        <field name="arch" type="xml">
+            <tree default_order="transaction_date desc" string="Shares Transactions">                
+                <field name="name"/>
+                <field name="shares_account_id"/>
+                <field name="member_id"/>
+                <field name="amount" />
+                <field name="currency_id" groups="base.group_multi_currency"/>
+                <field name="status"/>
+                <field name="transaction_type"/>
+                <field name="transaction_date"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_shares_transaction_search" model="ir.ui.view">
+        <field name="name">shares.transaction.search</field>
+        <field name="model">shares.transaction</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="member_id"/>
+                <field name="shares_account_id"/>
+                <field name="currency_id"/>
+                <field name="transaction_type"/>
+                <field name="status"/>
+                <field name="transaction_date"/>
+                <group expand="0" string="Group By">
+                    <filter string="Shares Account" name="group_by_shares_account" context="{'group_by': 'shares_account_id'}"/>
+                    <filter string="Currency" name="group_by_currency" context="{'group_by': 'currency_id'}"/>
+                    <filter string="Transaction Type" name="group_by_transaction_type" context="{'group_by': 'transaction_type'}"/>
+                    <filter string="Status" name="group_by_status" context="{'group_by': 'status'}"/>
+                    <filter string="Transaction Date" name="group_by_transaction_date" context="{'group_by': 'transaction_date'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_shares_transaction" model="ir.actions.act_window">
+        <field name="name">Shares Transaction</field>
+        <field name="res_model">shares.transaction</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem id="menu_sacco_shares_transactions" name="Shares Transactions" parent="menu_sacco_shares" action="action_shares_transaction"/>
+</odoo>

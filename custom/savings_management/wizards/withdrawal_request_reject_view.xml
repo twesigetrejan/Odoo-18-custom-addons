@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <record id="view_sacco_withdrawal_request_reject_form" model="ir.ui.view">
+         <field name="name">view.sacco.withdrawal.request.reject.form</field>
+         <field name="model">sacco.withdrawal.request.reject</field>
+         <field name="arch" type="xml">
+            <form string="Reject Reason">
+                <label for="reason"/>
+                <field name="reason" />
+                
+                <footer>
+                    <button name="action_reject_withdrawal_request" string="Reject" type="object" class="btn-primary"
+                            groups="savings_management.group_savings_manager,savings_management.group_savings_super_user"/>
+                    or
+                    <button string="Cancel" class="btn-default" special="cancel"/>
+                </footer>
+            </form>
+         </field>
+    </record>
+    
+    <record id="action_sacco_withdrawal_request_reject_form" model="ir.actions.act_window">
+        <field name="name">Reject Reason</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">sacco.withdrawal.request.reject</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+</odoo>

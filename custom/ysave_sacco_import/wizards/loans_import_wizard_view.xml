@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="loans_import_wizard_form" model="ir.ui.view">
+        <field name="name">loans.import.wizard.form</field>
+        <field name="model">loans.import.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Import Loans">
+                <group>
+                    <field name="journal_id"/>
+                    <field name="collection_account_id"/>
+                    <field name="folder_path"/>
+                </group>
+                <footer>
+                    <button name="action_import" string="Import" type="object" class="oe_highlight"/>
+                    <button string="Cancel" class="oe_link" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_loans_import_wizard" model="ir.actions.act_window">
+        <field name="name">Import Loans</field>
+        <field name="res_model">loans.import.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="loans_import_wizard_form"/>
+        <field name="target">new</field>
+    </record>
+
+    <!-- Add button to sacco.loan.loan list view -->
+    <menuitem id="menu_loans_import_wizard" 
+            name="Import Loans" 
+            parent="account.menu_finance_entries" 
+            action="action_loans_import_wizard" 
+            sequence="20"/>
+</odoo>

@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_investments_product_form" model="ir.ui.view">
+        <field name="name">sacco.investments.product.form</field>
+        <field name="model">sacco.investments.product</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_create_account_journals"
+                            string="Create Accounts &amp; Journals"
+                            type="object"
+                            class="oe_highlight"
+                            invisible="True"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="product_code"/>
+                            <field name="currency_id"/>
+                            <field name="minimum_balance"/>
+                            <field name="default_receiving_account_id" options="{'no_create': True}"/>
+                            <field name="default_paying_account_id" options="{'no_create': True}"/>
+                        </group>
+                        <group>
+                            <field name="investments_product_cash_account_id" options="{'no_create': True}"/>
+                            <field name="investments_product_cash_profit_account_id" options="{'no_create': True}"/>
+                            <field name="investments_product_cash_journal_id" readonly="True" options="{'no_create': True}"/>
+                            <field name="investments_product_account_id"/>
+                            <field name="investments_product_journal_id" invisible="1"/>
+                        </group>
+                        <notebook>
+                            <page string="Description">
+                                <field name="description" nolabel="1" placeholder="Enter product description..."/>
+                            </page>
+                        </notebook>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+isse                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_mass_sync_investments_products" model="ir.actions.server">
+        <field name="name">Mass Sync Products</field>
+        <field name="model_id" ref="model_sacco_investments_product"/>
+        <field name="state">code</field>
+        <field name="code">
+            action = env['sacco.investments.product.mis'].action_mass_sync_products(records)
+        </field>
+        <field name="binding_model_id" ref="model_sacco_investments_product"/>
+        <field name="binding_view_types">list</field>
+    </record>
+
+    <record id="view_investments_product_tree" model="ir.ui.view">
+        <field name="name">sacco.investments.product.tree</field>
+        <field name="model">sacco.investments.product</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="product_code"/>
+                <field name="currency_id"/>
+                <field name="minimum_balance"/>
+                <field name="interest_rate"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_investments_product" model="ir.actions.act_window">
+        <field name="name">Investments Products / Clubs</field>
+        <field name="res_model">sacco.investments.product</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem id="menu_sacco_investments_products" name="Investments Products"
+              parent="menu_sacco_investments_config" action="action_investments_product" sequence="20"/>
+</odoo>

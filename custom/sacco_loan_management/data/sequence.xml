@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright (C) 2015 DevIntelle Consulting Service Pvt.Ltd (<http://www.devintellecs.com>).
+
+For Module Support : devintelle@gmail.com  or Skype : devintelle 
+ -->
+<odoo>
+    <data noupdate="1">
+        <record id="sacco_loan_sequence_number" model="ir.sequence">
+            <field name="name">Loan Sequence</field>
+            <field name="code">sacco.loan.loan</field>
+            <field name="prefix">LOAN/%(year)s/</field>
+            <field name="padding">3</field>
+        </record>
+        
+
+        <record id="seq_loan_interest" model="ir.sequence">
+            <field name="name">Loan Interest</field>
+            <field name="code">loan.interest.sequence</field>
+            <field name="prefix">INT/%(year)s/</field>
+            <field name="padding">4</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <record id="seq_loan_product_code" model="ir.sequence">
+            <field name="name">Loan Product Code</field>
+            <field name="code">sacco.loan.product.code</field>
+            <field name="padding">3</field>
+            <field name="prefix">LP</field>
+        </record>
+
+        <record id="increment_loan_payment_reference" model="ir.sequence">
+            <field name="name">Loan Payment Reference</field>
+            <field name="code">increment_loan_payment_ref</field>
+            <field name="prefix">LPAY</field>
+            <field name="padding">3</field>
+        </record>    
+
+        <record id="seq_sacco_loan_security" model="ir.sequence">
+            <field name="name">Sacco Loan Security</field>
+            <field name="code">sacco.loan.security</field>
+            <field name="prefix">SEC/%(year)s/-</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+    </data>
+        
+</odoo>

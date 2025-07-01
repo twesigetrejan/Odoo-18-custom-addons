@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Top-level menu -->
+    <menuitem name="Member" id="menu_member_management_main" web_icon="member_management,static/description/icon.png" sequence="1"/>
+
+    <!-- Submenu for Members -->
+    <menuitem name="Members" id="menu_member_management_main2" parent="menu_member_management_main" sequence="1"/>
+</odoo>

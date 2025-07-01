@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Main Menu -->
+    <menuitem id="menu_sacco_transactions_management_root" name="Savings" web_icon="savings_management,static/description/icon.png" sequence="2"/>
+
+    <!-- Savings Menu -->
+    <menuitem id="menu_sacco_savings"  name="Savings" parent="menu_sacco_transactions_management_root" sequence="2"/>
+
+    <menuitem name="Withdrawal" parent="menu_sacco_transactions_management_root" id="menu_withdrawal_request_main" sequence="3" />
+
+    <!-- Interest menu -->
+    <menuitem id="menu_sacco_interest" name="Interest" parent="menu_sacco_transactions_management_root" sequence="4"/>
+
+    <!-- New Reporting Menu -->
+    <menuitem id="menu_sacco_reporting" name="Reporting" parent="menu_sacco_transactions_management_root" sequence="5"/>
+
+    <!-- Configuration menu -->
+    <menuitem id="menu_sacco_savings_config" name="Configuration" parent="menu_sacco_transactions_management_root" sequence="6"/>
+
+
+</odoo>

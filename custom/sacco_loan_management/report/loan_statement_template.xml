@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_loan_statement">
+        <t t-call="web.html_container">
+            <t t-call="web.external_layout">
+                <div class="page">
+                    <h2>Loan Statement</h2>
+                    <div class="row mt32 mb32">
+                        <div class="col-6">
+                            <strong>Member Id:</strong> <span t-esc="member_id"/><br/>
+                            <strong>Member Name:</strong> <span t-esc="member_name"/><br/>
+                            <strong>Loan ID:</strong> <span t-esc="loan_id"/><br/>
+                            <strong>Product:</strong> <span t-esc="loan_details['product']"/><br/>
+                            <strong>Estimated Monthly Installment:</strong> <span t-esc="loan_details['estimated_monthly_installment']" t-options='{"widget": "float", "precision": 2}'/><br/>
+                            <strong>Currency:</strong> <span t-esc="currency"/><br/>
+                            <strong>Loan Amount:</strong> <span t-esc="loan_details['loan_amount']" t-options='{"widget": "float", "precision": 2}' /><br/>
+                            <strong>Current Balance:</strong> <span t-esc="loan_details['current_balance']" t-options='{"widget": "float", "precision": 2}' /><br/>
+                        </div>
+                        <div class="col-6">
+                            <strong>Interest Rate:</strong> <span t-esc="loan_details['interest_rate']"/>%<br/>
+                            <strong>Loan Term:</strong> <span t-esc="loan_details['loan_term']"/> Months<br/>
+                            <strong>Interest Mode:</strong> <span t-esc="loan_details['interest_mode']"/><br/>
+                            <strong>Disbursement Date:</strong> <span t-esc="loan_details['disbursement_date']" t-options='{"widget": "date", "format": "dd MMM yyyy"}'/><br/>
+                            <strong>Original Maturity Date:</strong> <span t-esc="loan_details['original_maturity_date']" t-options='{"widget": "date", "format": "dd MMM yyyy"}'/><br/>
+                            <strong>Start Date:</strong> <span t-esc="start_date" t-options='{"widget": "date", "format": "dd MMM yyyy"}'/><br/>
+                            <strong>End Date:</strong> <span t-esc="end_date" t-options='{"widget": "date", "format": "dd MMM yyyy"}'/><br/>
+                            <strong>Request Date:</strong> <span t-esc="request_date" t-options='{"widget": "date", "format": "dd MMM yyyy"}'/><br/>
+                        </div>
+                    </div>
+                    <table class="table table-sm o_main_table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Transaction Type</th>
+                                <th class="text-right">Amount</th>
+                                <th class="text-right">Principal</th>
+                                <th class="text-right">Interest</th>
+                                <th t-if="any(line['type'] == 'Interest Accrual' for line in transactions)">Reference</th>
+                                <th class="text-right">Balance</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="transactions" t-as="line">
+                                <tr>
+                                    <td><span t-esc="line['date']" t-options='{"widget": "date", "format": "dd MMM yyyy"}'/></td>
+                                    <td><span t-esc="line['type']"/></td>
+                                    <td class="text-right">
+                                        <span t-esc="line['amount']" t-options='{"widget": "float", "precision": 2}'/>
+                                    </td>
+                                    <td class="text-right">
+                                        <span t-esc="line['principal']" t-options='{"widget": "float", "precision": 2}'/>
+                                    </td>
+                                    <td class="text-right">
+                                        <span t-esc="line['interest']" t-options='{"widget": "float", "precision": 2}'/>
+                                    </td>
+                                    <td t-if="any(l['type'] == 'Interest Accrual' for l in transactions)">
+                                        <span t-if="line['type'] == 'Interest Accrual'" t-esc="line.get('interest_record', '')"/>
+                                        <span t-else=""></span>
+                                    </td>
+                                    <td class="text-right">
+                                        <span t-esc="line['balance']" t-options='{"widget": "float", "precision": 2}'/>
+                                    </td>
+                                </tr>
+                            </t>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="2" class="text-right"><strong>Total</strong></td>
+                                <td class="text-right">
+                                    <strong t-esc="summary['total_paid']" t-options='{"widget": "float", "precision": 2}'/>
+                                </td>
+                                <td class="text-right">
+                                    <strong t-esc="summary['total_principal_paid']" t-options='{"widget": "float", "precision": 2}'/>
+                                </td>
+                                <td class="text-right">
+                                    <strong t-esc="summary['total_interest_paid']" t-options='{"widget": "float", "precision": 2}'/>
+                                </td>
+                                <td t-if="any(line['type'] == 'Interest Accrual' for line in transactions)"></td>
+                                <td class="text-right">
+                                    <strong t-esc="summary['current_principal_balance']" t-options='{"widget": "float", "precision": 2}'/>
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+
+                    <div class="row mt32">
+                        <div class="col-12">
+                            <h4>Summary</h4>
+                            <table class="table table-sm">
+                                <tr>
+                                    <td><strong>Total Amount Paid:</strong></td>
+                                    <td class="text-right"><span t-esc="summary['total_paid']" t-options='{"widget": "float", "precision": 2}'/></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Principal Paid:</strong></td>
+                                    <td class="text-right"><span t-esc="summary['total_principal_paid']" t-options='{"widget": "float", "precision": 2}'/></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Interest Paid:</strong></td>
+                                    <td class="text-right"><span t-esc="summary['total_interest_paid']" t-options='{"widget": "float", "precision": 2}'/></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Total Interest Accrued:</strong></td>
+                                    <td class="text-right"><span t-esc="summary['total_interest_accrued']" t-options='{"widget": "float", "precision": 2}'/></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Outstanding Principal:</strong></td>
+                                    <td class="text-right"><span t-esc="summary['current_principal_balance']" t-options='{"widget": "float", "precision": 2}'/></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Accrued Interest:</strong></td>
+                                    <td class="text-right"><span t-esc="summary['accrued_interest']" t-options='{"widget": "float", "precision": 2}'/></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Amortization Schedule Section -->
+                    <div class="row mt32">
+                        <div class="col-12">
+                            <h4>Amortization Schedule</h4>
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Due Date</th>
+                                        <th>Opening Balance</th>
+                                        <th>Principal</th>
+                                        <th>Interest</th>
+                                        <th>Total Payment</th>
+                                        <th>Closing Balance</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="amortization_schedule" t-as="installment">
+                                        <tr>
+                                            <td><span t-esc="installment['date']" t-options='{"widget": "date", "format": "dd MMM yyyy"}'/></td>
+                                            <td class="text-right"><span t-esc="installment['opening_balance']" t-options='{"widget": "float", "precision": 2}'/></td>
+                                            <td class="text-right"><span t-esc="installment['principal']" t-options='{"widget": "float", "precision": 2}'/></td>
+                                            <td class="text-right"><span t-esc="installment['interest']" t-options='{"widget": "float", "precision": 2}'/></td>
+                                            <td class="text-right"><span t-esc="installment['total_payment']" t-options='{"widget": "float", "precision": 2}'/></td>
+                                            <td class="text-right"><span t-esc="installment['closing_balance']" t-options='{"widget": "float", "precision": 2}'/></td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </t>
+    </template>
+
+    <record id="action_report_loan_statement" model="ir.actions.report">
+        <field name="name">Loan Statement</field>
+        <field name="model">sacco.loan.statement</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">sacco_loan_management.report_loan_statement</field>
+        <field name="report_file">sacco_loan_management.report_loan_statement</field>
+        <field name="binding_model_id" ref="model_sacco_loan_statement"/>
+        <field name="binding_type">report</field>
+    </record>
+</odoo>

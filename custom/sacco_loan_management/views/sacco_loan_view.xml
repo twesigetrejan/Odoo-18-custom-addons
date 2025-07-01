@@ -1,0 +1,340 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_sacco_loan_loan_form" model="ir.ui.view">
+        <field name="name">view.sacco.loan.loan.form</field>
+        <field name="model">sacco.loan.loan</field>
+        <field name="arch" type="xml">
+            <form string="Loan">
+                <header>
+                    <button name="action_confirm_loan" invisible="state != 'draft'" string="Confirm"
+                            class="btn-primary" type="object"
+                            groups="sacco_loan_management.group_loan_loans_officer,sacco_loan_management.group_loan_super_user"
+                            confirm="Are you sure you want to confirm this loan?"/>
+                    <button name="compute_installment" invisible="state not in ['disburse','open','close']" string="Calculate Installment"
+                            type="object" class="btn-primary"
+                            groups="sacco_loan_management.group_loan_loans_officer,sacco_loan_management.group_loan_super_user"/>
+                    <button name="action_cancel" invisible="state not in ['open','close']" string="Cancel"
+                            type="object" class="btn-primary"
+                            groups="sacco_loan_management.group_loan_loans_officer,sacco_loan_management.group_loan_super_user"
+                            confirm="Are you sure you want to cancel the loan?"/>
+                    <button name="action_set_to_draft" type="object" invisible="state != 'reject'" string="Set to Draft"
+                            groups="sacco_loan_management.group_loan_loans_officer,sacco_loan_management.group_loan_super_user"/>
+                    <button name="action_approve_loan" invisible="state != 'confirm'" string="Approve"
+                            class="btn-primary" type="object"
+                            groups="sacco_loan_management.group_loan_manager,sacco_loan_management.group_loan_super_user"
+                            confirm="Are you sure you want to approve this loan?"/>
+                    <button name="%(action_sacco_loan_reject_form)d" invisible="state != 'confirm'" string="Reject"
+                            type="action"
+                            groups="sacco_loan_management.group_loan_manager,sacco_loan_management.group_loan_super_user"/>
+                    <button name="action_disburse_loan" invisible="state != 'approve'" string="Disburse Loan"
+                            class="btn-primary" type="object"
+                            groups="sacco_loan_management.group_loan_accountant,sacco_loan_management.group_loan_super_user"/>
+                    <button name="action_open_loan" invisible="state != 'disburse'" string="Open Loan"
+                            class="btn-primary" type="object"
+                            groups="sacco_loan_management.group_loan_accountant,sacco_loan_management.group_loan_loans_officer,sacco_loan_management.group_loan_super_user"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,confirm,approve,disburse,open,close"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_installment" type="object" class="oe_stat_button" icon="fa-book" 
+                        invisible="count_installment &lt;= 0"
+                       >
+                            <field string="View Installment" name="count_installment" widget="statinfo"/>
+                        </button>
+                        <button name="action_get_attachment_view" class="oe_stat_button" icon="fa-file-text-o" type="object">
+                            <field name="attachment_number" widget="statinfo" string="Attachments" options="{'reload_on_button': true}"/>
+                        </button>
+                        <button name="action_view_securities" type="object" class="oe_stat_button" icon="fa-shield">
+                            <field string="View Securities" name="security_count" widget="statinfo"/>
+                        </button>
+                    </div>
+                    <label for="name" class="oe_edit_only"/>
+                	<h1><field name="name" string="Loan Id"/></h1>
+                    <group>
+                        <group>
+                            <field name="client_id" readonly="state != 'draft'"  context="{'default_is_allow_loan':True}"/>
+                            <field name="loan_type_id" readonly="state != 'draft'" />
+                        </group>
+                        <group>
+                            <field name="request_date"/>
+                            <field name="disbursement_date" 
+                                invisible="state not in ['disburse','open','close']"/>
+                            <field name="approve_date"
+                             invisible="state in ['draft','confirm','cancel']" />
+                            <field name="user_id" readonly="True"/>
+                            <field name="company_id" readonly="True"/>
+                            <field name="loan_url" invisible="1"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group>
+                            <field name="loan_amount" readonly="state != 'draft'" />
+                            <label for="loan_term" />
+                            <div>
+                                <field name="loan_term" readonly="state != 'draft'" force_save="1"/>
+                                <button name="%(action_update_term)d" type="action" 
+                                        string="update" class="oe_link"
+                                        invisible="state != 'open'"
+                                        context="{'default_months': loan_term}"/>                        
+                            </div>
+                            <field name="total_interest"/>
+                            <field name="emi_estimate"/>
+                            <field name="paid_amount"/>
+                            <field name="remaining_amount"/>
+                            </group>
+                        <group>
+                            <field name="is_interest_apply" invisible="1"/>
+                            <label for="interest_rate" invisible="not is_interest_apply"  />
+                            <div>
+                                <field name="interest_rate" readonly="True" force_save="1"  invisible="not is_interest_apply" />
+                                <button name="%(action_update_rate)d" type="action" string='update' class="oe_link" 
+                                invisible="not is_interest_apply or state != 'open'"
+                                 context="{'default_rate':interest_rate}"/>
+                            </div>
+                            <field name="interest_mode" readonly="True" invisible="not is_interest_apply" />
+                            <field name="none_interest_month" invisible="not is_interest_apply" readonly="state != 'draft'"
+                             />
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                    </group>
+                    
+                    <notebook>
+                        <page string='Scheduled Amortization' invisible="state not in ['disburse','open','close']">
+                            <field name="installment_ids" readonly="True">
+                                <tree>
+                                    <field name="none_interest" column_invisible="1"/>
+                                    <field name="name"/>
+                                    <field name="date"/>
+                                    <field name="opening_balance"/>
+                                    <field name="expected_total_amount" string="EMI (Estimated Monthly Installment)"/>
+                                    <field name="expected_principal" string="Principal"/>
+                                    <field name="expected_interest" string="Interest"/>
+                                    <field name="closing_balance"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Banking and Details">
+                            <group>
+                                <group string="Banking Information">
+                                    <field name="account_name" readonly="state not in ['draft', 'approve']"/>
+                                    <field name="account_number" readonly="state not in ['draft', 'approve']"/>
+                                    <field name="bank_name" readonly="state not in ['draft', 'approve']"/>
+                                    <field name="branch" readonly="state not in ['draft', 'approve']"/>
+                                </group>
+                                <group string="Loan Details">
+                                    <field name="specify" readonly="state != 'draft'"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Guarantor">
+                            <field name="guarantor_ids" readonly="state != 'draft'">
+                                <tree editable="bottom">
+                                    <field name="guarantor_member_id" options="{'no_create': True}" domain="[('is_sacco_member', '=', True), ('id', '!=', parent.client_id)]"/>
+                                    <field name="pledge_type"/>
+                                    <field name="pledge_amount"/>
+                                    <field name="released_flag" readonly="True"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Transactions" invisible="state not in ['disburse','open','close']">
+                            <button name="action_refresh_journal_lines" string="Refresh Loan Journal Lines"
+                                    type="object" class="btn-secondary"/>
+                            <field name="loans_journal_account_lines" readonly="True">
+                                <tree default_order="date asc, id asc">
+                                    <field name="name"/>
+                                    <field name="date"/>
+                                    <field name="transaction_type"/>
+                                    <field name="principal_amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                                    <field name="interest_amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                                    <field name="total_amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                                    <button name="action_view_journal_entry" string="View Journal Entry" 
+                                            type="object" class="btn-link"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Summary" name="summary" invisible="state not in ['disburse','open','close']">
+                            <group>
+                                <group string="Balance Information">
+                                    <field name="current_principal_balance" widget="monetary"/>
+                                    <field name="total_interest_accrued" widget="monetary" readonly="1"/>
+                                    <field name="total_principal_paid" widget="monetary"/>
+                                    <field name="total_interest_paid" widget="monetary"/>
+                                    <field name="last_interest_calculation_date"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Interest Records" name="interest_records" invisible="state not in ['disburse','open','close']">
+                            <field name="interest_ids">
+                                <tree>
+                                    <field name="name"/>
+                                    <field name="posting_date"/>
+                                    <field name="calculation_from_date"/>
+                                    <field name="calculation_to_date"/>
+                                    <field name="days_calculated"/>
+                                    <field name="interest_amount" sum="Total"/>
+                                    <field name="state"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string='Proof (Attachments)'>
+                            <group>
+                                <field name="proof_ids" widget="many2many_tags"
+                                readonly="state != 'draft' "
+                                 />
+                            </group>
+                            <field name="loan_document_ids" mode="kanban" context="{'default_res_id': active_id,'default_res_model': 'sacco.loan.loan','res_model':'sacco.loan.loan','res_name':name}" domain="[('res_id','=',active_id),('res_model','=','sacco.loan.loan')]" readonly="True">
+                                <kanban>
+                                    <field name="name"/>
+                                    <field name="res_id"/>
+                                    <field name="res_model"/>
+                                    <field name="datas"/>
+                                    <field name="id"/>
+                                    <field name="mimetype"/>
+                                    <field name="description"/>
+                                    <templates>
+		                                <t t-name="kanban-box">
+		                                    <div class="oe_kanban_global_click" style="max-width: 200px">
+		                                        <div class="o_kanban_record_top">
+		                                        	<img t-att-src="kanban_image('ir.attachment', 'datas', record.id.raw_value)" height="100" width="182" class="oe_avatar oe_kanban_avatar_smallbox mb0" t-att-alt="record.name.value"/>
+		                                        	
+                                                    <a t-if="! read_only_mode" type="delete" class="text-danger" title="Delete attachment">
+                                                        <i class="fa fa-times" role="img" aria-label="Delete"/>
+                                                    </a>
+		                                        </div>
+		                                        <div class="oe_kanban_details" style="text-align:center">
+									                <p><h5><field name="name"/></h5></p>
+                                                    <p class="text-muted small" t-if="record.description.value"><field name="description"/></p>
+											    </div>
+		                                    </div>
+		                                </t>
+		                            </templates>
+                                </kanban>
+                            </field>
+                        </page>
+                        <page string='Accounting' groups="account.group_account_invoice"
+                            invisible="state in ['draft','confirm','cancel','reject'] "
+                            >
+                            <group>
+                                <group>
+                                    <field name="paying_account_id" required="state in ['approve']" readonly="state != 'approve'"/>
+                                    <field name="pay_account" invisible="1"/>
+                                    
+                                    <field name="loan_account_id" readonly="state != 'approve' "  />
+                                    
+                                    <field name="disburse_journal_id" readonly="state != 'approve' " />
+                                </group>
+                                <group>
+                                    <field name="disburse_journal_entry_id" readonly="True"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string='Notes'>
+                            <br/>
+                            <field name="notes" readonly="state != 'draft'" />
+                        </page>
+                        <page string='Reject Reason' invisible="state != 'reject'" >
+                            <group>
+                                <field name="reject_user_id" readonly="True"/>
+                            </group>
+                            <br/>
+                            <field name="reject_reason" readonly="True"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+			        <field name="message_follower_ids" widget="mail_followers" groups="base.group_user"/>
+			        <field name="message_ids" widget="mail_thread"/>
+			    </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Server Action for Mass Sync -->
+    <record id="action_mass_sync_loan_statements" model="ir.actions.server">
+        <field name="name">Mass Sync Statements</field>
+        <field name="model_id" ref="model_sacco_loan_loan"/>
+        <field name="state">code</field>
+        <field name="code">
+            action = records.action_mass_sync_loan_statements()
+        </field>
+        <field name="binding_model_id" ref="model_sacco_loan_loan"/>
+        <field name="binding_view_types">list</field>
+    </record>
+
+    <record id="view_sacco_loan_loan_tree" model="ir.ui.view">
+        <field name="name">view.sacco.loan.loan.tree</field>
+        <field name="model">sacco.loan.loan</field>
+        <field name="arch" type="xml">
+            <tree string="Loan Request" decoration-success="state=='close'" decoration-danger="state=='reject'" decoration-muted="state=='cancel'" >
+                <field name="name"/>
+                <field name="client_id"/>
+                <field name="loan_type_id"/>
+                <field name="request_date"/>
+                <field name="loan_amount" sum="loan_amount"/>
+                <field name="interest_mode"/>
+                <field name="interest_rate"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+    
+    
+    <record id="filter_sacco_loan_loan" model="ir.ui.view">
+        <field name="name">filter.sacco.loan.loan</field>
+        <field name="model">sacco.loan.loan</field>
+        <field name="arch" type="xml">
+            <search string="Search Loan">
+            	<field name="client_id" operator="child_of"/>
+                <field name="name" string="Loan" filter_domain="[('name','ilike',self)]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Member" name="client_id" context="{'group_by':'client_id'}"/>
+                    <filter string="States" name="state" context="{'group_by':'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>    
+    
+    <record id="action_sacco_loan_loans" model="ir.actions.act_window">
+        <field name="name">Loans</field>
+        <field name="res_model">sacco.loan.loan</field>
+        <field name="domain">[]</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <record id="action_sacco_loan_request" model="ir.actions.act_window">
+        <field name="name">Loan Request</field>
+        <field name="res_model">sacco.loan.loan</field>
+        <field name="domain">[('state','in',['confirm','approve'])]</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <record id="action_sacco_approved_loan" model="ir.actions.act_window">
+        <field name="name">Approved Loans</field>
+        <field name="res_model">sacco.loan.loan</field>
+        <field name="domain">[('state','in',['open', 'disburse'])]</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+    
+    <record id="action_sacco_rejected_loan" model="ir.actions.act_window">
+        <field name="name">Rejected Loans</field>
+        <field name="res_model">sacco.loan.loan</field>
+        <field name="domain">[('state','in',['reject'])]</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <record id="action_sacco_closed_loan" model="ir.actions.act_window">
+        <field name="name">Closed Loans</field>
+        <field name="res_model">sacco.loan.loan</field>
+        <field name="domain">[('state','in',['close'])]</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+    
+	<!--  Menu Items-->
+    
+    <menuitem name="Loans" id="menu_sacco_loan_request_approve" parent="sacco_loan_management.menu_sacco_loan_request_main" action="action_sacco_loan_loans" sequence="1" />    
+    <menuitem name="Loan Requests" id="menu_sacco_loan_request" parent="sacco_loan_management.menu_sacco_loan_request_main" action="action_sacco_loan_request" sequence="2"/>
+    <menuitem name="Approved Loans" id="menu_sacco_approved_loan" parent="sacco_loan_management.menu_sacco_loan_request_main" action="action_sacco_approved_loan" sequence="3"/>
+    <menuitem name="Rejected Loans" id="menu_sacco_rejected_loan" parent="sacco_loan_management.menu_sacco_loan_request_main" action="action_sacco_rejected_loan" sequence="4"/>
+    <menuitem name="Closed Loans" id="menu_sacco_closed_loan" parent="sacco_loan_management.menu_sacco_loan_request_main" action="action_sacco_closed_loan" sequence="5"/>
+    
+</odoo>

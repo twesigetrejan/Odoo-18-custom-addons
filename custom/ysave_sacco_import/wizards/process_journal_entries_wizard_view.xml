@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_process_journal_entries_wizard_form" model="ir.ui.view">
+        <field name="name">process.journal.entries.wizard.form</field>
+        <field name="model">process.journal.entries.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Process Journal Entries">
+                <sheet>
+                    <group>
+                        <p>Click the button below to process all posted journal entries and create savings, shares, or loan accounts as needed.</p>
+                    </group>
+                    <footer>
+                        <button name="action_process_journal_entries" string="Process Journal Entries" type="object" class="btn-primary"/>
+                        <button string="Cancel" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_process_journal_entries_wizard" model="ir.actions.act_window">
+        <field name="name">Process Journal Entries</field>
+        <field name="res_model">process.journal.entries.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem id="menu_process_journal_entries_wizard" name="Process Journal Entries"
+              parent="account.menu_finance_entries" action="action_process_journal_entries_wizard"/>
+</odoo>

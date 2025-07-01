@@ -1,0 +1,329 @@
+BEGIN;
+
+-- Step 1: Verify ir_model entries exist for specific renamed models
+-- Handle report model only (sacco.update.rate and sacco.update.term are handled in Step 6)
+INSERT INTO ir_model (
+    ID,
+    create_uid,
+    write_uid,
+    model,
+    "order",
+    STATE,
+    NAME,
+    info,
+    transient,
+    create_date,
+    write_date,
+    is_mail_thread,
+    is_mail_activity,
+    is_mail_blacklist 
+) SELECT
+    nextval('ir_model_id_seq'),
+    create_uid,
+    write_uid,
+    'report.sacco_loan_management.report_print_loan_template',
+    "order",
+    STATE,
+    jsonb_build_object('en_US', 'SACCO Loan Report'),
+    info,
+    transient,
+    create_date,
+    write_date,
+    is_mail_thread,
+    is_mail_activity,
+    is_mail_blacklist 
+FROM
+    ir_model 
+WHERE
+    model = 'report.dev_loan_management.report_print_loan_template' 
+    AND 'report.sacco_loan_management.report_print_loan_template' NOT IN (SELECT model FROM ir_model) 
+ON CONFLICT (model) DO NOTHING;
+
+-- Step 2: Rename tables
+ALTER TABLE dev_loan_installment RENAME TO sacco_loan_installment;
+ALTER TABLE dev_loan_interest RENAME TO sacco_loan_interest;
+ALTER TABLE dev_loan_loan RENAME TO sacco_loan_loan;
+ALTER TABLE dev_loan_payments RENAME TO sacco_loan_payments;
+ALTER TABLE dev_loan_proof RENAME TO sacco_loan_proof;
+ALTER TABLE dev_loan_proof_mis RENAME TO sacco_loan_proof_mis;
+ALTER TABLE dev_loan_type RENAME TO sacco_loan_type;
+ALTER TABLE dev_loan_reject RENAME TO sacco_loan_reject;
+ALTER TABLE dev_loan_statement RENAME TO sacco_loan_statement;
+ALTER TABLE dev_loan_product_mis RENAME TO sacco_loan_product_mis;
+ALTER TABLE dev_update_rate RENAME TO sacco_update_rate;
+ALTER TABLE dev_update_term RENAME TO sacco_update_term;
+
+-- Step 3: Update foreign key constraints and columns
+-- For sacco_loan_installment
+ALTER TABLE sacco_loan_installment RENAME COLUMN loan_id TO temp_loan_id;
+ALTER TABLE sacco_loan_installment ADD COLUMN loan_id INTEGER;
+UPDATE sacco_loan_installment 
+SET loan_id = temp_loan_id;
+ALTER TABLE sacco_loan_installment DROP COLUMN temp_loan_id;
+ALTER TABLE sacco_loan_installment ADD CONSTRAINT sacco_loan_installment_loan_id_fkey FOREIGN KEY (loan_id) REFERENCES sacco_loan_loan (ID) ON DELETE CASCADE;
+
+-- For sacco_loan_interest
+ALTER TABLE sacco_loan_interest RENAME COLUMN loan_id TO temp_loan_id;
+ALTER TABLE sacco_loan_interest ADD COLUMN loan_id INTEGER;
+UPDATE sacco_loan_interest 
+SET loan_id = temp_loan_id;
+ALTER TABLE sacco_loan_interest DROP COLUMN temp_loan_id;
+ALTER TABLE sacco_loan_interest ADD CONSTRAINT sacco_loan_interest_loan_id_fkey FOREIGN KEY (loan_id) REFERENCES sacco_loan_loan (ID) ON DELETE CASCADE;
+ALTER TABLE sacco_loan_interest RENAME COLUMN previous_interest_id TO temp_previous_interest_id;
+ALTER TABLE sacco_loan_interest ADD COLUMN previous_interest_id INTEGER;
+UPDATE sacco_loan_interest 
+SET previous_interest_id = temp_previous_interest_id;
+ALTER TABLE sacco_loan_interest DROP COLUMN temp_previous_interest_id;
+ALTER TABLE sacco_loan_interest ADD CONSTRAINT sacco_loan_interest_previous_interest_id_fkey FOREIGN KEY (previous_interest_id) REFERENCES sacco_loan_interest (ID);
+
+-- For sacco_loan_payments
+ALTER TABLE sacco_loan_payments RENAME COLUMN loan_id TO temp_loan_id;
+ALTER TABLE sacco_loan_payments ADD COLUMN loan_id INTEGER;
+UPDATE sacco_loan_payments 
+SET loan_id = temp_loan_id;
+ALTER TABLE sacco_loan_payments DROP COLUMN temp_loan_id;
+ALTER TABLE sacco_loan_payments ADD CONSTRAINT sacco_loan_payments_loan_id_fkey FOREIGN KEY (loan_id) REFERENCES sacco_loan_loan (ID);
+ALTER TABLE sacco_loan_payments RENAME COLUMN installment_id TO temp_installment_id;
+ALTER TABLE sacco_loan_payments ADD COLUMN installment_id INTEGER;
+UPDATE sacco_loan_payments 
+SET installment_id = temp_installment_id;
+ALTER TABLE sacco_loan_payments DROP COLUMN temp_installment_id;
+ALTER TABLE sacco_loan_payments ADD CONSTRAINT sacco_loan_payments_installment_id_fkey FOREIGN KEY (installment_id) REFERENCES sacco_loan_installment (ID);
+ALTER TABLE sacco_loan_payments RENAME COLUMN loan_type_id TO temp_loan_type_id;
+ALTER TABLE sacco_loan_payments ADD COLUMN loan_type_id INTEGER;
+UPDATE sacco_loan_payments 
+SET loan_type_id = temp_loan_type_id;
+ALTER TABLE sacco_loan_payments DROP COLUMN temp_loan_type_id;
+ALTER TABLE sacco_loan_payments ADD CONSTRAINT sacco_loan_payments_loan_type_id_fkey FOREIGN KEY (loan_type_id) REFERENCES sacco_loan_type (ID);
+
+-- For sacco_loan_proof_mis
+ALTER TABLE sacco_loan_proof_mis RENAME COLUMN proof_id TO temp_proof_id;
+ALTER TABLE sacco_loan_proof_mis ADD COLUMN proof_id INTEGER;
+UPDATE sacco_loan_proof_mis 
+SET proof_id = temp_proof_id;
+ALTER TABLE sacco_loan_proof_mis DROP COLUMN temp_proof_id;
+ALTER TABLE sacco_loan_proof_mis ADD CONSTRAINT sacco_loan_proof_mis_proof_id_fkey FOREIGN KEY (proof_id) REFERENCES sacco_loan_proof (ID) ON DELETE CASCADE;
+
+-- For sacco_loan_product_mis
+ALTER TABLE sacco_loan_product_mis RENAME COLUMN product_id TO temp_product_id;
+ALTER TABLE sacco_loan_product_mis ADD COLUMN product_id INTEGER;
+UPDATE sacco_loan_product_mis 
+SET product_id = temp_product_id;
+ALTER TABLE sacco_loan_product_mis DROP COLUMN temp_product_id;
+ALTER TABLE sacco_loan_product_mis ADD CONSTRAINT sacco_loan_product_mis_product_id_fkey FOREIGN KEY (product_id) REFERENCES sacco_loan_type (ID) ON DELETE CASCADE;
+
+-- Step 4: Update Many2many relation tables
+ALTER TABLE dev_loan_loan_dev_loan_proof_rel RENAME TO sacco_loan_loan_sacco_loan_proof_rel;
+ALTER TABLE sacco_loan_loan_sacco_loan_proof_rel RENAME COLUMN dev_loan_loan_id TO sacco_loan_loan_id;
+ALTER TABLE sacco_loan_loan_sacco_loan_proof_rel RENAME COLUMN dev_loan_proof_id TO sacco_loan_proof_id;
+
+ALTER TABLE dev_loan_proof_dev_loan_type_rel RENAME TO sacco_loan_proof_sacco_loan_type_rel;
+ALTER TABLE sacco_loan_proof_sacco_loan_type_rel RENAME COLUMN dev_loan_proof_id TO sacco_loan_proof_id;
+ALTER TABLE sacco_loan_proof_sacco_loan_type_rel RENAME COLUMN dev_loan_type_id TO sacco_loan_type_id;
+
+-- Step 5: Update sequences
+UPDATE ir_sequence 
+SET 
+    code = REPLACE(code, 'dev.loan', 'sacco.loan'),
+    NAME = REPLACE(NAME, 'dev.loan', 'sacco.loan')
+WHERE 
+    code LIKE 'dev.loan%';
+
+-- Step 6: Update ir_model
+UPDATE ir_model 
+SET 
+    model = REPLACE(model, 'dev.loan', 'sacco.loan'),
+    NAME = jsonb_build_object('en_US', REPLACE(NAME ->> 'en_US', 'dev.loan', 'sacco.loan')) 
+WHERE 
+    model LIKE 'dev.loan%';
+
+UPDATE ir_model 
+SET 
+    model = 'sacco.update.rate',
+    NAME = jsonb_build_object('en_US', 'SACCO Update Rate') 
+WHERE 
+    model = 'dev.update.rate';
+
+UPDATE ir_model 
+SET 
+    model = 'sacco.update.term',
+    NAME = jsonb_build_object('en_US', 'SACCO Update Term') 
+WHERE 
+    model = 'dev.update.term';
+
+-- Step 7: Update ir_model_fields
+UPDATE ir_model_fields 
+SET 
+    model = REPLACE(model, 'dev.loan', 'sacco.loan'),
+    relation = REPLACE(relation, 'dev.loan', 'sacco.loan') 
+WHERE 
+    model LIKE 'dev.loan%' OR relation LIKE 'dev.loan%';
+
+UPDATE ir_model_fields 
+SET model = 'sacco.update.rate' 
+WHERE model = 'dev.update.rate';
+
+UPDATE ir_model_fields 
+SET model = 'sacco.update.term' 
+WHERE model = 'dev.update.term';
+
+-- Step 8: Update ir_model_constraint
+DO $$
+BEGIN
+    UPDATE ir_model_constraint 
+    SET 
+        NAME = REPLACE(NAME, 'dev_loan', 'sacco_loan'),
+        model = (SELECT ID FROM ir_model WHERE model = REPLACE((SELECT model FROM ir_model WHERE ID = ir_model_constraint.model), 'dev.loan', 'sacco.loan')) 
+    WHERE 
+        EXISTS (SELECT 1 FROM ir_model M WHERE M.ID = ir_model_constraint.model AND M.model LIKE 'dev.loan%');
+
+    UPDATE ir_model_constraint 
+    SET 
+        NAME = REPLACE(NAME, 'dev_update_rate', 'sacco_update_rate'),
+        model = (SELECT ID FROM ir_model WHERE model = 'sacco.update.rate') 
+    WHERE 
+        EXISTS (SELECT 1 FROM ir_model M WHERE M.ID = ir_model_constraint.model AND M.model = 'dev.update.rate');
+
+    UPDATE ir_model_constraint 
+    SET 
+        NAME = REPLACE(NAME, 'dev_update_term', 'sacco_update_term'),
+        model = (SELECT ID FROM ir_model WHERE model = 'sacco.update.term') 
+    WHERE 
+        EXISTS (SELECT 1 FROM ir_model M WHERE M.ID = ir_model_constraint.model AND M.model = 'dev.update.term');
+END $$;
+
+-- Step 9: Update ir_model_relation
+UPDATE ir_model_relation 
+SET 
+    NAME = REPLACE(NAME, 'dev_loan', 'sacco_loan'),
+    model = (SELECT ID FROM ir_model WHERE model = REPLACE((SELECT model FROM ir_model WHERE ID = ir_model_relation.model), 'dev.loan', 'sacco.loan')) 
+WHERE 
+    EXISTS (SELECT 1 FROM ir_model M WHERE M.ID = ir_model_relation.model AND M.model LIKE 'dev.loan%');
+
+UPDATE ir_model_relation 
+SET 
+    NAME = REPLACE(NAME, 'dev_update_rate', 'sacco_update_rate'),
+    model = (SELECT ID FROM ir_model WHERE model = 'sacco.update.rate') 
+WHERE 
+    EXISTS (SELECT 1 FROM ir_model M WHERE M.ID = ir_model_relation.model AND M.model = 'dev.update.rate');
+
+UPDATE ir_model_relation 
+SET 
+    NAME = REPLACE(NAME, 'dev_update_term', 'sacco_update_term'),
+    model = (SELECT ID FROM ir_model WHERE model = 'sacco.update.term') 
+WHERE 
+    EXISTS (SELECT 1 FROM ir_model M WHERE M.ID = ir_model_relation.model AND M.model = 'dev.update.term');
+
+-- Step 10: Update ir_ui_view, ir_act_window, etc.
+UPDATE ir_ui_view 
+SET 
+    NAME = REPLACE(NAME, 'dev.loan', 'sacco.loan'),
+    model = REPLACE(model, 'dev.loan', 'sacco.loan') 
+WHERE 
+    model LIKE 'dev.loan%';
+
+UPDATE ir_ui_view 
+SET 
+    NAME = REPLACE(NAME, 'dev.update.rate', 'sacco.update.rate'),
+    model = 'sacco.update.rate' 
+WHERE 
+    model = 'dev.update.rate';
+
+UPDATE ir_ui_view 
+SET 
+    NAME = REPLACE(NAME, 'dev.update.term', 'sacco.update.term'),
+    model = 'sacco.update.term' 
+WHERE 
+    model = 'dev.update.term';
+
+UPDATE ir_act_window 
+SET res_model = REPLACE(res_model, 'dev.loan', 'sacco.loan') 
+WHERE res_model LIKE 'dev.loan%';
+
+UPDATE ir_act_window 
+SET res_model = 'sacco.update.rate' 
+WHERE res_model = 'dev.update.rate';
+
+UPDATE ir_act_window 
+SET res_model = 'sacco.update.term' 
+WHERE res_model = 'dev.update.term';
+
+-- Step 11: Update ir_model_data
+UPDATE ir_model_data 
+SET 
+    NAME = REPLACE(NAME, 'dev_loan', 'sacco_loan'),
+    MODULE = 'sacco_loan_management' 
+WHERE 
+    MODULE = 'dev_loan_management' AND NAME LIKE 'dev_loan%';
+
+UPDATE ir_model_data 
+SET 
+    NAME = REPLACE(NAME, 'dev_update_rate', 'sacco_update_rate'),
+    MODULE = 'sacco_loan_management' 
+WHERE 
+    MODULE = 'dev_loan_management' AND NAME LIKE 'dev_update_rate%';
+
+UPDATE ir_model_data 
+SET 
+    NAME = REPLACE(NAME, 'dev_update_term', 'sacco_update_term'),
+    MODULE = 'sacco_loan_management' 
+WHERE 
+    MODULE = 'dev_loan_management' AND NAME LIKE 'dev_update_term%';
+
+-- Step 12: Update ir_module_module
+UPDATE ir_module_module 
+SET NAME = 'sacco_loan_management' 
+WHERE NAME = 'dev_loan_management';
+
+-- Step 13: Update ir_act_server
+UPDATE ir_act_server 
+SET model_name = REPLACE(model_name, 'dev.loan', 'sacco.loan') 
+WHERE model_name LIKE 'dev.loan%';
+
+UPDATE ir_act_server 
+SET model_name = 'sacco.update.rate' 
+WHERE model_name = 'dev.update.rate';
+
+UPDATE ir_act_server 
+SET model_name = 'sacco.update.term' 
+WHERE model_name = 'dev.update.term';
+
+-- Step 14: Update ir_config_parameter
+UPDATE ir_config_parameter 
+SET VALUE = REPLACE(VALUE, 'dev_loan_management', 'sacco_loan_management') 
+WHERE KEY = 'publisher_warranty.cloc' AND VALUE LIKE '%dev_loan_management%';
+
+-- Step 15: Update constraints in sacco_loan_type
+ALTER TABLE sacco_loan_type DROP CONSTRAINT IF EXISTS loan_account_id_unique;
+ALTER TABLE sacco_loan_type ADD CONSTRAINT sacco_loan_type_loan_account_id_unique UNIQUE (loan_account_id);
+ALTER TABLE sacco_loan_type DROP CONSTRAINT IF EXISTS interest_account_id_unique;
+ALTER TABLE sacco_loan_type ADD CONSTRAINT sacco_loan_type_interest_account_id_unique UNIQUE (interest_account_id);
+
+-- Step 16: Clean up any orphaned constraints
+DELETE FROM ir_model_constraint 
+WHERE model IS NULL OR model NOT IN (SELECT ID FROM ir_model);
+
+COMMIT;
+
+
+--------------------------------- RENAMING sacco_loan_proof_sacco_loan_type_rel COLUMNS ---------------------
+ALTER TABLE sacco_loan_loan_sacco_loan_proof_rel
+RENAME COLUMN dev_loan_loan_id TO sacco_loan_loan_id;
+
+ALTER TABLE sacco_loan_loan_sacco_loan_proof_rel
+RENAME COLUMN dev_loan_proof_id TO sacco_loan_proof_id;
+
+
+------------------------------- - RENAMING sacco_loan_proof_sacco_loan_type_rel COLUMNS ---------------------
+ALTER TABLE sacco_loan_proof_sacco_loan_type_rel
+RENAME COLUMN dev_loan_type_id TO sacco_loan_type_id;
+
+ALTER TABLE sacco_loan_proof_sacco_loan_type_rel
+RENAME COLUMN dev_loan_proof_id TO sacco_loan_proof_id;
+
+-------------------------------- - Update ir_attachment ---------------------------
+UPDATE ir_attachment
+SET res_model = REPLACE(res_model, 'dev.loan', 'sacco.loan')
+WHERE res_model LIKE 'dev.loan%';
+
+

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_savings_statement_wizard" model="ir.ui.view">
+        <field name="name">sacco.savings.statement.wizard.form</field>
+        <field name="model">sacco.savings.statement.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Generate Savings Statement">
+                <group>
+                    <field name="partner_id"/>
+                    <field name="product_id"/>
+                    <field name="currency_id" force_save="1"/>
+                    <field name="start_date" />
+                    <field name="end_date" />
+                    <field name="request_date" />
+                    <field name="available_product_ids" invisible="True"/>
+                </group>
+                <footer>
+                    <button name="action_download_statement" string="Download Statement" type="object" class="btn-primary"
+                            groups="savings_management.group_savings_accounts_assistant,savings_management.group_savings_manager,savings_management.group_savings_accountant,savings_management.group_savings_audit_viewer,savings_management.group_savings_super_user"/>
+                    <button name="action_post_statement" string="Post Statement" type="object" class="btn-primary"
+                            groups="savings_management.group_savings_accounts_assistant,savings_management.group_savings_manager,savings_management.group_savings_accountant,savings_management.group_savings_super_user"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_savings_statement_wizard" model="ir.actions.act_window">
+        <field name="name">Generate Savings Statement</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">sacco.savings.statement.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem id="menu_sacco_savings_statements" name="Generate Statements" 
+    parent="menu_sacco_reporting" action="action_savings_statement_wizard" sequence="50"/> 
+
+</odoo>

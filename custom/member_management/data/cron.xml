@@ -1,0 +1,26 @@
+<odoo>
+    <data noupdate="1">
+        <record id="ir_cron_sync_members" model="ir.cron">
+            <field name="name">Members Auto Sync</field>
+            <field name="model_id" ref="model_member_sync"/>
+            <field name="state">code</field>
+            <field name="code">model._cron_sync_members()</field>
+            <field name="interval_number">15</field>  <!-- Runs every 15 minutes -->
+            <field name="interval_type">minutes</field>
+            <field name="numbercall">-1</field>
+            <field name="doall">False</field>
+            <field name="active">False</field>
+        </record>
+        <record id="ir_cron_send_birthday_emails" model="ir.cron">
+            <field name="name">Send Birthday Emails</field>
+            <field name="model_id" ref="base.model_res_partner"/>
+            <field name="state">code</field>
+            <field name="code">model._cron_send_birthday_emails()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <field name="numbercall">-1</field>
+            <field name="doall">True</field>
+            <field name="active" eval="True"/>
+        </record>
+    </data>
+</odoo>

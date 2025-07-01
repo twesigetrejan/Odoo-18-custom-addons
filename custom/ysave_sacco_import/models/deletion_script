@@ -1,0 +1,39 @@
+-- Begin transaction to ensure atomicity
+BEGIN;
+
+-- Step 1: Delete account_move_line records linked to account_move records from 2019 that are posted
+DELETE FROM account_move_line
+WHERE move_id IN (
+    SELECT id
+    FROM account_move
+    WHERE state = 'posted'
+    AND date >= '2019-01-01'
+    AND date <= '2019-12-31'
+);
+
+-- Step 2: Delete the account_move records from 2019 that are posted
+DELETE FROM account_move
+WHERE state = 'posted'
+AND date >= '2019-01-01'
+AND date <= '2019-12-31';
+
+-- Commit the transaction
+COMMIT;
+
+-- Optional: Rollback in case of issues (uncomment to use instead of COMMIT)
+-- ROLLBACK;
+
+-- UPDATE public.res_partner
+-- SET active = true
+-- WHERE member_id IS NOT NULL;
+
+UPDATE public.sacco_loan_loan
+SET state = 'open'
+WHERE state = 'disburse';
+
+UPDATE public.res_partner
+SET username = 'YSV' || member_id
+WHERE member_id IS NOT NULL;
+
+SELECT "max"("id")
+FROM res_partner;

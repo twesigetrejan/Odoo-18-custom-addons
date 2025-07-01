@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_shares_statement_wizard" model="ir.ui.view">
+        <field name="name">sacco.shares.statement.wizard.form</field>
+        <field name="model">sacco.shares.statement.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Generate Shares Statement">
+                <group>
+                    <field name="partner_id"/>
+                    <field name="product_id"/>
+                    <field name="currency_id" force_save="1"/>
+                    <field name="start_date" />
+                    <field name="end_date" />
+                    <field name="request_date" />
+                    <field name="available_product_ids" invisible="True"/>
+                </group>
+                <footer>
+                    <button name="action_download_statement" string="Download Statement" type="object" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_shares_statement_wizard" model="ir.actions.act_window">
+        <field name="name">Generate Shares Statement</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">sacco.shares.statement.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem id="menu_sacco_shares_statements" name="Generate Statements" 
+    parent="shares_management.menu_sacco_reporting" action="action_shares_statement_wizard" sequence="50"/> 
+
+</odoo>

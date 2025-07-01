@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_savings_account_form" model="ir.ui.view">
+        <field name="name">sacco.savings.account.form</field>
+        <field name="model">sacco.savings.account</field>
+        <field name="arch" type="xml">
+            <form string='Savings Account'>
+                <header>
+                    <button name="action_activate_savings_account" invisible="state in ('active')" string="Activate"
+                            class="btn-primary" type="object" confirm="Are you sure you want to activate the account?"
+                            groups="savings_management.group_savings_accounts_assistant,savings_management.group_savings_super_user"/>
+                    <button name="action_deactivate_savings_account" invisible="state in ('draft', 'inactive')" string="Deactivate"
+                            class="btn-primary" type="object" confirm="Are you sure you want to deactivate the account?"
+                            groups="savings_management.group_savings_accounts_assistant,savings_management.group_savings_super_user"/>
+                    <button name="compute_next_interest_line" string="Compute Next Interest Line"
+                            type="object" class="btn-secondary" invisible="state in ('draft', 'inactive')"
+                            confirm="Are you sure you want to compute the next interest line?"
+                            groups="savings_management.group_savings_accountant,savings_management.group_savings_accounts_assistant,savings_management.group_savings_super_user"/>
+                    <button name="action_refresh_journal_lines" string="Refresh Journal Lines"
+                            type="object" class="btn-secondary"
+                            groups="savings_management.group_savings_accountant,savings_management.group_savings_accounts_assistant,savings_management.group_savings_super_user"/>
+                    <button name="action_deactivate_minimum_balance" string="Deactivate Minimum Balance"
+                            type="object" class="btn-secondary" invisible="bypass_minimum_balance == True"
+                            confirm="Are you sure you want to deactivate the minimum balance constraint?"
+                            groups="savings_management.group_savings_accounts_assistant,savings_management.group_savings_super_user"/>
+                    <button name="action_activate_minimum_balance" string="Activate Minimum Balance"
+                            type="object" class="btn-secondary" invisible="bypass_minimum_balance == False"
+                            confirm="Are you sure you want to activate the minimum balance constraint?"
+                            groups="savings_management.group_savings_accounts_assistant,savings_management.group_savings_super_user"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,active,inactive"/>
+                </header>
+                <sheet>
+                    <label for="name" class="oe_edit_only"/>
+                	<h1><field name="name" readonly="True"/></h1>
+                    <group>
+                        <field name="member_id" readonly="state != 'draft'"/>
+                        <field name="product_id" readonly="state != 'draft'"/>
+                        <field name="currency_id" readonly="True" groups="base.group_multi_currency" options="{'no_create': True, 'no_open': True}"
+                            force_save="1"/>
+                        <field name="balance" readonly='True' widget="monetary" options="{'currency_field': 'currency_id'}" force_save="1"/>
+                        <field name="period"/>
+                        <field name="interest_rate"/>
+                        <field name="bypass_minimum_balance" invisible="1"/>
+                    </group>
+                    <notebook>
+                        <page string="Journal Account Lines">
+                            <field name="journal_account_lines" readonly='True'>
+                                <tree default_order="date asc, id asc">
+                                    <field name="name"/>
+                                    <field name="date"/>
+                                    <field name="type"/>
+                                    <field name="opening_balance" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                                    <field name="amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                                    <field name="closing_balance" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                                    <field name="journal_entry_id"/>
+                                    <button name="action_view_journal_entry" string="View Journal Entry" 
+                                            type="object" class="btn-link"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Server Action for Mass Sync -->
+    <record id="action_mass_sync_statements" model="ir.actions.server">
+        <field name="name">Mass Sync Statements</field>
+        <field name="model_id" ref="model_sacco_savings_account"/>
+        <field name="state">code</field>
+        <field name="code">
+            action = records.action_mass_sync_statements()
+        </field>
+        <field name="binding_model_id" ref="model_sacco_savings_account"/>
+        <field name="binding_view_types">list</field>
+    </record>
+
+    <record id="view_savings_account_tree" model="ir.ui.view">
+        <field name="name">sacco.savings.account.tree</field>
+        <field name="model">sacco.savings.account</field>
+        <field name="arch" type="xml">
+            <tree string="Savings Account" >
+                <field name="name"/>
+                <field name="member_id"/>
+                <field name="state" widget="badge"
+                decoration-success="state=='active'" decoration-danger="state=='inactive'" decoration-muted="state=='draft'"/>
+                <field name="product_id"/>
+                <field name="currency_id" groups="base.group_multi_currency"/>
+                <field name="balance" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                <field name="period"/>
+                <field name="interest_rate"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_sacco_savings_account_search" model="ir.ui.view">
+        <field name="name">sacco.savings.account.search</field>
+        <field name="model">sacco.savings.account</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="member_id"/>
+                <field name="currency_id"/>
+                <field name="product_id"/>
+                <group expand="0" string="Group By">
+                    <filter string="Member" name="group_by_member" context="{'group_by': 'member_id'}"/>
+                    <filter string="Currency" name="group_by_currency" context="{'group_by': 'currency_id'}"/>
+                    <filter string="Product" name="group_by_product" context="{'group_by': 'product_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+
+    <record id="action_savings_account" model="ir.actions.act_window">
+        <field name="name">Savings Accounts</field>
+        <field name="res_model">sacco.savings.account</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first savings account!
+            </p>
+        </field>
+    </record>
+    <menuitem id="menu_sacco_savings_accounts" name="Savings Accounts" parent="menu_sacco_savings" action="action_savings_account" sequence="10"/>
+</odoo>

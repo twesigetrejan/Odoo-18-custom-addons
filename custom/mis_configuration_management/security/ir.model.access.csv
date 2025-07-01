@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_omni_mis_configure_user,access.omni.mis.configure.user,model_omni_mis_configure,base.group_user,1,1,1,1
+access_sacco_transaction_sync_user,access.sacco.transaction.sync.user,model_sacco_transaction_sync,base.group_user,1,1,1,1

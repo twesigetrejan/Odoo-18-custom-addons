@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loan Management System in Odoo for Customer and Supplier</title>
+    <meta name="description"
+        content="Odoo Loan Management System elegant loan processes for customers and suppliers, offering automated tracking, payment scheduling, and financial reporting Odoo Apps">
+    <meta name="keywords"
+        content="Loan Management system in odoo for customer and supplier, Customer Loan, Supplier Loan, vendor Loan, Loan Type, Loan Proef, Loan type, Loan Request, Notification, Loan Document, Loan installment, Loan Disbursement, Customer Loan Process, Loan emi, Loan summary report">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
+        integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+</head>
+
+<body>
+    <div class="container mt-5">
+        <!-- heading & description -->
+        <section id="dev_intro" class="mt-2">
+            <div class="product-card shadow-lg p-3" style="border-radius: 14px;">
+                <div class="card-body text-center mt-3">
+                    <h3 style="font-size: 31px;font-weight: 600;color: #015d65;margin-bottom: 10px;">
+                        Loan Management System in Odoo for Customer and Supplier
+                    </h3>
+                    <img src="images/seprator.png" alt="seprator" width=250 />
+                    <p style="color: #616060;font-size: 19px;margin: 0;letter-spacing: 1px;margin-top: 12px;">
+                        The Loan Management System in Odoo offers a comprehensive solution for managing loans for
+                        both customers and suppliers. It enables easy tracking of loan amounts, interest rates, and
+                        repayment schedules. Users can efficiently process loan applications, disbursements, and
+                        payments, ensuring accurate financial records. The system integrates with Odoo's accounting
+                        module, providing real-time insights into financial standings. It's ideal for businesses
+                        looking to smooth their loan handling processes, offering a user-friendly interface and
+                        robust reporting capabilities.
+                    </p>
+                    <div class="row my-3 text-center">
+                        <div class="col">
+                            <span class='btn btn-primary'
+                                style="position: relative; overflow: hidden; border: 1px solid transparent; padding: .375rem .75rem; font-size: 1rem; line-height: 1.5; border-radius: .25rem; background-color: #015d65; border-color: #015d65;">
+                                <i class='fa fa-check'></i>
+                                <span>Community</span>
+                            </span>
+                            <span class='btn btn-primary'
+                                style="position: relative; overflow: hidden; border: 1px solid transparent; padding: .375rem .75rem; font-size: 1rem; line-height: 1.5; border-radius: .25rem; background-color: #015d65; border-color: #015d65;">
+                                <i class='fa fa-check'></i>
+                                <span>Enterprise</span>
+                            </span>
+                            <span class='btn btn-primary'
+                                style="position: relative; overflow: hidden; border: 1px solid transparent; padding: .375rem .75rem; font-size: 1rem; line-height: 1.5; border-radius: .25rem; background-color: #015d65; border-color: #015d65;">
+                                <i class='fa fa-check'></i>
+                                <span>Odoo.sh</span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- features -->
+        <section id="features" class="mt-4">
+            <div class="text-center">
+                <h3 class="mb-0" style="color: #015d65;">Features</h3>
+                <img src="images/seprator.png" alt="seprator" width=120 />
+            </div>
+            <ul class="list-unstyled" style="font-weight: 500; font-size: 18px; color: #323232; word-spacing: 0.5px;">
+                <li class="shadow-lg rounded mb-3 p-3">
+                    <span class="fa fa-arrow-right" style="color: #015d65;"> </span>
+                    <span class="p-2"> Smooth loan Management Process. </span>
+                </li>
+                <li class="shadow-lg rounded mb-3 p-3">
+                    <span class="fa fa-arrow-right" style="color: #015d65;"> </span>
+                    <span class="p-2"> Customizable Loan Categories. </span>
+                </li>
+                <li class="shadow-lg rounded mb-3 p-3">
+                    <span class="fa fa-arrow-right" style="color: #015d65;"> </span>
+                    <span class="p-2">Document Upload for Loan Verification </span>
+                </li>
+                <li class="shadow-lg rounded mb-3 p-3">
+                    <span class="fa fa-arrow-right" style="color: #015d65;"> </span>
+                    <span class="p-2">Loan Account Creation Specific to Loan Category </span>
+                </li>
+                <li class="shadow-lg rounded mb-3 p-3">
+                    <span class="fa fa-arrow-right" style="color: #015d65;"> </span>
+                    <span class="p-2">Automatic Confirmation Alerts to Loan Managers. </span>
+                </li>
+                <li class="shadow-lg rounded mb-3 p-3">
+                    <span class="fa fa-arrow-right" style="color: #015d65;"> </span>
+                    <span class="p-2">Managerial Approval of Loan Applications. </span>
+                </li>
+                <li class="shadow-lg rounded mb-3 p-3">
+                    <span class="fa fa-arrow-right" style="color: #015d65;"> </span>
+                    <span class="p-2"> Direct Account Integration for Loans. </span>
+                </li>
+                <li class="shadow-lg rounded mb-3 p-3">
+                    <span class="fa fa-arrow-right" style="color: #015d65;"> </span>
+                    <span class="p-2"> Detailed Journal Entries for Loan Installments. </span>
+                </li>
+                <li class="shadow-lg rounded mb-3 p-3">
+                    <span class="fa fa-arrow-right" style="color: #015d65;"> </span>
+                    <span class="p-2"> Structured Workflow: Draft, Confirm, Approve, Disburse, Open, Close. </span>
+                </li>
+                <li class="shadow-lg rounded mb-3 p-3">
+                    <span class="fa fa-arrow-right" style="color: #015d65;"> </span>
+                    <span class="p-2"> Automated Notifications for Upcoming Loan Installments. </span>
+                </li>
+                <li class="shadow-lg rounded mb-3 p-3">
+                    <span class="fa fa-arrow-right" style="color: #015d65;"> </span>
+                    <span class="p-2">Comprehensive Loan Report in PDF Format </span>
+                </li>
+                <li class="shadow-lg rounded mb-3 p-3">
+                    <span class="fa fa-arrow-right" style="color: #015d65;"> </span>
+                    <span class="p-2"> Summarized Loan Information Available in PDF and On-Screen.</span>
+                </li>
+                <li class="shadow-lg rounded mb-3 p-3">
+                    <span class="fa fa-arrow-right" style="color: #015d65;"> </span>
+                    <span class="p-2">Loan Interest Certificate Generation in PDF Format. </span>
+                </li>
+                <li class="shadow-lg rounded mb-3 p-3">
+                    <span class="fa fa-arrow-right" style="color: #015d65;"> </span>
+                    <span class="p-2">Loan Outstanding Report in PDF Format. </span>
+                </li>
+            </ul>
+        </section>
+
+        <!-- tabs -->
+        <section id="tabs" class="mt-5">
+            <ul class="nav nav-tabs justify-content-center pb-2" role="tablist">
+                <li class="nav-item rounded mx-1"
+                    style="color: white !important; cursor: pointer; text-decoration: none; background-color: #015d65; font-weight: 600; font-size: 14px;">
+                    <span class="nav-link active rounded"
+                        style=" cursor: pointer; border: 1px solid #015d65;  padding: 10px 20px;" data-bs-toggle="tab"
+                        href="#Configurations">
+                        Setup
+                    </span>
+                </li>
+                <li class="nav-item rounded mx-1"
+                    style="color: white !important; cursor: pointer; text-decoration: none; background-color: #015d65; font-weight: 600; font-size: 14px;">
+                    <span class="nav-link rounded"
+                        style=" cursor: pointer; border: 1px solid #015d65;  padding: 10px 20px;" data-bs-toggle="tab"
+                        href="#Release">
+                        Releases
+                    </span>
+                </li>
+                <li class="nav-item rounded mx-1"
+                    style="color: white !important; cursor: pointer; text-decoration: none; background-color: #015d65; font-weight: 600; font-size: 14px;">
+                    <span class="nav-link rounded"
+                        style=" cursor: pointer; border: 1px solid #015d65;  padding: 10px 20px;" data-bs-toggle="tab"
+                        href="#faqs">
+                        FAQs
+                    </span>
+                </li>
+                <li class="nav-item rounded mx-1"
+                    style="color: white !important; cursor: pointer; text-decoration: none; background-color: #015d65; font-weight: 600; font-size: 14px;">
+                    <span class="nav-link rounded"
+                        style=" cursor: pointer; border: 1px solid #015d65;  padding: 10px 20px;" data-bs-toggle="tab"
+                        href="#support">
+                        Support
+                    </span>
+                </li>
+            </ul>
+
+            <div class="tab-content">
+                <div class="tab-pane fade show active" id="Configurations" role="tabpanel">
+                    <section id="screenshot" class="text-center" style="color: #015d65;">
+                        <div class="mt-4">
+                            <p style="font-size: 30px; margin: auto; letter-spacing: .5px">
+                                Loan Management Workflow
+                            </p>
+                            <div class="col-md-12">
+                                <img class="img-responsive rounded shadow-lg" src="screens/01_workflow.png"
+                                    alt="Loan Management Workflow" style="width:100%">
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <p style="font-size: 30px; margin: auto; letter-spacing: .5px">
+                                Print Outstanding Letter <img src="images/new.png" alt="New" style="width: 50px;">
+                            </p>
+                            <div class="col-md-12">
+                                <img class="img-responsive rounded shadow-lg" src="screens/001_loan_management.png"
+                                    alt="Loan Management Workflow" style="width:100%">
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <p style="font-size: 30px; margin: auto; letter-spacing: .5px">
+                                Outstanding Letter <img src="images/new.png" alt="New" style="width: 50px;">
+                            </p>
+                            <div class="col-md-12">
+                                <img class="img-responsive rounded shadow-lg" src="screens/002_loan_management.png"
+                                    alt="Loan Management Workflow" style="width:100%">
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <p style="font-size: 30px; margin: auto; letter-spacing: .5px">
+                                Create Loan Type
+                            </p>
+                            <div class="col-md-12">
+                                <img class="img-responsive rounded shadow-lg" src="screens/02_loan_type.png"
+                                    alt="Loan Management Workflow" style="width:100%">
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <p style="font-size: 30px; margin: auto; letter-spacing: .5px">
+                                Create Loan Proof
+                            </p>
+                            <p style="font-size: 18px; margin: auto; margin-bottom: 20px; max-width: 80%;"></p>
+                            <div class="col-md-12">
+                                <img class="img-responsive rounded shadow-lg" src="screens/03_loan_proof.png"
+                                    alt="Loan Management Workflow" style="width:100%">
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <p style="font-size: 30px; margin: auto; letter-spacing: .5px">
+                                Create Loan Request &amp; Confirm
+                            </p>
+                            <p style="font-size: 18px; margin: auto; margin-bottom: 20px; max-width: 80%;"></p>
+                            <div class="col-md-12">
+                                <img class="img-responsive rounded shadow-lg" src="screens/05_loan_1.png"
+                                    alt="Loan Management Workflow" style="width:100%">
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <p style="font-size: 18px; margin: auto; margin-bottom: 20px; max-width: 80%;"></p>
+                            <div class="col-md-12">
+                                <img class="img-responsive rounded shadow-lg" src="screens/05_loan_2.png"
+                                    alt="Loan Management Workflow" style="width:100%">
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <p style="font-size: 30px; margin: auto; letter-spacing: .5px">
+                                Add Loan Documents
+                            </p>
+                            <p style="font-size: 18px; margin: auto; margin-bottom: 20px; max-width: 80%;"></p>
+                            <div class="col-md-12">
+                                <img class="img-responsive rounded shadow-lg" src="screens/06_loan_document.png"
+                                    alt="Loan Management Workflow" style="width:100%">
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <p style="font-size: 30px; margin: auto; letter-spacing: .5px">
+                                Loan Request Approve Notification to Loan Manager
+                            </p>
+                            <p style="font-size: 18px; margin: auto; margin-bottom: 20px; max-width: 80%;"></p>
+                            <div class="col-md-12">
+                                <img class="img-responsive rounded shadow-lg"
+                                    src="screens/06_notification_to_manager.png" alt="Loan Management Workflow"
+                                    style="width:100%">
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <p style="font-size: 30px; margin: auto; letter-spacing: .5px">
+                                Reject Loan Request
+                            </p>
+                            <p style="font-size: 18px; margin: auto; margin-bottom: 20px; max-width: 80%;"></p>
+                            <div class="col-md-12">
+                                <img class="img-responsive rounded shadow-lg" src="screens/08_reject_loan_request.png"
+                                    alt="Loan Management Workflow" style="width:100%">
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <p style="font-size: 30px; margin: auto; letter-spacing: .5px">
+                                Loan Request Reject Reason
+                            </p>
+                            <p style="font-size: 18px; margin: auto; margin-bottom: 20px; max-width: 80%;"></p>
+                            <div class="col-md-12">
+                                <img class="img-responsive rounded shadow-lg" src="screens/09_loan_reject_reason.png"
+                                    alt="Loan Management Workflow" style="width:100%">
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <p style="font-size: 30px; margin: auto; letter-spacing: .5px">
+                                Reject Reason in Loan Form
+                            </p>
+                            <p style="font-size: 18px; margin: auto; margin-bottom: 20px; max-width: 80%;"></p>
+                            <div class="col-md-12">
+                                <img class="img-responsive rounded shadow-lg"
+                                    src="screens/10_loan_reject_reason_in_form.png" alt="Loan Management Workflow"
+                                    style="width:100%">
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <p style="font-size: 30px; margin: auto; letter-spacing: .5px">
+                                Approve Loan Request By Loan Manager
+                            </p>
+                            <p style="font-size: 18px; margin: auto; margin-bottom: 20px; max-width: 80%;"></p>
+                            <div class="col-md-12">
+                                <img class="img-responsive rounded shadow-lg" src="screens/11_approve_loan.png"
+                                    alt="Loan Management Workflow" style="width:100%">
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <p style="font-size: 30px; margin: auto; letter-spacing: .5px">
+                                Disburse Loan By Billing User
+                            </p>
+                            <p style="font-size: 18px; margin: auto; margin-bottom: 20px; max-width: 80%;"></p>
+                            <div class="col-md-12">
+                                <img class="img-responsive rounded shadow-lg" src="screens/12_disburse_loan.png"
+                                    alt="Loan Management Workflow" style="width:100%">
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <p style="font-size: 30px; margin: auto; letter-spacing: .5px">
+                                Disburse Loan Journal Entry
+                            </p>
+                            <p style="font-size: 18px; margin: auto; margin-bottom: 20px; max-width: 80%;"></p>
+                            <div class="col-md-12">
+                                <img class="img-responsive rounded shadow-lg"
+                                    src="screens/13_disburse_loan_journal_entry.png" alt="Loan Management Workflow"
+                                    style="width:100%">
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <p style="font-size: 30px; margin: auto; letter-spacing: .5px">
+                                Open Loan
+                            </p>
+                            <p style="font-size: 18px; margin: auto; margin-bottom: 20px; max-width: 80%;"></p>
+                            <div class="col-md-12">
+                                <img class="img-responsive rounded shadow-lg" src="screens/14_open_loan_request.png"
+                                    alt="Loan Management Workflow" style="width:100%">
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <p style="font-size: 30px; margin: auto; letter-spacing: .5px">
+                                Pay Loan Installment
+                            </p>
+                            <p style="font-size: 18px; margin: auto; margin-bottom: 20px; max-width: 80%;"></p>
+                            <div class="col-md-12">
+                                <img class="img-responsive rounded shadow-lg" src="screens/15_pay_installment.png"
+                                    alt="Loan Management Workflow" style="width:100%">
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <p style="font-size: 30px; margin: auto; letter-spacing: .5px">
+                                Pay Loan Installment Journal Entry
+                            </p>
+                            <p style="font-size: 18px; margin: auto; margin-bottom: 20px; max-width: 80%;"></p>
+                            <div class="col-md-12">
+                                <img class="img-responsive rounded shadow-lg"
+                                    src="screens/16_pay_installment_journal_entry.png" alt="Loan Management Workflow"
+                                    style="width:100%">
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <p style="font-size: 30px; margin: auto; letter-spacing: .5px">
+                                Advance Payment
+                            </p>
+                            <p style="font-size: 18px; margin: auto; margin-bottom: 20px; max-width: 80%;"></p>
+                            <div class="col-md-12">
+                                <img class="img-responsive rounded shadow-lg" src="screens/16_1_advance_payment.png"
+                                    alt="Loan Management Workflow" style="width:100%">
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <p style="font-size: 30px; margin: auto; letter-spacing: .5px">
+                                Advance Payment Window
+                            </p>
+                            <p style="font-size: 18px; margin: auto; margin-bottom: 20px; max-width: 80%;"></p>
+                            <div class="col-md-12">
+                                <img class="img-responsive rounded shadow-lg"
+                                    src="screens/16_2_advance_payment_wizard.png" alt="Loan Management Workflow"
+                                    style="width:100%">
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <p style="font-size: 30px; margin: auto; letter-spacing: .5px">
+                                Pay Advance Payment
+                            </p>
+                            <p style="font-size: 18px; margin: auto; margin-bottom: 20px; max-width: 80%;"></p>
+                            <div class="col-md-12">
+                                <img class="img-responsive rounded shadow-lg" src="screens/16_3_pay_advance_payment.png"
+                                    alt="Loan Management Workflow" style="width:100%">
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <p style="font-size: 30px; margin: auto; letter-spacing: .5px">
+                                Changes in Last inst. amount
+                            </p>
+                            <p style="font-size: 18px; margin: auto; margin-bottom: 20px; max-width: 80%;"></p>
+                            <div class="col-md-12">
+                                <img class="img-responsive rounded shadow-lg"
+                                    src="screens/16_4_changes_installment_amount.png" alt="Loan Management Workflow"
+                                    style="width:100%">
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <p style="font-size: 30px; margin: auto; letter-spacing: .5px">
+                                Update Interest Rate
+                            </p>
+                            <p style="font-size: 18px; margin: auto; margin-bottom: 20px; max-width: 80%;"></p>
+                            <div class="col-md-12">
+                                <img class="img-responsive rounded shadow-lg"
+                                    src="screens/16_5_update_interest_rate.png" alt="Loan Management Workflow"
+                                    style="width:100%">
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <p style="font-size: 30px; margin: auto; letter-spacing: .5px">
+                                Update Interest Rate Window
+                            </p>
+                            <p style="font-size: 18px; margin: auto; margin-bottom: 20px; max-width: 80%;"></p>
+                            <div class="col-md-12">
+                                <img class="img-responsive rounded shadow-lg"
+                                    src="screens/16_6_update_interest_rate_window.png" alt="Loan Management Workflow"
+                                    style="width:100%">
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <p style="font-size: 30px; margin: auto; letter-spacing: .5px">
+                                Loan PDF Report
+                            </p>
+                            <p style="font-size: 18px; margin: auto; margin-bottom: 20px; max-width: 80%;"></p>
+                            <div class="col-md-12">
+                                <img class="img-responsive rounded shadow-lg" src="screens/17_loan_report1.png"
+                                    alt="Loan Management Workflow" style="width:100%">
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <p style="font-size: 18px; margin: auto; margin-bottom: 20px; max-width: 80%;"></p>
+                            <div class="col-md-12">
+                                <img class="img-responsive rounded shadow-lg" src="screens/17_loan_report2.png"
+                                    alt="Loan Management Workflow" style="width:100%">
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <p style="font-size: 30px; margin: auto; letter-spacing: .5px">
+                                Installment Reminder Days
+                            </p>
+                            <p style="font-size: 18px; margin: auto; margin-bottom: 20px; max-width: 80%;"></p>
+                            <div class="col-md-12">
+                                <img class="img-responsive rounded shadow-lg"
+                                    src="screens/04_installment_due_reminder_days.png" alt="Loan Management Workflow"
+                                    style="width:100%">
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <p style="font-size: 30px; margin: auto; letter-spacing: .5px">
+                                Send Installment Due Reminder to Borrower
+                            </p>
+                            <p style="font-size: 18px; margin: auto; margin-bottom: 20px; max-width: 80%;"></p>
+                            <div class="col-md-12">
+                                <img class="img-responsive rounded shadow-lg"
+                                    src="screens/18_due_installment_reminder_to_borrower.png"
+                                    alt="Loan Management Workflow" style="width:100%">
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <p style="font-size: 30px; margin: auto; letter-spacing: .5px">
+                                Print Installment Summary Report Window
+                            </p>
+                            <p style="font-size: 18px; margin: auto; margin-bottom: 20px; max-width: 80%;"></p>
+                            <div class="col-md-12">
+                                <img class="img-responsive rounded shadow-lg"
+                                    src="screens/19_installment_summary_report_window.png"
+                                    alt="Loan Management Workflow" style="width:100%">
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <p style="font-size: 30px; margin: auto; letter-spacing: .5px">
+                                Installment Summary Report 20_installment_summary_report2
+                            </p>
+                            <p style="font-size: 18px; margin: auto; margin-bottom: 20px; max-width: 80%;"></p>
+                            <div class="col-md-12">
+                                <img class="img-responsive rounded shadow-lg"
+                                    src="screens/20_installment_summary_report.png" alt="Loan Management Workflow"
+                                    style="width:100%">
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <p style="font-size: 18px; margin: auto; margin-bottom: 20px; max-width: 80%;"></p>
+                            <div class="col-md-12">
+                                <img class="img-responsive rounded shadow-lg"
+                                    src="screens/20_installment_summary_report2.png" alt="Loan Management Workflow"
+                                    style="width:100%">
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <p style="font-size: 30px; margin: auto; letter-spacing: .5px">
+                                Installment Summary On Screen
+
+
+                            </p>
+                            <p style="font-size: 18px; margin: auto; margin-bottom: 20px; max-width: 80%;"></p>
+                            <div class="col-md-12">
+                                <img class="img-responsive rounded shadow-lg"
+                                    src="screens/21_installment_summary_on_screen.png" alt="Loan Management Workflow"
+                                    style="width:100%">
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <p style="font-size: 30px; margin: auto; letter-spacing: .5px">
+                                Print Interest Certificate
+                            </p>
+                            <p style="font-size: 18px; margin: auto; margin-bottom: 20px; max-width: 80%;"></p>
+                            <div class="col-md-12">
+                                <img class="img-responsive rounded shadow-lg"
+                                    src="screens/22_interest_certificate_window.png" alt="Loan Management Workflow"
+                                    style="width:100%">
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <p style="font-size: 30px; margin: auto; letter-spacing: .5px">
+                                Interest Certificate Report
+                            </p>
+                            <p style="font-size: 18px; margin: auto; margin-bottom: 20px; max-width: 80%;"></p>
+                            <div class="col-md-12">
+                                <img class="img-responsive rounded shadow-lg"
+                                    src="screens/23_interest_certificate_pdf.png" alt="Loan Management Workflow"
+                                    style="width:100%">
+                            </div>
+                        </div>
+
+                    </section>
+                </div>
+                <div class="tab-pane fade" id="Release" role="tabpanel">
+                    <section id="release" class="mt-2">
+                        <div class="shadow-lg rounded bg-white" style="padding:20px; margin-bottom:15px">
+                            <h4
+                                style="font-size:16px; margin:0; color:#212121; text-decoration:none; font-weight:600; letter-spacing:1px; display:block">
+                                <span class="fa fa-hand-o-right"
+                                    style="color:#015d65; font-weight:600; font-size:18px; padding-right:10px"></span>
+                                <span>Version 1.0</span> | <span style="color:#015d65">Released on : 17<sup>th</sup>
+                                    July 2024</span>
+                            </h4>
+                            <div style="font-size:16px; padding-left:32px; color:#555; margin:0; padding-top:15px">
+                                <div style="font-weight:normal" class="d-flex align-items-center">
+                                    <span class="fa fa-arrow-right"
+                                        style="color:#015d65; font-weight:600; font-size:18px; padding-right:10px"></span>
+                                    <span style="vertical-align:middle; font-size:17px; font-weight: 600; ">
+                                        Loan Outstanding Letter added.
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="shadow-lg rounded bg-white" style="padding:20px; margin-bottom:15px">
+                            <h4
+                                style="font-size:16px; margin:0; color:#212121; text-decoration:none; font-weight:600; letter-spacing:1px; display:block">
+                                <span class="fa fa-hand-o-right"
+                                    style="color:#015d65; font-weight:600; font-size:18px; padding-right:10px"></span>
+                                <span>Version 1.0</span> | <span style="color:#015d65">Released on : 3<sup>rd</sup>
+                                    October 2023</span>
+                            </h4>
+                            <div style="font-size:16px; padding-left:32px; color:#555; margin:0; padding-top:15px">
+                                <div style="font-weight:normal" class="d-flex align-items-center">
+                                    <span class="fa fa-arrow-right"
+                                        style="color:#015d65; font-weight:600; font-size:18px; padding-right:10px"></span>
+                                    <span style="vertical-align:middle; font-size:17px; font-weight: 600; ">
+                                        Initial Release.</span>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+                <div class="tab-pane fade" id="faqs" role="tabpanel">
+                    <section id="faq">
+                        <ul class="list-unstyled">
+                            <li class="shadow-lg rounded"
+                                style="padding:20px; margin-bottom:20px; font-size:20px; color:#015d65; display:block; border-radius:0.25rem">
+                                <span class="fa fa-hand-o-right"
+                                    style="color:#015d65; font-weight:600; font-size:18px; padding-right:10px"></span>
+                                <span>
+                                    <b>Is this app compatible with Odoo Enterprise?</b>
+                                </span>
+                                <br>
+                                <ul style="color: black; font-size: 16px;">
+                                    <li>
+                                        <span class="pl-4">Yes, our app works with Odoo Enterprise as well as
+                                            Community.</span>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="shadow-lg rounded"
+                                style="padding:20px; margin-bottom:20px; font-size:20px; color:#015d65; display:block; border-radius:0.25rem">
+                                <span class="fa fa-hand-o-right"
+                                    style="color:#015d65; font-weight:600; font-size:18px; padding-right:10px"></span>
+                                <span>
+                                    <b>If need of customization in this app, How can i contact ?</b>
+                                </span>
+                                <br>
+                                <ul style="color: black; font-size: 16px;">
+                                    <li>
+                                        <span class="pl-4">Please contact us on <b>odoo@devintellecs.com</b></span>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="shadow-lg rounded"
+                                style="padding:20px; margin-bottom:20px; font-size:20px; color:#015d65; display:block; border-radius:0.25rem">
+                                <span class="fa fa-hand-o-right"
+                                    style="color:#015d65; font-weight:600; font-size:18px; padding-right:10px"></span>
+                                <span>
+                                    <b>Do i get free support?</b>
+                                </span>
+                                <br>
+                                <ul style="color: black; font-size: 16px;">
+                                    <li>
+                                        <span class="pl-4">Yes, you will get free support for 90days.</b></span>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="shadow-lg rounded"
+                                style="padding:20px; margin-bottom:20px; font-size:20px; color:#015d65; display:block; border-radius:0.25rem">
+                                <span class="fa fa-hand-o-right"
+                                    style="color:#015d65; font-weight:600; font-size:18px; padding-right:10px"></span>
+                                <span>
+                                    <b>Do i get free updates?</b>
+                                </span>
+                                <br>
+                                <ul style="color: black; font-size: 16px;">
+                                    <li>
+                                        <span class="pl-4">Yes, you will get free updates for lifetime.</b></span>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="shadow-lg rounded"
+                                style="padding:20px; margin-bottom:20px; font-size:20px; color:#015d65; display:block; border-radius:0.25rem">
+                                <span class="fa fa-hand-o-right"
+                                    style="color:#015d65; font-weight:600; font-size:18px; padding-right:10px"></span>
+                                <span>
+                                    <b>Do i have to buy this module for each version ?</b>
+                                </span>
+                                <br>
+                                <ul style="color: black; font-size: 16px;">
+                                    <li>
+                                        <span class="pl-4">Yes, you have to buy this module for each version.</b></span>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </section>
+                </div>
+                <div class="tab-pane fade" id="support" role="tabpanel">
+                    <section id="support" class="mt-4">
+                        <div class="text-center">
+                            <h3 class="mb-0" style="color: #015d65;">Support</h3>
+                            <img src="images/seprator.png" alt="seprator" width=150 />
+                        </div>
+                        <div class="product-card shadow-lg p-2" style="border-radius: 14px;">
+                            <div class="row">
+                                <div class="col-lg-2 col-sm-12 text-center">
+                                    <img src="images/tube.png" alt="support" height=100>
+                                </div>
+                                <div class="col-lg-10 col-sm-12 pt-3" style="font-size: 20px; font-weight: 400;">
+                                    DevIntelle will provide FREE 90 days support for any doubt, queries, and bug fixing
+                                    (excluding
+                                    data recovery) or any
+                                    type of issues related to this app. This is applicable from the date of purchase.
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </section>
+
+        <!-- whyus  -->
+        <section id="whyus" class="mt-5">
+            <div class="text-center">
+                <h3 class="mb-0" style="color: #015d65;">Why Us?</h3>
+                <img src="images/seprator.png" alt="seprator" width=120 />
+            </div>
+            <div class="shadow-lg p-3" style="border-radius: 14px;">
+                <div class="row mt-3">
+                    <div class="col-lg-4 col-md-12 col-sm-12 text-center my-auto">
+                        <img src='images/logo.png' alt='logo' style="width: 250px;">
+                    </div>
+                    <div class="col-lg-8 col-md-12 col-sm-12 mt-1"
+                        style="font-size: 20px; font-weight: 400; color: #364546; text-align: justify !important;">
+                        DevIntelle Consulting Services Pvt Ltd is an Odoo service provider India/USA based
+                        consulting
+                        company with <b>12+ years of experience</b>. We provide a wide range of services, including
+                        implementation, customization, migration, support, and training. Devintellecs experienced
+                        team
+                        of Odoo can help you get the most out of your Odoo ERP system and achieve your business
+                        goals.
+                    </div>
+                </div>
+                <div class="row mt-4">
+                    <div class="col-lg-6 col-12 d-flex justify-content-lg-end justify-content-center">
+                        <a href="https://apps.odoo.com/apps/modules/browse?author=DevIntelle%20Consulting%20Service%20Pvt.Ltd"
+                            style="text-decoration: none;">
+                            <span class='btn btn-primary px-5 py-3 ml-auto'
+                                style="position: relative; overflow: hidden; border: 1px solid transparent; font-size: 1.3rem; line-height: 1.5; border-radius: .25rem; background-color: #015d65;border-color: #015d65;"><i
+                                    class='fa fa-cube' style="padding-right: 9px;"></i>More Apps</span>
+                        </a>
+                    </div>
+                    <div class="col-lg-6 col-12 d-flex justify-content-lg-start justify-content-center mt-lg-0 mt-3">
+                        <a href="mailto:odoo@devintellecs.com" style="text-decoration: none;">
+                            <span class='btn btn-primary py-3 px-5'
+                                style="position: relative; overflow: hidden; border: 1px solid transparent; font-size: 1.3rem; line-height: 1.5; border-radius: .25rem; background-color: #015d65;border-color: #015d65;"><i
+                                    class='fa fa-desktop' style="padding-right: 9px;"></i>Ask for Demo</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- app you like  -->
+        <section id="dev_similarapps" class="mt-5">
+            <div class="text-center mt-4">
+                <h3 class="mb-0" style="color: #015d65;">You May Also Like</h3>
+                <img src="images/seprator.png" alt="seprator" width=230 />
+            </div>
+            <div class="row my-3">
+                <div class="col-lg-4 col-md-6 col-sm-12 text-center mb-2">
+                    <a href="https://apps.odoo.com/apps/modules/17.0/dev_tailor_management" target="_blank">
+                        <img src="banners/dev_tailor_management.png" alt="Tailor Management in Odoo" width="320"
+                            style="border: solid 1px #12757e;">
+                    </a>
+                </div>
+                <div class="col-lg-4 col-md-6 col-sm-12 text-center mb-2">
+                    <a href="https://apps.odoo.com/apps/modules/17.0/dev_gym_management/" target="_blank">
+                        <img src="banners/dev_gym_management.png" alt="Gym Management System" width="320"
+                            style="border: solid 1px #12757e;">
+                    </a>
+                </div>
+                <div class="col-lg-4 col-md-6 col-sm-12 text-center mb-2">
+                    <a href="https://apps.odoo.com/apps/modules/17.0/dev_law_management/" target="_blank">
+                        <img src="banners/dev_law_management.png" alt="Law Management Odoo Apps" width="320"
+                            style="border: solid 1px #12757e;">
+                    </a>
+                </div>
+                <div class="col-lg-4 col-md-6 col-sm-12 text-center mb-2">
+                    <a href="https://apps.odoo.com/apps/modules/17.0/dev_courier_management/" target="_blank">
+                        <img src="banners/dev_courier_management.png" alt="Courier Management in Odoo" width="320"
+                            style="border: solid 1px #12757e;">
+                    </a>
+                </div>
+                <div class="col-lg-4 col-md-6 col-sm-12 text-center mb-2">
+                    <a href="https://apps.odoo.com/apps/modules/17.0/dev_parking_management/" target="_blank">
+                        <img src="banners/dev_parking_management.png" alt="Parking Management Odoo" width="320"
+                            style="border: solid 1px #12757e;">
+                    </a>
+                </div>
+                <div class="col-lg-4 col-md-6 col-sm-12 text-center mb-2">
+                    <a href="https://apps.odoo.com/apps/modules/17.0/dev_car_rental_management/" target="_blank">
+                        <img src="banners/dev_car_rental_management.png" alt="Car Rental Management Odoo Apps"
+                            width="320" style="border: solid 1px #12757e;">
+                    </a>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- most Demandend apps  -->
+        <section id="dev_demandedapps" class="mt-5">
+            <div class="text-center mt-4">
+                <h3 class="mb-0" style="color: #015d65;">Most Demandend Apps</h3>
+                <img src="images/seprator.png" alt="seprator" width=230 />
+            </div>
+            <div class="row my-3">
+                <div class="col-lg-4 col-md-6 col-sm-12 mb-2 text-center">
+                    <a href="https://apps.odoo.com/apps/modules/16.0/dev_picking_cancel/" target="_blank">
+                        <img src="banners/dev_picking_cancel.gif" alt="All in one Cancel" height="180">
+                    </a>
+                </div>
+                <div class="col-lg-4 col-md-6 col-sm-12 mb-2 text-center">
+                    <a href="https://apps.odoo.com/apps/modules/16.0/dev_loan_management/" target="_blank">
+                        <img src="banners/dev_loan_management.gif" alt="Customer / Supplier Loan Management"
+                            height="180">
+                    </a>
+                </div>
+                <div class="col-lg-4 col-md-6 col-sm-12 mb-2 text-center">
+                    <a href="https://apps.odoo.com/apps/modules/16.0/dev_customer_credit_limit/" target="_blank">
+                        <img src="banners/dev_customer_credit_limit.gif" alt="Customer Credit Limit" height="180">
+                    </a>
+                </div>
+                <div class="col-lg-4 col-md-6 col-sm-12 mb-2 text-center">
+                    <a href="https://apps.odoo.com/apps/modules/16.0/dev_inventory_ageing_report/" target="_blank">
+                        <img src="banners/dev_inventory_ageing_report.gif" alt="Stock Inventory Aging Report PDF/Excel"
+                            height="180">
+                    </a>
+                </div>
+                <div class="col-lg-4 col-md-6 col-sm-12 mb-2 text-center">
+                    <a href="https://apps.odoo.com/apps/modules/16.0/dev_hr_loan/" target="_blank">
+                        <img src="banners/dev_hr_loan.gif" alt="Employee Loan Management" height="180">
+                    </a>
+                </div>
+                <div class="col-lg-4 col-md-6 col-sm-12 mb-2 text-center">
+                    <a href="https://apps.odoo.com/apps/modules/16.0/dev_export_excel/" target="_blank">
+                        <img src="banners/dev_export_excel.gif"
+                            alt="Dynamic / Global Export Excel Report For all Application-xls" height="180">
+                    </a>
+                </div>
+                <div class="col-lg-4 col-md-6 col-sm-12 mb-2 text-center">
+                    <a href="https://apps.odoo.com/apps/modules/16.0/dev_customer_account_statement/" target="_blank">
+                        <img src="banners/dev_customer_account_statement.gif" alt="Customer Statement & Aging"
+                            height="180">
+                    </a>
+                </div>
+                <div class="col-lg-4 col-md-6 col-sm-12 mb-2 text-center">
+                    <a href="https://apps.odoo.com/apps/modules/16.0/dev_purchase_down_payment/" target="_blank">
+                        <img src="banners/dev_purchase_down_payment.gif" alt="Purchase Advance Payment" height="180">
+                    </a>
+                </div>
+                <div class="col-lg-4 col-md-6 col-sm-12 mb-2 text-center">
+                    <a href="https://apps.odoo.com/apps/modules/16.0/dev_invoice_multi_payment/" target="_blank">
+                        <img src="banners/dev_invoice_multi_payment.gif" alt="Multiple Invoice Payment" height="180">
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- services  -->
+
+        <section id="services" class="mt-5">
+            <div class="text-center mt-4">
+                <h3 class="mb-0" style="color: #015d65;">Devintelle Odoo Services</h3>
+                <img src="images/seprator.png" alt="seprator" width=170 />
+            </div>
+            <div class="row mt-3">
+                <div class="col-lg-4 col-sm-12 text-center">
+                    <a href="#" style="text-decoration: none;">
+                        <div class="shadow-lg rounded btn-lg btn-block p-4 mb-2"
+                            style="font-size:25px; font-weight:bold; color: #0090e9; background-color:#d1edff; width:90%; margin:auto;">
+                            <span class="fa fa-cloud-upload" style="font-size:40px; color:#0090e9"></span> <br>
+                            <span> Odoo Implementation </span>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-lg-4 col-sm-12 text-center">
+                    <a href="#" style="text-decoration: none;">
+                        <div class="shadow-lg rounded btn-lg btn-block p-4 mb-2"
+                            style="font-size:25px; font-weight:bold; color: #6bcf00; background-color:#ecfcda; width:90%; margin:auto;">
+                            <span class="fa fa-gear" style="font-size:40px; color:#6bcf00"></span> <br>
+                            <span> Odoo Customization </span>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-lg-4 col-sm-12 text-center">
+                    <a href="#" style="text-decoration: none;">
+                        <div class="shadow-lg rounded btn-lg btn-block p-4 mb-2"
+                            style="font-size:25px; font-weight:bold; color: #e90065; background-color:#ffcde3; width:90%; margin:auto;">
+                            <span class="fa fa-link" style="font-size:40px; color:#e90065"></span> <br>
+                            <span> Odoo Intergration </span>
+                        </div>
+                    </a>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-lg-4 col-sm-12 text-center">
+                    <a href="#" style="text-decoration: none;">
+                        <div class="shadow-lg rounded btn-lg btn-block p-4 mb-2"
+                            style="font-size:25px; font-weight:bold; color: #c3c903; background-color:#feffdd; width:90%; margin:auto;">
+                            <span class="fa fa-rocket" style="font-size:40px; color:#c3c903"></span> <br>
+                            <span> Odoo Migration </span>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-lg-4 col-sm-12 text-center">
+                    <a href="#" style="text-decoration: none;">
+                        <div class="shadow-lg rounded btn-lg btn-block p-4 mb-2"
+                            style="font-size:25px; font-weight:bold; color: #e96100; background-color:#f9ddc9; width:90%; margin:auto;">
+                            <span class="fa fa-desktop" style="font-size:40px; color:#e96100"></span> <br>
+                            <span> Odoo Training </span>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-lg-4 col-sm-12 text-center">
+                    <a href="#" style="text-decoration: none;">
+                        <div class="shadow-lg rounded btn-lg btn-block p-4 mb-2"
+                            style="font-size:25px; font-weight:bold; color: #03b19f; background-color:#cafffa; width:90%; margin:auto;">
+                            <span class="fa fa-comments" style="font-size:40px; color:#03b19f"></span> <br>
+                            <span> Odoo Support </span>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- footer  -->
+        <section id="footer" class="mt-5">
+            <div class="text-center mt-4">
+                <h3 class="mb-0" style="color: #015d65;">Connect Us</h3>
+                <img src="images/seprator.png" alt="seprator" width=170 />
+            </div>
+            <div class="text-center row">
+                <div class="col-lg-4 col-md-4 col-sm-12 col-12">
+                    <a class="shadow-lg rounded py-3 px-4 d-flex justify-content-center align-items-center mb-2"
+                        style="border-width: 1px;border-style: solid;border-color: #4FCE5D;color: #fff;position: relative; overflow: hidden;text-decoration: none;border-radius: 0px;font-size: 20px;font-weight: bold;width: 100%;background-color: #4FCE5D;border-radius: 0.25rem !important;"
+                        href="https://web.whatsapp.com/send?phone=+918780543446&text=Hi" target="_blank"><span
+                            class="fa fa-whatsapp mr-3" style="font-size: 30px;color: #fff;"></span><span
+                            class="align-middle px-2">+91 87805 43446</span></a>
+                </div>
+                <div class="col-lg-4 col-md-4 col-sm-12 col-12">
+                    <a class="shadow-lg rounded py-3 px-4 d-flex justify-content-center align-items-center mb-2"
+                        style="border-width: 1px;border-style: solid;border-color: #4ca9e3;color: #fff;position: relative; overflow: hidden;text-decoration: none;border-radius: 0px;font-size: 20px;font-weight: bold;width: 100%;background-color: #4ca9e3;border-radius: 0.25rem !important;"
+                        href="skype:devintelle?chat" target="_blank"><span class="fa fa-skype mr-3"
+                            style="font-size: 30px;color: #fff;"></span><span
+                            class="align-middle px-2">@devintelle</span></a>
+                </div>
+                <div class="col-lg-4 col-md-4 col-sm-12 col-12">
+                    <a class="shadow-lg rounded py-3 px-4 d-flex justify-content-center align-items-center mb-2"
+                        style="border-width: 1px;border-style: solid;border-color: #ce493b;color: #fff;position: relative; overflow: hidden;text-decoration: none;border-radius: 0px;font-size: 20px;font-weight: bold;width: 100%;background-color: #ce493b;border-radius: 0.25rem !important;"
+                        href="mailto:odoo@devintellecs.com" target="_blank"><span class="fa fa-envelope mr-3"
+                            style="font-size: 30px;color: #fff;"></span><span
+                            class="align-middle px-2">odoo@devintellecs.com</span></a>
+                </div>
+            </div>
+            <div class="text-center mt-4">
+                <img src="images/seprator.png" alt="seprator" width=170 />
+            </div>
+            <div class="row mt-4 mb-4">
+                <div class="col-12 text-center">
+                    <img src="images/logo.png" alt="Devintelle Consulting Services" height="100">
+                </div>
+            </div>
+            <div class="row mt-2">
+                <div class="col text-center mt-3">
+                    <a class="mx-2" href="https://www.instagram.com/devintelle_odoo/" target="_blank"><img
+                            src="images/insta.png" alt="instagram" height="45"></a>
+                    <a class="mx-2" href="https://www.facebook.com/Odoodevintellecs/" target="_blank"><img
+                            src="images/fb.png" alt="facebook" height="45"></a>
+                    <a class="mx-2" href="https://www.youtube.com/channel/UCrmu-T0c8rhMXGuB44bH7gA" target="_blank"><img
+                            src="images/yt.png" alt="youtube" height="45"></a>
+                    <a class="mx-2" href="https://twitter.com/devintelle" target="_blank"><img src="images/twit.png"
+                            alt="twitter" height="45" style="border-radius: 5px;"></a>
+                    <a class="mx-2" href="https://www.linkedin.com/in/devintelle-odoo-service-provide-34785b144/"
+                        target="_blank"><img src="images/in.png" alt="linkedin" height="45"></a>
+                    <a class="mx-2" href="https://in.pinterest.com/devintellecs_odoo_expert/" target="_blank"><img
+                            src="images/pin.png" alt="pinterest" height="45"></a>
+                </div>
+            </div>
+        </section>
+    </div>
+</body>
+
+</html>

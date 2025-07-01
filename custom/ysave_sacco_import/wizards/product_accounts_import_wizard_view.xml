@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_product_accounts_import_wizard_form" model="ir.ui.view">
+        <field name="name">product.accounts.import.wizard.form</field>
+        <field name="model">product.accounts.import.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Import Product Accounts">
+                <group>
+                    <field name="file" filename="file_name"/>
+                    <field name="file_name" invisible="1"/>
+                </group>
+                <footer>
+                    <button name="action_import_accounts" string="Import Product Accounts" type="object" class="oe_highlight"/>
+                    <button string="Cancel" class="oe_link" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_product_accounts_import_wizard" model="ir.actions.act_window">
+        <field name="name">Import Product Accounts</field>
+        <field name="res_model">product.accounts.import.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_product_accounts_import_wizard_form"/>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem id="menu_product_accounts_import_wizard"
+              name="Import Product Accounts"
+              parent="account.menu_finance_entries"
+              action="action_product_accounts_import_wizard"
+              sequence="16"/>
+</odoo>

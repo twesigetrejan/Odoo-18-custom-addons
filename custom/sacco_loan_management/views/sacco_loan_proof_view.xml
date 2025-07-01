@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_sacco_loan_proof_form" model="ir.ui.view">
+        <field name="name">view.sacco.loan.proof.form</field>
+        <field name="model">sacco.loan.proof</field>
+        <field name="arch" type="xml">
+            <form string="Proofs">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                        </group>
+                        <group>
+                            <field name="is_required"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Description">
+                            <field name="description" nolabel="1" placeholder="Enter proof description..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_sacco_loan_proof_tree" model="ir.ui.view">
+        <field name="name">view.sacco.loan.proof.tree</field>
+        <field name="model">sacco.loan.proof</field>
+        <field name="arch" type="xml">
+            <tree string="Loan Proofs" editable="bottom">
+                <field name="name"/>
+                <field name="is_required"/>
+                <field name="description"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_mass_sync_loan_proofs" model="ir.actions.server">
+        <field name="name">Mass Sync Loan Proofs</field>
+        <field name="model_id" ref="model_sacco_loan_proof"/>
+        <field name="state">code</field>
+        <field name="code">
+            action = env['sacco.loan.proof.mis'].action_mass_sync_proofs(records)
+        </field>
+        <field name="binding_model_id" ref="model_sacco_loan_proof"/>
+        <field name="binding_view_types">list</field>
+    </record>
+
+
+    <record id="action_sacco_loan_proof" model="ir.actions.act_window">
+        <field name="name">Loan Proof</field>
+        <field name="res_model">sacco.loan.proof</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+	<!--  Menu Items-->
+    
+    
+    <menuitem name="Loan Proofs" id="menu_sacco_loan_proof" parent="sacco_loan_management.menu_sacco_loan_configration" action="action_sacco_loan_proof" sequence="3"/>
+</odoo>

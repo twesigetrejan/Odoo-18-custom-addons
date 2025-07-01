@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Define a Loans Configuration Menu if not already present -->
+    <menuitem id="menu_sacco_loans_root" name="Loans" sequence="10"/>
+    <menuitem id="menu_sacco_loans_config" name="Configuration" parent="menu_sacco_loans_root" sequence="5"/>
+
+    <record id="view_loan_product_wizard_form" model="ir.ui.view">
+        <field name="name">loan.product.wizard.form</field>
+        <field name="model">loan_product_wizard</field>
+        <field name="arch" type="xml">
+            <form string="Create Loan Product">
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="is_interest_apply"/>
+                        <field name="currency_id"/>
+                        <field name="interest_mode" invisible="not is_interest_apply"/>
+                        <field name="rate"/>
+                        <field name="loan_amount"/>
+                        <field name="loan_term_by_month"/>
+                    </group>
+                    <group string="Default Accounts">
+                        <field name="default_receiving_account_id"/>
+                        <field name="default_paying_account_id"/>
+                    </group>
+                    <footer>
+                        <button name="action_create_loan_product" string="Create Product" type="object" class="btn-primary"/>
+                        <button string="Cancel" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_loan_product_wizard" model="ir.actions.act_window">
+        <field name="name">Create Loan Product</field>
+        <field name="res_model">loan_product_wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <!-- <menuitem id="menu_loan_product_wizard" name="Create Loan Product" 
+              parent="sacco_loan_management.menu_sacco_loan_configration" action="action_loan_product_wizard"/> -->
+</odoo>

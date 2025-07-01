@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_chart_accounts_import_wizard_form" model="ir.ui.view">
+        <field name="name">chart.accounts.import.wizard.form</field>
+        <field name="model">chart.accounts.import.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Import Chart of Accounts">
+                <group>
+                    <field name="file" filename="file_name"/>
+                    <field name="file_name" invisible="1"/>
+                </group>
+                <footer>
+                    <button name="action_import_accounts" string="Import Accounts" type="object" class="oe_highlight"/>
+                    <button string="Cancel" class="oe_link" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_chart_accounts_import_wizard" model="ir.actions.act_window">
+        <field name="name">Import Chart of Accounts</field>
+        <field name="res_model">chart.accounts.import.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_chart_accounts_import_wizard_form"/>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem id="menu_chart_accounts_import_wizard"
+              name="Import Chart of Accounts"
+              parent="account.menu_finance_entries" 
+              action="action_chart_accounts_import_wizard"
+              sequence="15"/>
+</odoo>

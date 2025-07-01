@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_savings_product_wizard_form" model="ir.ui.view">
+        <field name="name">savings.product.wizard.form</field>
+        <field name="model">savings_product_wizard</field>
+        <field name="arch" type="xml">
+            <form string="Create Savings Product">
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="interest_rate"/>
+                        <field name="period"/>
+                        <field name="currency_id"/>
+                    </group>
+                    <group string="Default Accounts">
+                        <field name="default_receiving_account_id"/>
+                        <field name="default_paying_account_id"/>
+                    </group>
+                    <footer>
+                        <button name="action_create_savings_product" string="Create Product" type="object" class="btn-primary"/>
+                        <button string="Cancel" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_savings_product_wizard" model="ir.actions.act_window">
+        <field name="name">Create Savings Product</field>
+        <field name="res_model">savings_product_wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <!-- <menuitem id="menu_savings_product_wizard" name="Create Savings Product" 
+              parent="savings_management.menu_sacco_savings_config" action="action_savings_product_wizard"/> -->
+</odoo>

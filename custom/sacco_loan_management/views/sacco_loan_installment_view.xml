@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_sacco_loan_installment_form" model="ir.ui.view">
+        <field name="name">view.sacco.loan.installment.form</field>
+        <field name="model">sacco.loan.installment</field>
+        <field name="arch" type="xml">
+            <form string="Loan" create="false" edit="false" >
+                <sheet>
+                    <label for="name" class="oe_edit_only"/>
+                	<h1><field name="name" readonly="True"/></h1>
+                    <group>
+                        <group>
+                            <field name="client_id" readonly="True"/>
+                            <field name="loan_id" readonly="True"/>
+                            <field name="company_id" invisible="1"/>
+                        </group>
+                        <group>
+                            <field name="date" readonly="True"/>
+                            <field name="amount" readonly="True"/>
+                            <field name="interest" readonly="True"/>
+                            <field name="expected_total_amount" string="EMI (Estimated Monthly Installment)" readonly="True"/>
+                            <field name="closing_balance" invisible="1"/>
+                            <field name="opening_balance" invisible="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page name="accounting" string='Accounting' groups="account.group_account_invoice">
+                            <group>
+                                <group>
+                                    <field name="interest_account_id"/>
+                                    <field name="installment_account_id"/>
+                                </group>
+                                <group>
+                                    <field name="loan_payment_journal_id"/>
+                                    <field name="journal_entry_id" readonly="True"/>
+                                </group>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_sacco_loan_installment_tree" model="ir.ui.view">
+        <field name="name">view.sacco.loan.installment.tree</field>
+        <field name="model">sacco.loan.installment</field>
+        <field name="arch" type="xml">
+            <tree string="Loan Installments" create="false" edit="false">
+                <field name="name"/>
+                <field name="client_id"/>
+                <field name="loan_id"/>
+                <field name="date"/>
+                <field name="amount"/>
+                <field name="interest"/>
+                <field name="total_amount"/>
+            </tree>
+        </field>
+    </record>
+    
+    <record id="filter_sacco_loan_installment" model="ir.ui.view">
+        <field name="name">filter.sacco.loan.installment</field>
+        <field name="model">sacco.loan.installment</field>
+        <field name="arch" type="xml">
+            <search string="Search Loan Installment">
+                <field name="name" string="Loan" filter_domain="[('name','ilike',self)]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Member" name="client_id" context="{'group_by':'client_id'}"/>
+                    <filter string="Loan" name="loan_id" context="{'group_by':'loan_id'}"/>
+                    <filter string="Date" name="date" context="{'group_by':'date'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_sacco_loan_installment" model="ir.actions.act_window">
+        <field name="name">Loan Installment</field>
+        <field name="res_model">sacco.loan.installment</field>
+        <field name="domain">[('loan_id.state','not in',['draft','reject','cancel'])]</field>
+        <field name="context">{'search_default_loan_id':1}</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+    
+    
+    <menuitem name="Amortization" id="menu_sacco_loan_installment" parent="sacco_loan_management.menu_sacco_loan_payments_main" action="action_sacco_loan_installment" sequence="3"/>
+    
+    
+    
+</odoo>
