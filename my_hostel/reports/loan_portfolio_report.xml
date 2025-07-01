@@ -29,7 +29,7 @@
                     
                     <div class="row">
                         <div class="col-12 text-center">
-                            <h2>💰 Loan Portfolio Performance Report</h2>
+                            <h2>Loan Performance Report</h2>
                             <p class="text-muted">Generated on <span t-esc="datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')"/></p>
                         </div>
                     </div>
@@ -38,10 +38,10 @@
                         <div class="row mt-3 mb-3">
                             <div class="col-12">
                                 <div class="alert alert-info">
-                                    <strong>📊 Filtered Report:</strong>
-                                    <t t-if="member_filter">Member: "<span t-esc="member_filter"/>"</t>
+                                    <strong>Report for </strong>
+                                    <t t-if="member_filter">Member: <span t-esc="member_filter"/></t>
                                     <t t-if="member_filter and loan_product_filter"> | </t>
-                                    <t t-if="loan_product_filter">Loan Product: "<span t-esc="loan_product_filter"/>"</t>
+                                    <t t-if="loan_product_filter">Loan Product: <span t-esc="loan_product_filter"/></t>
                                 </div>
                             </div>
                         </div>
@@ -144,17 +144,17 @@
                                     
                                     <t t-if="outstanding_gap > 0">
                                         <div class="alert alert-warning">
-                                            <strong>⚠️ Collection Gap:</strong> There is a shortfall of <span t-esc="'{:,.0f}'.format(outstanding_gap)"/> UGX in collections.
+                                            <strong>Collection Gap:</strong> There is a shortfall of <span t-esc="'{:,.0f}'.format(outstanding_gap)"/> UGX in collections.
                                         </div>
                                     </t>
                                     <t t-elif="outstanding_gap &lt; 0">
                                         <div class="alert alert-success">
-                                            <strong>✅ Over-Collection:</strong> Collections exceed expectations by <span t-esc="'{:,.0f}'.format(abs(outstanding_gap))"/> UGX.
+                                            <strong>Over-Collection:</strong> Collections exceed expectations by <span t-esc="'{:,.0f}'.format(abs(outstanding_gap))"/> UGX.
                                         </div>
                                     </t>
                                     <t t-else="">
                                         <div class="alert alert-info">
-                                            <strong>🎯 Perfect Match:</strong> Collections match expectations exactly.
+                                            <strong>Perfect Match:</strong> Collections match expectations exactly.
                                         </div>
                                     </t>
                                 </div>
