@@ -96,28 +96,22 @@ class LoanPortfolio(models.Model):
     @api.model
     def generate_pdf_report(self, member_filter=None, loan_product_filter=None):
         """Generate PDF report for loan portfolio data."""
-        # Get the filtered data
-        data = self.get_filtered_metrics(member_filter, loan_product_filter)
-        
-        # Create a report action
-        report_name = 'my_hostel.loan_portfolio_report'  # Replace with your module name
-        
-        # Prepare context with filter information
-        context = {
-            'member_filter': member_filter,
-            'loan_product_filter': loan_product_filter,
-            'report_data': data,
-        }
+        report_data = self.get_filtered_metrics(member_filter, loan_product_filter)
         
         return {
             'type': 'ir.actions.report',
-            'report_name': report_name,
+            'report_name': 'my_hostel.loan_portfolio_report_template',
             'report_type': 'qweb-pdf',
-            'context': context,
             'data': {
+                'report_data': report_data,
                 'member_filter': member_filter,
                 'loan_product_filter': loan_product_filter,
-                'report_data': data,
+            },
+            'context': {
+                'active_model': 'loan.portfolio',
+                'report_data': report_data,
+                'member_filter': member_filter,
+                'loan_product_filter': loan_product_filter,
             }
         }
 

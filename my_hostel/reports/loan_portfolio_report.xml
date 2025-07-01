@@ -5,8 +5,8 @@
         <field name="name">Loan Portfolio Report</field>
         <field name="model">loan.portfolio</field>
         <field name="report_type">qweb-pdf</field>
-        <field name="report_name">my_hostel.loan_portfolio_report_template</field>  <!-- Replace my_hostel with your module name -->
-        <field name="report_file">my_hostel.loan_portfolio_report_template</field>  <!-- Replace my_hostel with your module name -->
+        <field name="report_name">my_hostel.loan_portfolio_report_template</field>
+        <field name="report_file">my_hostel.loan_portfolio_report_template</field>
         <field name="binding_model_id" ref="model_loan_portfolio"/>
         <field name="binding_type">report</field>
     </record>
@@ -18,18 +18,21 @@
                 <div class="page">
                     <div class="oe_structure"/>
                     
-                    <!-- Header -->
+                    <!-- Debug context (remove in production) -->
+                    <!-- <pre t-esc="str(data)"/>
+                    <pre t-esc="str(context)"/> -->
+                    
+                    <!-- Initialize variables safely -->
+                    <t t-set="report_data" t-value="data and data.get('report_data', {}) or context.get('report_data', {}) or {}"/>
+                    <t t-set="member_filter" t-value="data and data.get('member_filter') or context.get('member_filter')"/>
+                    <t t-set="loan_product_filter" t-value="data and data.get('loan_product_filter') or context.get('loan_product_filter')"/>
+                    
                     <div class="row">
                         <div class="col-12 text-center">
                             <h2>💰 Loan Portfolio Performance Report</h2>
                             <p class="text-muted">Generated on <span t-esc="datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')"/></p>
                         </div>
                     </div>
-                    
-                    <!-- Filter Information -->
-                    <t t-set="data" t-value="data.get('report_data', {})"/>
-                    <t t-set="member_filter" t-value="data.get('member_filter')"/>
-                    <t t-set="loan_product_filter" t-value="data.get('loan_product_filter')"/>
                     
                     <t t-if="member_filter or loan_product_filter">
                         <div class="row mt-3 mb-3">
@@ -44,14 +47,13 @@
                         </div>
                     </t>
                     
-                    <!-- Summary Metrics -->
                     <div class="row mb-4">
                         <div class="col-3">
                             <div class="card text-center">
                                 <div class="card-body">
                                     <h5 class="card-title">Total Disbursed</h5>
                                     <p class="card-text h4">
-                                        <span t-esc="'{:,.0f}'.format(data.get('total_disbursed', 0))"/> UGX
+                                        <span t-esc="'{:,.0f}'.format(report_data.get('total_disbursed', 0))"/> UGX
                                     </p>
                                 </div>
                             </div>
@@ -61,7 +63,7 @@
                                 <div class="card-body">
                                     <h5 class="card-title">Expected Outstanding</h5>
                                     <p class="card-text h4">
-                                        <span t-esc="'{:,.0f}'.format(data.get('expected_outstanding', 0))"/> UGX
+                                        <span t-esc="'{:,.0f}'.format(report_data.get('expected_outstanding', 0))"/> UGX
                                     </p>
                                 </div>
                             </div>
@@ -71,7 +73,7 @@
                                 <div class="card-body">
                                     <h5 class="card-title">Actual Outstanding</h5>
                                     <p class="card-text h4">
-                                        <span t-esc="'{:,.0f}'.format(data.get('actual_outstanding', 0))"/> UGX
+                                        <span t-esc="'{:,.0f}'.format(report_data.get('actual_outstanding', 0))"/> UGX
                                     </p>
                                 </div>
                             </div>
@@ -81,14 +83,13 @@
                                 <div class="card-body">
                                     <h5 class="card-title">Total Loans</h5>
                                     <p class="card-text h4">
-                                        <span t-esc="data.get('loan_count', 0)"/>
+                                        <span t-esc="report_data.get('loan_count', 0)"/>
                                     </p>
                                 </div>
                             </div>
                         </div>
                     </div>
                     
-                    <!-- Loan Details Table -->
                     <div class="row">
                         <div class="col-12">
                             <h4>Loan Details</h4>
@@ -106,7 +107,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <t t-foreach="data.get('loan_details', [])" t-as="loan">
+                                    <t t-foreach="report_data.get('loan_details', [])" t-as="loan">
                                         <tr>
                                             <td><span t-esc="loan.get('loan_id', '')"/></td>
                                             <td><span t-esc="loan.get('member', '')"/></td>
@@ -118,7 +119,7 @@
                                             <td><span t-esc="loan.get('start_date', '')"/></td>
                                         </tr>
                                     </t>
-                                    <t t-if="not data.get('loan_details')">
+                                    <t t-if="not report_data.get('loan_details')">
                                         <tr>
                                             <td colspan="8" class="text-center text-muted">
                                                 No loan details available for the selected filters.
@@ -130,16 +131,15 @@
                         </div>
                     </div>
                     
-                    <!-- Summary Analysis -->
                     <div class="row mt-4">
                         <div class="col-12">
                             <h4>Performance Analysis</h4>
                             <div class="card">
                                 <div class="card-body">
-                                    <t t-set="collection_rate" t-value="(data.get('actual_outstanding', 0) / data.get('expected_outstanding', 1)) * 100 if data.get('expected_outstanding', 0) > 0 else 0"/>
+                                    <t t-set="collection_rate" t-value="(report_data.get('actual_outstanding', 0) / report_data.get('expected_outstanding', 1)) * 100 if report_data.get('expected_outstanding', 0) > 0 else 0"/>
                                     <p><strong>Collection Rate:</strong> <span t-esc="'{:.2f}'.format(collection_rate)"/>%</p>
                                     
-                                    <t t-set="outstanding_gap" t-value="data.get('expected_outstanding', 0) - data.get('actual_outstanding', 0)"/>
+                                    <t t-set="outstanding_gap" t-value="report_data.get('expected_outstanding', 0) - report_data.get('actual_outstanding', 0)"/>
                                     <p><strong>Outstanding Gap:</strong> <span t-esc="'{:,.0f}'.format(outstanding_gap)"/> UGX</p>
                                     
                                     <t t-if="outstanding_gap > 0">
@@ -162,7 +162,7 @@
                         </div>
                     </div>
                     
-                    <div class="oe_structure"/>
+                    <div class="oe_structure"/> 
                 </div>
             </t>
         </t>
