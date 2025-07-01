@@ -145,7 +145,7 @@
                                         <div class="alert alert-success">
                                             <strong>Over-Collection:</strong> Collections exceed expectations by  UGX <span t-esc="'{:,.0f}'.format(abs(outstanding_gap))"/> UGX.
                                         </div>
-                                    </t>
+                                      </t>
                                     <t t-else="">
                                         <div class="alert alert-info">
                                             <strong>Perfect Match:</strong> Collections match expectations exactly.
@@ -156,7 +156,24 @@
                             </div>
                         </div>
                     </div>
+                  
+                    <div class="row" style= "margin-top:200px;">
+                        <div class="col-12">
+                            <h3>Performance Chart</h3>
+                            <div style="height: 400px; width: 100%;">
                     
+                                <img t-att-src="'data:image/png;base64,' + chart_data.get('image')" 
+                                    style="width: 100%; height: 100%; object-fit: contain;" 
+                                    alt="Performance Chart" t-if="chart_data.get('image')"/>
+                                
+                           
+                                <div class="alert alert-warning" t-if="not chart_data.get('image')">
+                                    Chart could not be generated for this report.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                                        
                     <div class="oe_structure"/> 
                 </div>
             </t>

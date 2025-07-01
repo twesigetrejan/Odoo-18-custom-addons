@@ -97,18 +97,33 @@ class LoanPortfolio(models.Model):
         """Generate PDF report for loan portfolio data."""
         report_data = self.get_filtered_metrics(member_filter, loan_product_filter)
         
+        chart_data = {
+        'labels': ['Expected', 'Actual'],
+        'datasets': [{
+            'label': 'Outstanding Amount (UGX)',
+            'data': [
+                report_data.get('expected_outstanding', 0),
+                report_data.get('actual_outstanding', 0)
+            ],
+            'backgroundColor': ['#36A2EB', '#FF6384']
+            }]
+        }
+    
+        
         return {
             'type': 'ir.actions.report',
             'report_name': 'my_hostel.loan_portfolio_report_template',
             'report_type': 'qweb-pdf',
             'data': {
                 'report_data': report_data,
+                'chart_data': chart_data, 
                 'member_filter': member_filter,
                 'loan_product_filter': loan_product_filter,
             },
             'context': {
                 'active_model': 'loan.portfolio',
                 'report_data': report_data,
+                'chart_data': chart_data, 
                 'member_filter': member_filter,
                 'loan_product_filter': loan_product_filter,
             }
