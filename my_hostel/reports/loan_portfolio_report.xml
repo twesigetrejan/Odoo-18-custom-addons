@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Report Action Definition -->
+
     <record id="loan_portfolio_report" model="ir.actions.report">
         <field name="name">Loan Portfolio Report</field>
         <field name="model">loan.portfolio</field>
@@ -11,18 +11,12 @@
         <field name="binding_type">report</field>
     </record>
 
-    <!-- Report Template -->
     <template id="loan_portfolio_report_template">
         <t t-call="web.html_container">
             <t t-call="web.external_layout">
                 <div class="page">
                     <div class="oe_structure"/>
                     
-                    <!-- Debug context (remove in production) -->
-                    <!-- <pre t-esc="str(data)"/>
-                    <pre t-esc="str(context)"/> -->
-                    
-                    <!-- Initialize variables safely -->
                     <t t-set="report_data" t-value="data and data.get('report_data', {}) or context.get('report_data', {}) or {}"/>
                     <t t-set="member_filter" t-value="data and data.get('member_filter') or context.get('member_filter')"/>
                     <t t-set="loan_product_filter" t-value="data and data.get('loan_product_filter') or context.get('loan_product_filter')"/>
@@ -51,9 +45,9 @@
                         <div class="col-3">
                             <div class="card text-center">
                                 <div class="card-body">
-                                    <h5 class="card-title">Total Disbursed</h5>
-                                    <p class="card-text h4">
-                                        <span t-esc="'{:,.0f}'.format(report_data.get('total_disbursed', 0))"/> UGX
+                                    <h6 class="card-title">Total Disbursed</h6>
+                                    <p class="card-text h3">
+                                        <span t-esc="'{:,.0f}'.format(report_data.get('total_disbursed', 0))"/>
                                     </p>
                                 </div>
                             </div>
@@ -61,9 +55,9 @@
                         <div class="col-3">
                             <div class="card text-center">
                                 <div class="card-body">
-                                    <h5 class="card-title">Expected Outstanding</h5>
-                                    <p class="card-text h4">
-                                        <span t-esc="'{:,.0f}'.format(report_data.get('expected_outstanding', 0))"/> UGX
+                                    <h6 class="card-title">Expect Outstanding</h6>
+                                    <p class="card-text h3">
+                                        <span t-esc="'{:,.0f}'.format(report_data.get('expected_outstanding', 0))"/>
                                     </p>
                                 </div>
                             </div>
@@ -71,9 +65,9 @@
                         <div class="col-3">
                             <div class="card text-center">
                                 <div class="card-body">
-                                    <h5 class="card-title">Actual Outstanding</h5>
-                                    <p class="card-text h4">
-                                        <span t-esc="'{:,.0f}'.format(report_data.get('actual_outstanding', 0))"/> UGX
+                                    <h6 class="card-title">Actual Outstanding</h6>
+                                    <p class="card-text h3">
+                                        <span t-esc="'{:,.0f}'.format(report_data.get('actual_outstanding', 0))"/>
                                     </p>
                                 </div>
                             </div>
@@ -81,8 +75,8 @@
                         <div class="col-3">
                             <div class="card text-center">
                                 <div class="card-body">
-                                    <h5 class="card-title">Total Loans</h5>
-                                    <p class="card-text h4">
+                                    <h6 class="card-title">Total Loans</h6>
+                                    <p class="card-text h3">
                                         <span t-esc="report_data.get('loan_count', 0)"/>
                                     </p>
                                 </div>
@@ -92,7 +86,7 @@
                     
                     <div class="row">
                         <div class="col-12">
-                            <h4>Loan Details</h4>
+                            <h3>Loan Details</h3>
                             <table class="table table-bordered table-striped">
                                 <thead class="table-dark">
                                     <tr>
@@ -113,9 +107,9 @@
                                             <td><span t-esc="loan.get('member', '')"/></td>
                                             <td><span t-esc="loan.get('loan_product', '')"/></td>
                                             <td><span t-esc="loan.get('interest_rate', 0)"/>%</td>
-                                            <td><span t-esc="'{:,.0f}'.format(loan.get('disbursed_amount', 0))"/> UGX</td>
-                                            <td><span t-esc="'{:,.0f}'.format(loan.get('expected_outstanding', 0))"/> UGX</td>
-                                            <td><span t-esc="'{:,.0f}'.format(loan.get('actual_outstanding', 0))"/> UGX</td>
+                                            <td><span t-esc="'{:,.0f}'.format(loan.get('disbursed_amount', 0))"/></td>
+                                            <td><span t-esc="'{:,.0f}'.format(loan.get('expected_outstanding', 0))"/></td>
+                                            <td><span t-esc="'{:,.0f}'.format(loan.get('actual_outstanding', 0))"/></td>
                                             <td><span t-esc="loan.get('start_date', '')"/></td>
                                         </tr>
                                     </t>
@@ -133,7 +127,7 @@
                     
                     <div class="row mt-4">
                         <div class="col-12">
-                            <h4>Performance Analysis</h4>
+                            <h3>Performance Analysis</h3>
                             <div class="card">
                                 <div class="card-body">
                                     <t t-set="collection_rate" t-value="(report_data.get('actual_outstanding', 0) / report_data.get('expected_outstanding', 1)) * 100 if report_data.get('expected_outstanding', 0) > 0 else 0"/>
@@ -144,12 +138,12 @@
                                     
                                     <t t-if="outstanding_gap > 0">
                                         <div class="alert alert-warning">
-                                            <strong>Collection Gap:</strong> There is a shortfall of <span t-esc="'{:,.0f}'.format(outstanding_gap)"/> UGX in collections.
+                                            <strong>Collection Gap:</strong> There is a shortfall of UGX <span t-esc="'{:,.0f}'.format(outstanding_gap)"/> in collections.
                                         </div>
                                     </t>
                                     <t t-elif="outstanding_gap &lt; 0">
                                         <div class="alert alert-success">
-                                            <strong>Over-Collection:</strong> Collections exceed expectations by <span t-esc="'{:,.0f}'.format(abs(outstanding_gap))"/> UGX.
+                                            <strong>Over-Collection:</strong> Collections exceed expectations by  UGX <span t-esc="'{:,.0f}'.format(abs(outstanding_gap))"/> UGX.
                                         </div>
                                     </t>
                                     <t t-else="">
@@ -158,6 +152,7 @@
                                         </div>
                                     </t>
                                 </div>
+                                <p>Note: All amounts are in Ugandan shillings</p>
                             </div>
                         </div>
                     </div>

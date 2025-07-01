@@ -22,7 +22,7 @@ class LoanPortfolio(models.Model):
 
     @api.model
     def get_overview_metrics(self):
-        """Return aggregated metrics for all portfolios."""
+        
         portfolios = self.search([])
         if not portfolios:
             return {
@@ -44,7 +44,6 @@ class LoanPortfolio(models.Model):
 
     @api.model
     def get_filtered_metrics(self, member_filter=None, loan_product_filter=None):
-        """Return metrics and loan details filtered by member and/or loan product."""
         domain = []
         
         if member_filter:
