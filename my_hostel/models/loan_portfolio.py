@@ -133,22 +133,68 @@ class LoanPortfolio(models.Model):
             }
         }
     def generate_svg_chart(self, expected, actual):
-        """Generate SVG chart string"""
+        """Generate properly spaced SVG chart with all labels"""
         max_value = max(expected, actual, 1)
-        expected_height = (expected / max_value) * 200
-        actual_height = (actual / max_value) * 200
+        chart_width = 600
+        chart_height = 500  # Increased height to accommodate title
+        bar_width = 100
+        gap = 40
+        top_margin = 40  # Space for title
+        bottom_margin = 80  # Space for x-axis labels
+        
+        # Calculate available height for bars
+        available_height = chart_height - top_margin - bottom_margin
+        
+        # Calculate bar heights
+        expected_height = (expected / max_value) * available_height
+        actual_height = (actual / max_value) * available_height
+        
+        # Base Y position (chart bottom minus bottom margin)
+        base_y = chart_height - bottom_margin
         
         return f"""
-        <svg width="100%" height="300" viewBox="0 0 400 300">
-            <rect x="100" y="{300 - expected_height}" width="80" height="{expected_height}" fill="#36A2EB"/>
-            <text x="140" y="{280 - expected_height}" text-anchor="middle" fill="black">Expected</text>
-            <text x="140" y="{295 - expected_height}" text-anchor="middle" fill="black">{'{:,.0f}'.format(expected)}</text>
+        <svg width="100%" height="{chart_height}" viewBox="0 0 {chart_width} {chart_height}" font-family="Arial, sans-serif">
+            <!-- Background -->
+            <rect width="100%" height="100%" fill="#f8f9fa"/>
             
-            <rect x="220" y="{300 - actual_height}" width="80" height="{actual_height}" fill="#FF6384"/>
-            <text x="260" y="{280 - actual_height}" text-anchor="middle" fill="black">Actual</text>
-            <text x="260" y="{295 - actual_height}" text-anchor="middle" fill="black">{'{:,.0f}'.format(actual)}</text>
             
-            <line x1="50" y1="250" x2="350" y2="250" stroke="black" stroke-width="2"/>
+            <!-- X-axis line -->
+            <line x1="50" y1="{base_y}" x2="{chart_width - 50}" y2="{base_y}" stroke="#495057" stroke-width="2"/>
+            
+            <!-- Expected bar -->
+            <rect x="150" y="{base_y - expected_height}" 
+                width="{bar_width}" height="{expected_height}" 
+                fill="#36A2EB" rx="5" ry="5"/>
+            <!-- Expected bar top label -->
+            <text x="{150 + bar_width/2}" y="{base_y - expected_height - 15}" 
+                text-anchor="middle" fill="#212529" font-size="12" font-weight="bold">
+                Expected
+            </text>
+            <!-- Expected value label -->
+            <text x="{150 + bar_width/2}" y="{base_y + 20}" 
+                text-anchor="middle" fill="#212529" font-size="12">
+                {'{:,.0f}'.format(expected)} UGX
+            </text>
+            
+            <!-- Actual bar -->
+            <rect x="{150 + bar_width + gap}" y="{base_y - actual_height}" 
+                width="{bar_width}" height="{actual_height}" 
+                fill="#FF6384" rx="5" ry="5"/>
+            <!-- Actual bar top label - NOW INCLUDED -->
+            <text x="{150 + bar_width + gap + bar_width/2}" y="{base_y - actual_height - 15}" 
+                text-anchor="middle" fill="#212529" font-size="12" font-weight="bold">
+                Actual
+            </text>
+            <!-- Actual value label -->
+            <text x="{150 + bar_width + gap + bar_width/2}" y="{base_y + 20}" 
+                text-anchor="middle" fill="#212529" font-size="12">
+                {'{:,.0f}'.format(actual)} UGX
+            </text>
+            
+            <!-- Y-axis indicators -->
+            <line x1="50" y1="{top_margin}" x2="50" y2="{base_y}" stroke="#495057" stroke-width="1" stroke-dasharray="5,5"/>
+            <text x="40" y="{top_margin + 15}" text-anchor="end" fill="#495057" font-size="10">{'{:,.0f}'.format(max_value)}</text>
+            <text x="40" y="{base_y}" text-anchor="end" fill="#495057" font-size="10">0</text>
         </svg>
         """
 

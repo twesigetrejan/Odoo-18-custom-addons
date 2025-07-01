@@ -152,20 +152,21 @@
                                         </div>
                                     </t>
                                 </div>
-                                <p>Note: All amounts are in Ugandan shillings</p>
+                                
                             </div>
                         </div>
                     </div>
 
-                    <div class="row mt-4" style="margin-top: 180px;">
+                    <div class="row mt-4" style="padding-top: 180px;">
                         <div class="col-12">
-                            <h3>Performance Comparison</h3>
+                            <h3>Outstanding amount comparison</h3>
                             <div t-raw="svg_chart" t-if="svg_chart"/>
                             <div class="alert alert-warning" t-if="not svg_chart">
                                 Chart could not be generated for this report.
                             </div>
                         </div>
                     </div>
+                    <p>Note: All amounts are in Ugandan shillings</p>
                                         
                     <div class="oe_structure"/> 
                 </div>
