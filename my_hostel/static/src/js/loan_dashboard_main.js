@@ -182,13 +182,25 @@ export class LoanDashboardMain extends Component {
     downloadReport() {
         try {
             console.log('Triggering PDF report download...');
-            this.orm.call('loan.portfolio', 'generate_pdf_report', []).then(action => {
-                if (action) this.action.doAction(action);
+            
+            // Pass current filter values to the report generation
+            const memberFilter = this.state.selectedMember || null;
+            const loanProductFilter = this.state.selectedLoanProduct || null;
+            
+            this.orm.call('loan.portfolio', 'generate_pdf_report', [
+                memberFilter, 
+                loanProductFilter
+            ]).then(action => {
+                if (action) {
+                    this.action.doAction(action);
+                }
             }).catch(error => {
                 console.error('Download Error:', error);
+                this.state.error = 'Failed to generate PDF report: ' + error.message;
             });
         } catch (error) {
             console.error('Download failed:', error);
+            this.state.error = 'Failed to download report: ' + error.message;
         }
     }
 }

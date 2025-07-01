@@ -17,6 +17,7 @@
         'views/room_category.xml',
         'views/hostel_dashboard_menu.xml',
         'views/loan_portfolio.xml',
+        'reports/loan_portfolio_report.xml',
         'data/data.xml',
     ],
     'assets': {
