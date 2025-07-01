@@ -2,12 +2,15 @@
 <templates id="template" xml:space="preserve">
     <t t-name="my_hostel.LoanDashboardMainTemplate">
         <div class="loan_dashboard_main">
-            <h1>💰 Loan Portfolio Performance</h1>
+            <div style="padding-left:20px">
+                <h1>Loan Portfolio Performance</h1>
+
+            </div>
             
             <!-- Filter Section -->
             <div class="row mb-4" style="background-color: #f8f9fa; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
                 <div class="col-md-12">
-                    <h4 style="margin-bottom: 15px;">🔍 Filters</h4>
+                    <h4 style="margin-bottom: 15px;">Filters 🔍</h4>
                     <div class="row">
                         <div class="col-md-4">
                             <label for="memberFilter" class="form-label">Filter by Member:</label>
@@ -43,8 +46,9 @@
                     </t>
                 </div>
             </div>
-
-            <button class="btn btn-primary mb-3" t-on-click="downloadReport">Download PDF Report</button>
+            <div style="padding-left:20px">
+                <button class="btn btn-primary mb-3" t-on-click="downloadReport">Download PDF Report</button>
+            </div>
             
             <t t-if="state.error">
                 <div class="alert alert-danger" role="alert">
@@ -53,7 +57,7 @@
             </t>
             
             <!-- Metrics Cards -->
-            <div class="row" style="margin-bottom: 20px;">
+            <div class="row" style="margin-bottom: 20px; padding-left:20px; padding-right:20px">
                 <div class="col-md-3">
                     <div class="card" style="background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); border-radius: 15px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); padding: 20px; transition: transform 0.2s; text-align: center;">
                         <h3 style="font-size: 1.5em; font-weight: bold; color: #2c3e50; margin-bottom: 10px;">Total Disbursed (UGX)</h3>
