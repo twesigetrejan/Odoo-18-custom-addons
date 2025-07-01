@@ -3,12 +3,56 @@
     <t t-name="my_hostel.LoanDashboardMainTemplate">
         <div class="loan_dashboard_main">
             <h1>💰 Loan Portfolio Performance</h1>
+            
+            <!-- Filter Section -->
+            <div class="row mb-4" style="background-color: #f8f9fa; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+                <div class="col-md-12">
+                    <h4 style="margin-bottom: 15px;">🔍 Filters</h4>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label for="memberFilter" class="form-label">Filter by Member:</label>
+                            <select id="memberFilter" class="form-select" t-model="state.selectedMember" t-on-change="onMemberFilterChange">
+                                <option value="">All Members</option>
+                                <t t-foreach="state.members" t-as="member" t-key="member">
+                                    <option t-att-value="member"><t t-esc="member"/></option>
+                                </t>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="loanProductFilter" class="form-label">Filter by Loan Product:</label>
+                            <select id="loanProductFilter" class="form-select" t-model="state.selectedLoanProduct" t-on-change="onLoanProductFilterChange">
+                                <option value="">All Loan Products</option>
+                                <t t-foreach="state.loanProducts" t-as="product" t-key="product">
+                                    <option t-att-value="product"><t t-esc="product"/></option>
+                                </t>
+                            </select>
+                        </div>
+                        <div class="col-md-4" style="display: flex; align-items: end;">
+                            <button class="btn btn-secondary" t-on-click="clearFilters" style="margin-bottom: 0;">
+                                Clear Filters
+                            </button>
+                        </div>
+                    </div>
+                    <t t-if="state.isFiltered">
+                        <div class="alert alert-info mt-3" role="alert">
+                            <strong>📊 Filtered View:</strong> Showing data for 
+                            <t t-if="state.selectedMember">member "<t t-esc="state.selectedMember"/>"</t>
+                            <t t-if="state.selectedMember and state.selectedLoanProduct"> and </t>
+                            <t t-if="state.selectedLoanProduct">loan product "<t t-esc="state.selectedLoanProduct"/>"</t>
+                        </div>
+                    </t>
+                </div>
+            </div>
+
             <button class="btn btn-primary mb-3" t-on-click="downloadReport">Download PDF Report</button>
+            
             <t t-if="state.error">
                 <div class="alert alert-danger" role="alert">
                     <t t-esc="state.error"/>
                 </div>
             </t>
+            
+            <!-- Metrics Cards -->
             <div class="row" style="margin-bottom: 20px;">
                 <div class="col-md-3">
                     <div class="card" style="background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); border-radius: 15px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); padding: 20px; transition: transform 0.2s; text-align: center;">
@@ -35,141 +79,56 @@
                     </div>
                 </div>
             </div>
-            <div class="row" style="padding:160px;">
-                
-                <div class="col-md-6">
-                    <h4>Loan Details</h4>
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>Loan ID</th>
-                                <th>Member</th>
-                                <th>Loan Product</th>
-                                <th>Interest Rate (%)</th>
-                                <th>Disbursed Amount (UGX)</th>
-                                <th>Expected Outstanding (UGX)</th>
-                                <th>Actual Outstanding (UGX)</th>
-                                <th>Start Date</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <t t-foreach="state.loanDetails" t-as="loan" t-key="loan.id">
-                                <tr>
-                                    <td><t t-esc="loan.loan_id"/></td>
-                                    <td><t t-esc="loan.member"/></td>
-                                    <td><t t-esc="loan.loan_product"/></td>
-                                    <td><t t-esc="loan.interest_rate"/></td>
-                                    <td><t t-esc="loan.disbursed_amount.toLocaleString('en-US', { style: 'currency', currency: 'UGX' })"/></td>
-                                    <td><t t-esc="loan.expected_outstanding.toLocaleString('en-US', { style: 'currency', currency: 'UGX' })"/></td>
-                                    <td><t t-esc="loan.actual_outstanding.toLocaleString('en-US', { style: 'currency', currency: 'UGX' })"/></td>
-                                    <td><t t-esc="loan.start_date"/></td>
-                                </tr>
-                            </t>
-                            <t t-if="state.loanDetails.length === 0">
-                                <tr>
-                                    <td colspan="8" class="text-center">No loan details available.</td>
-                                </tr>
-                            </t>
-                        </tbody>
-                    </table>
-                </div>
-                <div class="col-md-6" style="padding-left:80px;">
-                    <h4>Expected vs Actual Outstanding</h4>
-                    <div style="max-width: 600px; max-height: 600px;">
-                        <canvas t-ref="barChart" width="600" height="450"></canvas>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </t>
-</templates> 
-<!-- <?xml version="1.0" encoding="UTF-8"?>
-<templates id="template" xml:space="preserve">
-    <t t-name="my_hostel.LoanDashboardMainTemplate">
-        <div class="loan_dashboard_main">
-            <h1>💰 Loan Portfolio Performance</h1>
-            <button class="btn btn-primary mb-3" t-on-click="downloadReport">Download PDF Report</button>
-            <t t-if="state.error">
-                <div class="alert alert-danger" role="alert">
-                    <t t-esc="state.error"/>
-                </div>
-            </t>
-            <div class="row" style="margin-bottom: 20px;">
-                <div class="col-md-3">
-                    <div class="card" style="background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); border-radius: 15px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); padding: 20px; transition: transform 0.2s; text-align: center;">
-                        <h3 style="font-size: 1.5em; font-weight: bold; color: #2c3e50; margin-bottom: 10px;">Total Disbursed (UGX)</h3>
-                        <p style="font-size: 1.2em; color: #34495e;"><t t-esc="state.total_disbursed.toLocaleString('en-US', { style: 'currency', currency: 'UGX' })"/></p>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="card" style="background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); border-radius: 15px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); padding: 20px; transition: transform 0.2s; text-align: center;">
-                        <h3 style="font-size: 1.5em; font-weight: bold; color: #2c3e50; margin-bottom: 10px;">Expected Outstanding (UGX)</h3>
-                        <p style="font-size: 1.2em; color: #34495e;"><t t-esc="state.expected_outstanding.toLocaleString('en-US', { style: 'currency', currency: 'UGX' })"/></p>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="card" style="background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); border-radius: 15px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); padding: 20px; transition: transform 0.2s; text-align: center;">
-                        <h3 style="font-size: 1.5em; font-weight: bold; color: #2c3e50; margin-bottom: 10px;">Actual Outstanding (UGX)</h3>
-                        <p style="font-size: 1.2em; color: #34495e;"><t t-esc="state.actual_outstanding.toLocaleString('en-US', { style: 'currency', currency: 'UGX' })"/></p>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="card" style="background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); border-radius: 15px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); padding: 20px; transition: transform 0.2s; text-align: center;">
-                        <h3 style="font-size: 1.5em; font-weight: bold; color: #2c3e50; margin-bottom: 10px;">Total Loans</h3>
-                        <p style="font-size: 1.2em; color: #34495e;"><t t-esc="state.loan_count"/></p>
-                    </div>
-                </div>
-            </div>
+            
+            <!-- Main Content Area -->
             <div class="row" style="padding: 20px;">
-                <div class="col-md-6">
-                    <h4>Overall loan details</h4>
-                    <div class="filter-controls mb-3" style="display:flex; gap:20px;">
-                        <input type="text" t-model="state.filterMember" t-att-placeholder="'Filter by Member...'" class="form-control"/>
-                        <input type="text" t-model="state.filterProduct" t-att-placeholder="'Filter by Loan Product...'" class="form-control" />
-                    </div>
+                <div class="col-md-7">
                     <h4>Loan Details</h4>
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>Loan ID</th>
-                                <th>Member</th>
-                                <th>Loan Product</th>
-                                <th>Interest Rate (%)</th>
-                                <th>Disbursed Amount (UGX)</th>
-                                <th>Expected Outstanding (UGX)</th>
-                                <th>Actual Outstanding (UGX)</th>
-                                <th>Start Date</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <t t-foreach="state.loanDetails" t-as="loan" t-key="loan.id">
+                    <div style="max-height: 500px; overflow-y: auto;">
+                        <table class="table table-striped table-hover">
+                            <thead class="table-dark">
                                 <tr>
-                                    <td><t t-esc="loan.loan_id"/></td>
-                                    <td><t t-esc="loan.member"/></td>
-                                    <td><t t-esc="loan.loan_product"/></td>
-                                    <td><t t-esc="loan.interest_rate"/></td>
-                                    <td><t t-esc="loan.disbursed_amount.toLocaleString('en-US', { style: 'currency', currency: 'UGX' })"/></td>
-                                    <td><t t-esc="loan.expected_outstanding.toLocaleString('en-US', { style: 'currency', currency: 'UGX' })"/></td>
-                                    <td><t t-esc="loan.actual_outstanding.toLocaleString('en-US', { style: 'currency', currency: 'UGX' })"/></td>
-                                    <td><t t-esc="loan.start_date"/></td>
+                                    <th>Loan ID</th>
+                                    <th>Member</th>
+                                    <th>Loan Product</th>
+                                    <th>Interest Rate (%)</th>
+                                    <th>Disbursed Amount (UGX)</th>
+                                    <th>Expected Outstanding (UGX)</th>
+                                    <th>Actual Outstanding (UGX)</th>
+                                    <th>Start Date</th>
                                 </tr>
-                            </t>
-                            <t t-if="state.loanDetails.length === 0">
-                                <tr>
-                                    <td colspan="8" class="text-center">No loan details available.</td>
-                                </tr>
-                            </t>
-                        </tbody>
-                    </table>
-                </div>
-                <div class="col-md-6" style="padding-left: 80px;">
-                    <h4>Expected vs Actual Outstanding</h4>
-                    <div style="max-width: 600px; max-height: 600px;" t-ref="chartContainer">
-                        <canvas t-ref="barChart"></canvas>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="state.loanDetails" t-as="loan" t-key="loan.id">
+                                    <tr>
+                                        <td><t t-esc="loan.loan_id"/></td>
+                                        <td><strong><t t-esc="loan.member"/></strong></td>
+                                        <td><span class="badge bg-info"><t t-esc="loan.loan_product"/></span></td>
+                                        <td><t t-esc="loan.interest_rate"/>%</td>
+                                        <td><t t-esc="loan.disbursed_amount.toLocaleString('en-US', { style: 'currency', currency: 'UGX' })"/></td>
+                                        <td><t t-esc="loan.expected_outstanding.toLocaleString('en-US', { style: 'currency', currency: 'UGX' })"/></td>
+                                        <td><t t-esc="loan.actual_outstanding.toLocaleString('en-US', { style: 'currency', currency: 'UGX' })"/></td>
+                                        <td><t t-esc="loan.start_date"/></td>
+                                    </tr>
+                                </t>
+                                <t t-if="state.loanDetails.length === 0">
+                                    <tr>
+                                        <td colspan="8" class="text-center text-muted">
+                                            <i>No loan details available for the selected filters.</i>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
-                
+                <div class="col-md-5">
+                    <h4>Expected vs Actual Outstanding</h4>
+                    <div style="max-width: 500px; max-height: 400px; background-color: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                        <canvas t-ref="barChart" width="450" height="350"></canvas>
+                    </div>
+                </div>
             </div>
         </div>
     </t>
-</templates> -->
+</templates>
