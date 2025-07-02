@@ -19,10 +19,12 @@
         'views/loan_portfolio.xml',
         'reports/loan_portfolio_report.xml',
         'data/data.xml',
+        # 'views/assets.xml'
     ],
     'assets': {
         'web.assets_backend': [
             'my_hostel/static/src/css/hostel.css',
+            'my_hostel/static/src/css/output.css',
             # 'my_hostel/static/src/js/lib/chart.js',
             'my_hostel/static/src/js/hostel_dashboard_main.js',
             'my_hostel/static/src/js/loan_dashboard_main.js',
@@ -31,6 +33,7 @@
             'https://cdn.jsdelivr.net/npm/chart.js',
             'web/static/lib/owl/owl.js'
         ],
+    
         'web.assets_qweb': [
         ],
     },

@@ -82,27 +82,27 @@
                                     <!-- Status Badge -->
                                     <div style="margin-top: 24px;">
                                         <span t-if="record.status.raw_value == 'draft'" 
-                                            class="badge badge-secondary"
+                                            class="px-2 py-2 badge badge-secondary"
                                             style="background-color: #6c757d; color: #fff;">Draft</span>
 
                                         <span t-if="record.status.raw_value == 'reservation'" 
-                                            class="badge badge-warning"
+                                            class="px-1 py-2 badge badge-warning"
                                             style="background-color: #ffc107; color: #212529;">Reservation</span>
 
                                         <span t-if="record.status.raw_value == 'pending'" 
-                                            class="badge badge-info"
+                                            class="px-1 py-2 badge badge-info"
                                             style="background-color: #17a2b8; color: #fff;">Pending</span>
 
                                         <span t-if="record.status.raw_value == 'paid'" 
-                                            class="badge badge-success"
+                                            class="px-2 py-2 badge badge-success"
                                             style="background-color: #28a745; color: #fff;">Done</span>
 
                                         <span t-if="record.status.raw_value == 'discharge'" 
-                                            class="badge badge-danger"
+                                            class="px-1 py-2 badge badge-danger"
                                             style="background-color: #dc3545; color: #fff;">Discharged</span>
 
                                         <span t-if="record.status.raw_value == 'cancel'" 
-                                            class="badge badge-dark"
+                                            class="px-1 py-2 badge badge-dark"
                                             style="background-color: #343a40; color: #fff;">Cancelled</span>
                                     </div>
 
