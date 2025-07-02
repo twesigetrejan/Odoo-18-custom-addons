@@ -10,7 +10,6 @@ export class LoanDashboardMain extends Component {
         super.setup();
         this.orm = useService('orm');
         this.action = useService('action');
-        console.log('ORM Service:', this.orm);
         this.state = useState({
             total_disbursed: 0,
             expected_outstanding: 0,
@@ -18,7 +17,6 @@ export class LoanDashboardMain extends Component {
             loan_count: 0,
             error: null,
             loanDetails: [],
-            // Filter states
             members: [],
             loanProducts: [],
             selectedMember: '',
@@ -34,7 +32,6 @@ export class LoanDashboardMain extends Component {
         });
 
         onMounted(() => {
-            console.log('Bar chart element:', this.barChartRef.el);
             this.renderCharts();
         });
     }
@@ -45,9 +42,7 @@ export class LoanDashboardMain extends Component {
         ];
         for (const lib of libraries) {
             try {
-                console.log(`Loading ${lib}...`);
                 await loadJS(lib);
-                console.log(`${lib} loaded successfully`);
             } catch (error) {
                 console.error(`Failed to load ${lib}:`, error);
                 throw new Error(`Failed to load required library: ${lib}`);
@@ -57,9 +52,7 @@ export class LoanDashboardMain extends Component {
 
     async fetchFilterOptions() {
         try {
-            console.log('Fetching filter options...');
             const options = await this.orm.call('loan.portfolio', 'get_filter_options', []);
-            console.log('Filter options:', options);
             this.state.members = options.members || [];
             this.state.loanProducts = options.loan_products || [];
         } catch (error) {
@@ -70,18 +63,13 @@ export class LoanDashboardMain extends Component {
 
     async fetchDashboardData() {
         try {
-            console.log('Fetching dashboard data...');
-            
-            // Check if any filters are applied
             const hasFilters = this.state.selectedMember || this.state.selectedLoanProduct;
             
             if (hasFilters) {
-                // Use filtered data
                 const data = await this.orm.call('loan.portfolio', 'get_filtered_metrics', [
                     this.state.selectedMember || null,
                     this.state.selectedLoanProduct || null
                 ]);
-                console.log('Filtered dashboard data:', data);
                 this.state.total_disbursed = data.total_disbursed || 0;
                 this.state.expected_outstanding = data.expected_outstanding || 0;
                 this.state.actual_outstanding = data.actual_outstanding || 0;
@@ -89,16 +77,13 @@ export class LoanDashboardMain extends Component {
                 this.state.loanDetails = data.loan_details || [];
                 this.state.isFiltered = true;
             } else {
-                // Use overview data and fetch all loan details
                 const data = await this.orm.call('loan.portfolio', 'get_overview_metrics', []);
-                console.log('Overview dashboard data:', data);
                 this.state.total_disbursed = data.total_disbursed || 0;
                 this.state.expected_outstanding = data.expected_outstanding || 0;
                 this.state.actual_outstanding = data.actual_outstanding || 0;
                 this.state.loan_count = data.loan_count || 0;
                 this.state.isFiltered = false;
                 
-                // Fetch all loan details for table
                 await this.fetchLoanDetails();
             }
         } catch (error) {
@@ -109,7 +94,6 @@ export class LoanDashboardMain extends Component {
 
     async fetchLoanDetails() {
         try {
-            console.log('Fetching loan details...');
             const loans = await this.orm.searchRead('loan.details', [], [
                 'loan_id',
                 'member',
@@ -120,7 +104,6 @@ export class LoanDashboardMain extends Component {
                 'actual_outstanding',
                 'start_date',
             ]);
-            console.log('Loan details:', loans);
             this.state.loanDetails = loans;
         } catch (error) {
             console.error('Error fetching loan details:', error);
@@ -181,9 +164,7 @@ export class LoanDashboardMain extends Component {
 
     downloadReport() {
         try {
-            console.log('Triggering PDF report download...');
-            
-            // Pass current filter values to the report generation
+      
             const memberFilter = this.state.selectedMember || null;
             const loanProductFilter = this.state.selectedLoanProduct || null;
             
