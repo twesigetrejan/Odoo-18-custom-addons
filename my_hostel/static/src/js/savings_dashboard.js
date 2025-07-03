@@ -33,8 +33,8 @@ export class SavingsDashboardMain extends Component {
             selectedMember: '',
             selectedProduct: '',
             selectedPortfolio: '',
-            dormancyPeriod: 90,
-            balanceThreshold: 50000,
+            dormancyPeriod: 1,
+            balanceThreshold: 10000,
             
             isFiltered: false,
         });
@@ -116,7 +116,7 @@ export class SavingsDashboardMain extends Component {
         this.state.filteredAccountDetails = this.state.accountDetails.filter(account => {
             const isDormant = account.days_idle >= this.state.dormancyPeriod;
             const isLowBalance = this.state.balanceThreshold ? 
-                account.balance < this.state.balanceThreshold : true;
+                account.balance >= this.state.balanceThreshold : true;
             const productMatch = this.state.selectedProduct ? 
                 account.product_type === this.state.selectedProduct : true;
             const portfolioMatch = this.state.selectedPortfolio ? 

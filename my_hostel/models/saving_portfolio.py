@@ -140,8 +140,8 @@ class SavingPortfolio(models.Model):
         return metrics
 
     @api.model
-    def get_filtered_metrics(self, member_filter=None, product_filter=None, portfolio_filter=None, dormancy_period=90, balance_threshold=None):
-        """Get filtered metrics for dashboard"""
+    def get_filtered_metrics(self, member_filter=None, product_filter=None, portfolio_filter=None, dormancy_period=1, balance_threshold=10000):
+        """Get filtered metrics for dashboard with new defaults"""
         domain = []
         
         if member_filter:
@@ -153,17 +153,17 @@ class SavingPortfolio(models.Model):
             
         accounts = self.env['saving.details'].search(domain)
         
-        # Apply dormancy filter
+        # Apply dormancy filter (new 1-day default)
         dormant_accounts = accounts.filtered(lambda a: a.days_idle >= dormancy_period)
         dormant_balances = sum(a.balance for a in dormant_accounts)
         
-        # Apply balance threshold filter if provided
+        # Apply balance threshold filter (now >= and 10,000 default)
         if balance_threshold:
-            low_balance_accounts = accounts.filtered(lambda a: a.balance < balance_threshold)
+            threshold_accounts = accounts.filtered(lambda a: a.balance >= balance_threshold)
         else:
-            low_balance_accounts = accounts
+            threshold_accounts = accounts
             
-        # Get all account details (client will do additional filtering)
+        # Get all account details
         account_details = []
         for account in accounts:
             account_details.append({
@@ -183,7 +183,7 @@ class SavingPortfolio(models.Model):
             'dormant_accounts': len(dormant_accounts),
             'dormant_balances': dormant_balances,
             'dormant_percentage': (len(dormant_accounts) / len(accounts)) * 100 if accounts else 0,
-            'low_balance_accounts': len(low_balance_accounts),
+            'low_balance_accounts': len(threshold_accounts), 
             'account_details': account_details
         }
             
