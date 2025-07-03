@@ -7,7 +7,16 @@ class SavingPortfolio(models.Model):
     _description = 'Saving Portfolio Overview'
     _rec_name = 'portfolio_code'
 
-    portfolio_code = fields.Char(string='Portfolio Code', required=True)
+    portfolio_code = fields.Selection([
+        ('students', 'Students'),
+        ('corporate_clients', 'Corporate clients'),
+        ('youth_groups', 'Youth Groups'),
+        ('senior_citizens', 'Senior Citizens'),
+        ('NGO', 'NGO / Charity groups'),
+        ('government_workers', 'Government workers'),
+        ('farmers', 'farmers')
+    ], string='Portfolio Name', required=True, help="Category of savings group")
+    
     currency_id = fields.Many2one('res.currency', string='Currency', required=True,
                                   default=lambda self: self.env.company.currency_id)
 
@@ -64,6 +73,8 @@ class SavingPortfolio(models.Model):
 class SavingDetails(models.Model):
     _name = 'saving.details'
     _description = 'Individual Saving Account Details'
+    _rec_name ='member_name'
+    _order = 'member_id'
 
     portfolio_id = fields.Many2one('saving.portfolio', string='Portfolio', required=True)
     member_id = fields.Char(string='Member ID', required=True)
@@ -108,6 +119,7 @@ class SavingDetails(models.Model):
 class SavingTransaction(models.Model):
     _name = 'saving.transaction'
     _description = 'Saving Transactions'
+    _rec_name = 'account_id'
 
     account_id = fields.Many2one('saving.details', string='Account', required=True, ondelete='cascade')
     transaction_type = fields.Selection([
