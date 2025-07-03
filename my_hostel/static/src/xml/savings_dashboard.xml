@@ -22,13 +22,17 @@
                             </select>
                         </div>
                         <div class="col-md-2">
-                            <label for="balanceThreshold" class="form-label">Low Balance Threshold:</label>
+                            <label for="balanceThreshold" class="form-label">Balance Threshold:</label>
                             <select id="balanceThreshold" class="form-select" t-model="state.balanceThreshold" t-on-change="onBalanceThresholdChange">
                                 <option value="10000">UGX 10,000</option>
                                 <option value="25000">UGX 25,000</option>
                                 <option value="50000" selected="selected">UGX 50,000</option>
                                 <option value="100000">UGX 100,000</option>
                                 <option value="200000">UGX 200,000</option>
+                                <option value="200000">UGX 400,000</option>
+                                <option value="200000">UGX 500,000</option>
+                                <option value="200000">UGX 750,000</option>
+                                <option value="200000">UGX 1,000,000</option>
                             </select>
                         </div>
                         <div class="col-md-2">
@@ -41,7 +45,7 @@
                             </select>
                         </div>
                         <div class="col-md-2">
-                            <label for="portfolioFilter" class="form-label">Branches:</label>
+                            <label for="portfolioFilter" class="form-label">Savings category:</label>
                             <select id="portfolioFilter" class="form-select" t-model="state.selectedPortfolio" t-on-change="onPortfolioFilterChange">
                                 <option value="">Any</option>
                                 <t t-foreach="state.portfolios" t-as="portfolio" t-key="portfolio">
@@ -122,7 +126,6 @@
                                     <th>Last Txn</th>
                                     <th>Days Idle</th>
                                     <th>Balance</th>
-                                    <th>Count by Days Idle</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -134,13 +137,7 @@
                                         <td><t t-esc="formatDate(account.last_transaction_date)"/></td>
                                         <td><t t-esc="account.days_idle"/></td>
                                         <td><t t-esc="formatCurrency(account.balance)"/></td>
-                                        <td>
-                                            <t t-if="account.days_idle >= 160">160+</t>
-                                            <t t-elif="account.days_idle >= 120">120</t>
-                                            <t t-elif="account.days_idle >= 60">60</t>
-                                            <t t-elif="account.days_idle >= 30">30</t>
-                                            <t t-else="">0</t>
-                                        </td>
+                                        
                                     </tr>
                                 </t>
                                 <t t-if="state.accountDetails.length === 0">
