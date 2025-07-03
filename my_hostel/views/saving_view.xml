@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
 
-    
     <!-- Saving Portfolio Tree View -->
     <record id="view_saving_portfolio_tree" model="ir.ui.view">
         <field name="name">saving.portfolio.tree</field>
@@ -54,6 +53,13 @@
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">Create your first savings portfolio</p>
         </field>
+    </record>
+    
+    <!-- Action: Savings Dashboard -->
+    <record id="action_savings_dashboard_main" model="ir.actions.client">
+        <field name="name">Savings Dashboard</field>
+        <field name="tag">savings_dashboard_main</field>
+        <field name="params">{}</field>
     </record>
     
     <!-- Saving Details Tree View -->
@@ -187,4 +193,11 @@
               parent="menu_savings_root"
               action="action_saving_transaction"
               sequence="3"/>
+
+    <!-- Dashboard menu -->
+    <menuitem id="menu_savings_dashboard"
+              name="Dashboard"
+              parent="menu_savings_root"
+              action="action_savings_dashboard_main"
+              sequence="4"/>
 </odoo>

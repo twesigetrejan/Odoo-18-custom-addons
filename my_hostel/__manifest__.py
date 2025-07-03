@@ -17,10 +17,11 @@
         'views/room_category.xml',
         'views/hostel_dashboard_menu.xml',
         'views/loan_portfolio.xml',
+        'views/saving_view.xml',
         'reports/loan_portfolio_report.xml',
+        'reports/savings_portfolio_report.xml',
         'data/data.xml',
         'views/hostel_announcements.xml',
-        'views/saving_view.xml',
         # 'views/hostel_maintenance_requests.xml',
         # 'views/assets.xml'
     ],
@@ -31,8 +32,10 @@
             # 'my_hostel/static/src/js/lib/chart.js',
             'my_hostel/static/src/js/hostel_dashboard_main.js',
             'my_hostel/static/src/js/loan_dashboard_main.js',
+            'my_hostel/static/src/js/savings_dashboard.js',
             'my_hostel/static/src/xml/loan_dashboard_main.xml',
             'my_hostel/static/src/xml/hostel_dashboard_main.xml',
+            'my_hostel/static/src/xml/savings_dashboard.xml',
             'https://cdn.jsdelivr.net/npm/chart.js',
             'web/static/lib/owl/owl.js'
         ],

@@ -1,5 +1,13 @@
 from odoo import models, fields, api
 from datetime import date
+import base64
+import io
+try:
+    import matplotlib.pyplot as plt
+    import matplotlib
+    matplotlib.use('Agg')
+except ImportError:
+    plt = None
 
 
 class SavingPortfolio(models.Model):
@@ -68,6 +76,167 @@ class SavingPortfolio(models.Model):
                 distribution['30'] += 1
 
         return distribution
+
+    @api.model
+    def get_filter_options(self):
+        """Get filter options for the dashboard"""
+        accounts = self.env['saving.details'].search([])
+        
+        members = list(set(accounts.mapped('member_name')))
+        members.sort()
+        
+        product_types = list(set(accounts.mapped('product_type')))
+        product_types.sort()
+        
+        portfolios = list(set(accounts.mapped('portfolio_id.portfolio_code')))
+        portfolios.sort()
+        
+        return {
+            'members': members,
+            'product_types': product_types,
+            'portfolios': portfolios
+        }
+
+    @api.model
+    def get_overview_metrics(self, dormancy_period=90, balance_threshold=None):
+        """Get overview metrics for dashboard"""
+        accounts = self.env['saving.details'].search([])
+        
+        total_accounts = len(accounts)
+        total_balances = sum(accounts.mapped('balance'))
+        dormant_accounts = len(accounts.filtered(lambda a: a.days_idle >= dormancy_period))
+        dormant_balances = sum(a.balance for a in accounts.filtered(lambda a: a.days_idle >= dormancy_period))
+        
+        metrics = {
+            'total_accounts': total_accounts,
+            'total_balances': total_balances,
+            'dormant_accounts': dormant_accounts,
+            'dormant_balances': dormant_balances,
+            'dormant_percentage': (dormant_accounts / total_accounts) * 100 if total_accounts else 0
+        }
+        
+        if balance_threshold is not None:
+            low_balance_accounts = len(accounts.filtered(lambda a: a.balance < balance_threshold))
+            metrics['low_balance_accounts'] = low_balance_accounts
+            
+        return metrics
+
+    @api.model
+    def get_filtered_metrics(self, member_filter=None, product_filter=None, portfolio_filter=None, dormancy_period=90, balance_threshold=None):
+        """Get filtered metrics for dashboard"""
+        domain = []
+        
+        if member_filter:
+            domain.append(('member_name', '=', member_filter))
+        if product_filter:
+            domain.append(('product_type', '=', product_filter))
+        if portfolio_filter:
+            domain.append(('portfolio_id.portfolio_code', '=', portfolio_filter))
+            
+        accounts = self.env['saving.details'].search(domain)
+        
+        total_accounts = len(accounts)
+        total_balances = sum(accounts.mapped('balance'))
+        dormant_accounts = len(accounts.filtered(lambda a: a.days_idle >= dormancy_period))
+        dormant_balances = sum(a.balance for a in accounts.filtered(lambda a: a.days_idle >= dormancy_period))
+        
+        # Get account details for display
+        account_details = []
+        for account in accounts:
+            account_details.append({
+                'id': account.id,
+                'member_id': account.member_id,
+                'member_name': account.member_name,
+                'product_type': account.product_type,
+                'portfolio': account.portfolio_id.portfolio_code,
+                'balance': account.balance,
+                'days_idle': account.days_idle,
+                'last_transaction_date': account.last_transaction_date.strftime('%Y-%m-%d') if account.last_transaction_date else '',
+                'is_dormant': account.days_idle >= dormancy_period,
+                'is_low_balance': account.balance < balance_threshold if balance_threshold else False
+            })
+        
+        metrics = {
+            'total_accounts': total_accounts,
+            'total_balances': total_balances,
+            'dormant_accounts': dormant_accounts,
+            'dormant_balances': dormant_balances,
+            'dormant_percentage': (dormant_accounts / total_accounts) * 100 if total_accounts else 0,
+            'account_details': account_details
+        }
+        
+        if balance_threshold is not None:
+            low_balance_accounts = len(accounts.filtered(lambda a: a.balance < balance_threshold))
+            metrics['low_balance_accounts'] = low_balance_accounts
+            
+        return metrics
+
+    @api.model
+    def generate_pdf_report(self, member_filter=None, product_filter=None, portfolio_filter=None, dormancy_period=90, balance_threshold=None):
+        """Generate PDF report for savings dashboard"""
+        # Get filtered data
+        report_data = self.get_filtered_metrics(member_filter, product_filter, portfolio_filter, dormancy_period, balance_threshold)
+        
+        # Generate chart
+        svg_chart = self._generate_chart(report_data)
+        
+        # Prepare report context
+        context = {
+            'report_data': report_data,
+            'member_filter': member_filter,
+            'product_filter': product_filter,
+            'portfolio_filter': portfolio_filter,
+            'dormancy_period': dormancy_period,
+            'balance_threshold': balance_threshold,
+            'svg_chart': svg_chart,
+        }
+        
+        return self.env.ref('my_hostel.savings_portfolio_report').report_action([], data=context)
+
+    def _generate_chart(self, report_data):
+        """Generate SVG chart for the report"""
+        if not plt:
+            return None
+            
+        try:
+            # Create a simple bar chart
+            fig, ax = plt.subplots(figsize=(8, 6))
+            
+            categories = ['Total Accounts', 'Dormant Accounts', 'Low Balance Accounts']
+            values = [
+                report_data.get('total_accounts', 0),
+                report_data.get('dormant_accounts', 0),
+                report_data.get('low_balance_accounts', 0)
+            ]
+            
+            bars = ax.bar(categories, values, color=['#36A2EB', '#FF6384', '#FFCE56'])
+            
+            # Add value labels on bars
+            for bar, value in zip(bars, values):
+                height = bar.get_height()
+                ax.text(bar.get_x() + bar.get_width()/2., height,
+                       f'{int(value)}',
+                       ha='center', va='bottom')
+            
+            ax.set_title('Savings Account Distribution', fontsize=16, fontweight='bold')
+            ax.set_ylabel('Number of Accounts')
+            
+            # Rotate x-axis labels for better readability
+            plt.xticks(rotation=45, ha='right')
+            plt.tight_layout()
+            
+            # Convert to SVG
+            buffer = io.StringIO()
+            plt.savefig(buffer, format='svg', bbox_inches='tight')
+            buffer.seek(0)
+            svg_content = buffer.getvalue()
+            buffer.close()
+            plt.close()
+            
+            return svg_content
+            
+        except Exception as e:
+            return None
 
 
 class SavingDetails(models.Model):

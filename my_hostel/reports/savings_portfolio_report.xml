@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="savings_portfolio_report" model="ir.actions.report">
+        <field name="name">Savings Portfolio Report</field>
+        <field name="model">saving.portfolio</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">my_hostel.savings_portfolio_report_template</field>
+        <field name="report_file">my_hostel.savings_portfolio_report_template</field>
+        <field name="binding_model_id" ref="model_saving_portfolio"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <template id="savings_portfolio_report_template">
+        <t t-call="web.html_container">
+            <t t-call="web.external_layout">
+                <div class="page">
+                    <div class="oe_structure"/>
+                    
+                    <t t-set="report_data" t-value="data and data.get('report_data', {}) or context.get('report_data', {}) or {}"/>
+                    <t t-set="member_filter" t-value="data and data.get('member_filter') or context.get('member_filter')"/>
+                    <t t-set="product_filter" t-value="data and data.get('product_filter') or context.get('product_filter')"/>
+                    <t t-set="portfolio_filter" t-value="data and data.get('portfolio_filter') or context.get('portfolio_filter')"/>
+                    <t t-set="dormancy_period" t-value="data and data.get('dormancy_period', 90) or context.get('dormancy_period', 90)"/>
+                    <t t-set="balance_threshold" t-value="data and data.get('balance_threshold', 50000) or context.get('balance_threshold', 50000)"/>
+                    
+                    <div class="row">
+                        <div class="text-center col-12">
+                            <h2>Dormant &amp; Low-Balance Accounts Report</h2>
+                            <p class="text-muted">Generated on <span t-esc="datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')"/></p>
+                        </div>
+                    </div>
+                    
+                    <t t-if="member_filter or product_filter or portfolio_filter">
+                        <div class="mt-3 mb-3 row">
+                            <div class="col-12">
+                                <div class="alert alert-info">
+                                    <strong>Report for </strong>
+                                    <t t-if="member_filter">Member: <span t-esc="member_filter"/></t>
+                                    <t t-if="member_filter and product_filter"> | </t>
+                                    <t t-if="product_filter">Product: <span t-esc="product_filter"/></t>
+                                    <t t-if="(member_filter or product_filter) and portfolio_filter"> | </t>
+                                    <t t-if="portfolio_filter">Branch: <span t-esc="portfolio_filter"/></t>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                    
+                    <div class="mb-4 row">
+                        <div class="col-3">
+                            <div class="text-center card">
+                                <div class="card-body">
+                                    <h6 class="card-title">Total Accounts</h6>
+                                    <p class="card-text h3">
+                                        <span t-esc="report_data.get('total_accounts', 0)"/>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="text-center card">
+                                <div class="card-body">
+                                    <h6 class="card-title">Dormant Accounts</h6>
+                                    <p class="card-text h3">
+                                        <span t-esc="report_data.get('dormant_accounts', 0)"/>
+                                    </p>
+                                    <small>(<span t-esc="'{:.1f}'.format(report_data.get('dormant_percentage', 0))"/>%)</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="text-center card">
+                                <div class="card-body">
+                                    <h6 class="card-title">Dormant Balances</h6>
+                                    <p class="card-text h3">
+                                        <span t-esc="'{:,.0f}'.format(report_data.get('dormant_balances', 0))"/> UGX
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="text-center card">
+                                <div class="card-body">
+                                    <h6 class="card-title">Low-Balance Accounts</h6>
+                                    <p class="card-text h3">
+                                        <span t-esc="report_data.get('low_balance_accounts', 0)"/>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4 row">
+                        <div class="col-12">
+                            <h3>Account Distribution</h3>
+                            <div t-raw="svg_chart" t-if="svg_chart"/>
+                            <div class="alert alert-warning" t-if="not svg_chart">
+                                Chart could not be generated for this report.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4 row">
+                        <div class="col-12">
+                            <h3>Account Details</h3>
+                            <table class="table table-bordered table-striped">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Member ID</th>
+                                        <th>Name</th>
+                                        <th>Product</th>
+                                        <th>Last Transaction</th>
+                                        <th>Days Idle</th>
+                                        <th>Balance (UGX)</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="report_data.get('account_details', [])" t-as="account">
+                                        <tr>
+                                            <td><span t-esc="account.get('member_id', '')"/></td>
+                                            <td><span t-esc="account.get('member_name', '')"/></td>
+                                            <td><span t-esc="account.get('product_type', '')"/></td>
+                                            <td><span t-esc="account.get('last_transaction_date', '')"/></td>
+                                            <td><span t-esc="account.get('days_idle', 0)"/></td>
+                                            <td><span t-esc="'{:,.0f}'.format(account.get('balance', 0))"/></td>
+                                            <td>
+                                                <t t-if="account.get('is_dormant')">
+                                                    <span class="badge bg-danger">Dormant</span>
+                                                </t>
+                                                <t t-elif="account.get('is_low_balance')">
+                                                    <span class="badge bg-warning text-dark">Low Balance</span>
+                                                </t>
+                                                <t t-else="">
+                                                    <span class="badge bg-success">Active</span>
+                                                </t>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                    <t t-if="not report_data.get('account_details')">
+                                        <tr>
+                                            <td colspan="7" class="text-center text-muted">
+                                                No account details available for the selected filters.
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4 row">
+                        <div class="col-12">
+                            <h3>Analysis</h3>
+                            <div class="card">
+                                <div class="card-body">
+                                    <p><strong>Dormancy Period:</strong> <span t-esc="dormancy_period"/> days</p>
+                                    <p><strong>Low Balance Threshold:</strong> <span t-esc="'{:,.0f}'.format(balance_threshold)"/> UGX</p>
+                                    
+                                    <t t-set="dormant_percentage" t-value="report_data.get('dormant_percentage', 0)"/>
+                                    <t t-if="dormant_percentage > 10">
+                                        <div class="alert alert-danger">
+                                            <strong>High Dormancy Rate:</strong> <span t-esc="'{:.1f}'.format(dormant_percentage)"/>% of accounts are dormant (above 10% threshold).
+                                        </div>
+                                    </t>
+                                    <t t-elif="dormant_percentage > 5">
+                                        <div class="alert alert-warning">
+                                            <strong>Moderate Dormancy Rate:</strong> <span t-esc="'{:.1f}'.format(dormant_percentage)"/>% of accounts are dormant (above 5% threshold).
+                                        </div>
+                                    </t>
+                                    <t t-else="">
+                                        <div class="alert alert-success">
+                                            <strong>Healthy Dormancy Rate:</strong> Only <span t-esc="'{:.1f}'.format(dormant_percentage)"/>% of accounts are dormant.
+                                        </div>
+                                    </t>
+                                    
+                                    <t t-set="low_balance_percentage" t-value="(report_data.get('low_balance_accounts', 0) / report_data.get('total_accounts', 1)) * 100 if report_data.get('total_accounts', 0) > 0 else 0"/>
+                                    <p><strong>Low Balance Accounts:</strong> <span t-esc="'{:.1f}'.format(low_balance_percentage)"/>% of total accounts</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <p>Note: All amounts are in Ugandan shillings (UGX)</p>
+                                        
+                    <div class="oe_structure"/> 
+                </div>
+            </t>
+        </t>
+    </template>
+</odoo>
