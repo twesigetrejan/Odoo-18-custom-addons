@@ -140,32 +140,39 @@ class SavingPortfolio(models.Model):
         return metrics
 
     @api.model
+    @api.model
     def get_filtered_metrics(self, member_filter=None, product_filter=None, portfolio_filter=None, dormancy_period=1, balance_threshold=10000):
-        """Get filtered metrics for dashboard with new defaults"""
+        """Get filtered metrics for dashboard with all filters properly applied"""
         domain = []
         
+        # Apply member/product/portfolio filters
         if member_filter:
             domain.append(('member_name', '=', member_filter))
         if product_filter:
             domain.append(('product_type', '=', product_filter))
         if portfolio_filter:
             domain.append(('portfolio_id.portfolio_code', '=', portfolio_filter))
-            
-        accounts = self.env['saving.details'].search(domain)
         
-        # Apply dormancy filter (new 1-day default)
-        dormant_accounts = accounts.filtered(lambda a: a.days_idle >= dormancy_period)
-        dormant_balances = sum(a.balance for a in dormant_accounts)
+        # Get ALL accounts in database (for total counts)
+        all_accounts = self.env['saving.details'].search([])
         
-        # Apply balance threshold filter (now >= and 10,000 default)
-        if balance_threshold:
-            threshold_accounts = accounts.filtered(lambda a: a.balance >= balance_threshold)
-        else:
-            threshold_accounts = accounts
-            
-        # Get all account details
+        # Get accounts matching member/product/portfolio filters
+        filtered_accounts = self.env['saving.details'].search(domain)
+        
+        # Apply dormancy and balance filters to the filtered accounts
+        fully_filtered_accounts = filtered_accounts.filtered(
+            lambda a: a.days_idle >= dormancy_period and 
+                    a.balance >= balance_threshold
+        )
+        
+        # Get dormant accounts from the fully filtered set
+        dormant_accounts = fully_filtered_accounts.filtered(
+            lambda a: a.days_idle >= dormancy_period
+        )
+        
+        # Prepare account details for display (respecting all filters)
         account_details = []
-        for account in accounts:
+        for account in filtered_accounts:  # Note: using filtered_accounts here for client-side flexibility
             account_details.append({
                 'id': account.id,
                 'member_id': account.member_id,
@@ -175,19 +182,32 @@ class SavingPortfolio(models.Model):
                 'balance': account.balance,
                 'days_idle': account.days_idle,
                 'last_transaction_date': account.last_transaction_date.strftime('%Y-%m-%d') if account.last_transaction_date else '',
+                'is_dormant': account.days_idle >= dormancy_period,
+                'meets_balance_threshold': account.balance >= balance_threshold
             })
         
-        metrics = {
-            'total_accounts': len(accounts),
-            'total_balances': sum(accounts.mapped('balance')),
+        return {
+            # Unfiltered totals (entire database)
+            'total_accounts': len(all_accounts),
+            'total_balances': sum(all_accounts.mapped('balance')),
+            
+            # Accounts matching member/product/portfolio filters
+            'filtered_accounts': len(filtered_accounts),
+            
+            # Accounts matching ALL filters (including dormancy and balance)
+            'fully_filtered_accounts': len(fully_filtered_accounts),
+            'filtered_dormant_accounts': len(dormant_accounts),
+            'filtered_dormant_balances': sum(dormant_accounts.mapped('balance')),
+            'filtered_dormant_percentage': (len(dormant_accounts) / len(fully_filtered_accounts)) * 100 if all_accounts else 0,
+            
+            # For backward compatibility
             'dormant_accounts': len(dormant_accounts),
-            'dormant_balances': dormant_balances,
-            'dormant_percentage': (len(dormant_accounts) / len(accounts)) * 100 if accounts else 0,
-            'low_balance_accounts': len(threshold_accounts), 
+            'dormant_balances': sum(dormant_accounts.mapped('balance')),
+            'low_balance_accounts': len(fully_filtered_accounts),
+            
+            # For client-side display
             'account_details': account_details
         }
-            
-        return metrics
 
     @api.model
     def generate_pdf_report(self, member_filter=None, product_filter=None, portfolio_filter=None, dormancy_period=90, balance_threshold=None):

@@ -11,12 +11,16 @@ export class SavingsDashboardMain extends Component {
         this.orm = useService('orm');
         this.action = useService('action');
         this.state = useState({
+            // Unfiltered metrics (total database)
             total_accounts: 0,
             total_balances: 0,
-            dormant_accounts: 0,
-            dormant_balances: 0,
-            dormant_percentage: 0,
-            low_balance_accounts: 0,
+            
+            // Filtered metrics
+            filtered_accounts: 0,
+            filtered_dormant_accounts: 0,
+            filtered_dormant_balances: 0,
+            filtered_dormant_percentage: 0,
+            
             error: null,
             accountDetails: [],
             filteredAccountDetails: [],
@@ -29,12 +33,12 @@ export class SavingsDashboardMain extends Component {
             productTypes: [],
             portfolios: [],
             
-            // Filter values
+            // Filter values with new defaults
             selectedMember: '',
             selectedProduct: '',
             selectedPortfolio: '',
-            dormancyPeriod: 1,
-            balanceThreshold: 10000,
+            dormancyPeriod: 1, // 1 day default
+            balanceThreshold: 10000, // UGX 10,000 default
             
             isFiltered: false,
         });
@@ -63,7 +67,7 @@ export class SavingsDashboardMain extends Component {
                 await loadJS(lib);
             } catch (error) {
                 console.error(`Failed to load ${lib}:`, error);
-                throw new Error(`Failed to load required library: ${lib}`);
+                this.state.error = `Failed to load required library: ${lib}`;
             }
         }
     }
@@ -90,10 +94,18 @@ export class SavingsDashboardMain extends Component {
                 this.state.balanceThreshold
             ]);
             
-            this.updateStateFromData(data);
+            this.state.total_accounts = data.total_accounts || 0;
+            this.state.total_balances = data.total_balances || 0;
+            this.state.filtered_accounts = data.filtered_accounts || 0;
+            this.state.filtered_dormant_accounts = data.filtered_dormant_accounts || 0;
+            this.state.filtered_dormant_balances = data.filtered_dormant_balances || 0;
+            this.state.filtered_dormant_percentage = data.filtered_dormant_percentage || 0;
+            this.state.accountDetails = data.account_details || [];
+            
+            this.applyFiltersToAccounts();
             this.state.isFiltered = this.state.selectedMember || this.state.selectedProduct || 
-                                 this.state.selectedPortfolio || this.state.dormancyPeriod !== 90 || 
-                                 this.state.balanceThreshold !== 50000;
+                                 this.state.selectedPortfolio || this.state.dormancyPeriod !== 1 || 
+                                 this.state.balanceThreshold !== 10000;
             
         } catch (error) {
             console.error('Error fetching dashboard data:', error);
@@ -101,30 +113,18 @@ export class SavingsDashboardMain extends Component {
         }
     }
 
-    updateStateFromData(data) {
-        this.state.total_accounts = data.total_accounts || 0;
-        this.state.total_balances = data.total_balances || 0;
-        this.state.dormant_accounts = data.dormant_accounts || 0;
-        this.state.dormant_balances = data.dormant_balances || 0;
-        this.state.dormant_percentage = (data.dormant_accounts / data.total_accounts) * 100 || 0;
-        this.state.low_balance_accounts = data.low_balance_accounts || 0;
-        this.state.accountDetails = data.account_details || [];
-        this.applyFiltersToAccounts();
-    }
-
     applyFiltersToAccounts() {
         this.state.filteredAccountDetails = this.state.accountDetails.filter(account => {
             const isDormant = account.days_idle >= this.state.dormancyPeriod;
-            const isLowBalance = this.state.balanceThreshold ? 
-                account.balance >= this.state.balanceThreshold : true;
+            const meetsBalanceThreshold = account.balance >= this.state.balanceThreshold;
             const productMatch = this.state.selectedProduct ? 
                 account.product_type === this.state.selectedProduct : true;
             const portfolioMatch = this.state.selectedPortfolio ? 
-                account.portfolio === this.state.selectedPortfolio : true;
+                account.portfolio_id[1] === this.state.selectedPortfolio : true;
             const memberMatch = this.state.selectedMember ? 
                 account.member_name === this.state.selectedMember : true;
             
-            return isDormant && isLowBalance && productMatch && portfolioMatch && memberMatch;
+            return isDormant && meetsBalanceThreshold && productMatch && portfolioMatch && memberMatch;
         });
         
         this.state.currentPage = 1;
@@ -168,14 +168,14 @@ export class SavingsDashboardMain extends Component {
     }
 
     async onDormancyPeriodChange(event) {
-        this.state.dormancyPeriod = parseInt(event.target.value) || 90;
-        this.applyFiltersToAccounts();
+        this.state.dormancyPeriod = parseInt(event.target.value) || 1;
+        await this.fetchDashboardData();
         this.renderCharts();
     }
 
     async onBalanceThresholdChange(event) {
-        this.state.balanceThreshold = parseInt(event.target.value) || 50000;
-        this.applyFiltersToAccounts();
+        this.state.balanceThreshold = parseInt(event.target.value) || 10000;
+        await this.fetchDashboardData();
         this.renderCharts();
     }
 
@@ -183,8 +183,8 @@ export class SavingsDashboardMain extends Component {
         this.state.selectedMember = '';
         this.state.selectedProduct = '';
         this.state.selectedPortfolio = '';
-        this.state.dormancyPeriod = 90;
-        this.state.balanceThreshold = 50000;
+        this.state.dormancyPeriod = 1;
+        this.state.balanceThreshold = 10000;
         await this.fetchDashboardData();
         this.renderCharts();
     }
@@ -203,15 +203,15 @@ export class SavingsDashboardMain extends Component {
             this.state.barChart = new Chart(ctx, {
                 type: 'bar',
                 data: {
-                    labels: ['Total Accounts', 'Dormant Accounts', 'Low Balance Accounts'],
+                    labels: ['Total Accounts', 'Dormant Accounts', 'Above Threshold'],
                     datasets: [{
                         label: 'Count',
                         data: [
-                            this.state.total_accounts,
-                            this.state.dormant_accounts,
-                            this.state.low_balance_accounts,
+                            this.state.filtered_accounts,
+                            this.state.filtered_dormant_accounts,
+                            this.state.filtered_accounts - this.state.filtered_dormant_accounts
                         ],
-                        backgroundColor: ['#36A2EB', '#FF6384', '#FFCE56'],
+                        backgroundColor: ['#36A2EB', '#FF6384', '#4BC0C0'],
                     }],
                 },
                 options: {
@@ -229,14 +229,15 @@ export class SavingsDashboardMain extends Component {
             const ctx = this.pieChartRef.el.getContext('2d');
             if (this.state.pieChart) this.state.pieChart.destroy();
             
-            const activeAccounts = this.state.total_accounts - this.state.dormant_accounts;
-            
             this.state.pieChart = new Chart(ctx, {
                 type: 'pie',
                 data: {
                     labels: ['Active Accounts', 'Dormant Accounts'],
                     datasets: [{
-                        data: [activeAccounts, this.state.dormant_accounts],
+                        data: [
+                            this.state.filtered_accounts - this.state.filtered_dormant_accounts,
+                            this.state.filtered_dormant_accounts
+                        ],
                         backgroundColor: ['#36A2EB', '#FF6384'],
                     }],
                 },
@@ -256,23 +257,18 @@ export class SavingsDashboardMain extends Component {
             
             const productBalances = {};
             this.state.filteredAccountDetails.forEach(account => {
-                if (!productBalances[account.product_type]) {
-                    productBalances[account.product_type] = 0;
-                }
-                productBalances[account.product_type] += account.balance;
+                const productType = account.product_type;
+                productBalances[productType] = (productBalances[productType] || 0) + account.balance;
             });
-            
-            const labels = Object.keys(productBalances).map(this.getProductTypeDisplay);
-            const data = Object.values(productBalances);
             
             this.state.balanceProductChart = new Chart(ctx, {
                 type: 'bar',
                 data: {
-                    labels: labels,
+                    labels: Object.keys(productBalances).map(this.getProductTypeDisplay),
                     datasets: [{
-                        label: 'Total Balance by Product',
-                        data: data,
-                        backgroundColor: '#4BC0C0',
+                        label: 'Total Balance',
+                        data: Object.values(productBalances),
+                        backgroundColor: '#FFCE56',
                     }],
                 },
                 options: {
@@ -338,5 +334,4 @@ export class SavingsDashboardMain extends Component {
 }
 
 SavingsDashboardMain.template = 'my_hostel.SavingsDashboardMainTemplate';
-
 registry.category('actions').add('savings_dashboard_main', SavingsDashboardMain);
