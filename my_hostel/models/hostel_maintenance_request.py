@@ -13,6 +13,7 @@ class HostelMaintenanceRequest(models.Model):
 
     hostel_id = fields.Many2one('hostel.hostel', string='Hostel', help='Hostel where issue occurred')
     room_id = fields.Many2one('hostel.room', string='Room', domain="[('hostel_id', '=', hostel_id)]", help='Room affected by the issue')
+    student_id = fields.Many2one('hostel.student', string='Student', help= 'Student making request', domain="[('room_id', '=', room_id)]")
     
     reported_by = fields.Many2one('res.users', string='Reported By', default=lambda self: self.env.user, readonly=True)
     priority = fields.Selection(

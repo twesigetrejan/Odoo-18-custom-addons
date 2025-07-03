@@ -17,6 +17,7 @@ export class LoanDashboardMain extends Component {
             loan_count: 0,
             error: null,
             loanDetails: [],
+
             members: [],
             loanProducts: [],
             selectedMember: '',
