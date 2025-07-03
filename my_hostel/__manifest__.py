@@ -20,6 +20,7 @@
         'reports/loan_portfolio_report.xml',
         'data/data.xml',
         'views/hostel_announcements.xml',
+        'views/saving_view.xml',
         # 'views/hostel_maintenance_requests.xml',
         # 'views/assets.xml'
     ],

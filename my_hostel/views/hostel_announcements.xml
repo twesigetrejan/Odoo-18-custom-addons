@@ -10,7 +10,6 @@
                 <field name= "hostel_id"/>
                 <field name= "announcement_title"/>
                 <field name= "target_audience"/>
-                <field name= "description"/>
                 <field name= "announcement_date"/>
                 <field name= "active"/>
 

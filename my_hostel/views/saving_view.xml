@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    
+    <!-- Saving Portfolio Tree View -->
+    <record id="view_saving_portfolio_tree" model="ir.ui.view">
+        <field name="name">saving.portfolio.tree</field>
+        <field name="model">saving.portfolio</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="portfolio_code"/>
+                <field name="currency_id"/>
+                <field name="total_accounts"/>
+                <field name="total_balances"/>
+            </tree>
+        </field>
+    </record>
+    
+    <!-- Saving Portfolio Form View -->
+    <record id="view_saving_portfolio_form" model="ir.ui.view">
+        <field name="name">saving.portfolio.form</field>
+        <field name="model">saving.portfolio</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="portfolio_code"/>
+                        <field name="currency_id"/>
+                    </group>
+                    <notebook>
+                        <page string="Accounts">
+                            <field name="account_ids">
+                                <tree editable="bottom">
+                                    <field name="member_id"/>
+                                    <field name="member_name"/>
+                                    <field name="product_type"/>
+                                    <field name="balance"/>
+                                    <field name="last_transaction_date"/>
+                                    <field name="days_idle"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action: Saving Portfolio -->
+    <record id="action_saving_portfolio" model="ir.actions.act_window">
+        <field name="name">Savings Portfolios</field>
+        <field name="res_model">saving.portfolio</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Create your first savings portfolio</p>
+        </field>
+    </record>
+    
+    <!-- Saving Details Tree View -->
+    <record id="view_saving_details_tree" model="ir.ui.view">
+        <field name="name">saving.details.tree</field>
+        <field name="model">saving.details</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="portfolio_id"/>
+                <field name="member_id"/>
+                <field name="member_name"/>
+                <field name="product_type"/>
+                <field name="balance"/>
+                <field name="last_transaction_date"/>
+                <field name="days_idle"/>
+            </tree>
+        </field>
+    </record>
+    
+    <!-- Saving Details Form View -->
+    <record id="view_saving_details_form" model="ir.ui.view">
+        <field name="name">saving.details.form</field>
+        <field name="model">saving.details</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="portfolio_id"/>
+                        <field name="member_id"/>
+                        <field name="member_name"/>
+                        <field name="product_type"/>
+                        <field name="balance"/>
+                        <field name="last_transaction_date"/>
+                        <field name="days_idle"/>
+                    </group>
+                    <notebook>
+                        <page string="Transactions">
+                            <field name="transaction_ids">
+                                <tree editable="bottom">
+                                    <field name="transaction_type"/>
+                                    <field name="amount"/>
+                                    <field name="transaction_date"/>
+                                    <field name="reference"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action: Saving Details -->
+    <record id="action_saving_details" model="ir.actions.act_window">
+        <field name="name">Saving Accounts</field>
+        <field name="res_model">saving.details</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Add your savings accounts here</p>
+        </field>
+    </record>
+
+    <!-- Saving Transaction Tree View -->
+    <record id="view_saving_transaction_tree" model="ir.ui.view">
+        <field name="name">saving.transaction.tree</field>
+        <field name="model">saving.transaction</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="account_id"/>
+                <field name="transaction_type"/>
+                <field name="amount"/>
+                <field name="transaction_date"/>
+                <field name="reference"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Saving Transaction Form View -->
+    <record id="view_saving_transaction_form" model="ir.ui.view">
+        <field name="name">saving.transaction.form</field>
+        <field name="model">saving.transaction</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="account_id"/>
+                        <field name="transaction_type"/>
+                        <field name="amount"/>
+                        <field name="transaction_date"/>
+                        <field name="reference"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    
+    <!-- Action: Saving Transactions -->
+    <record id="action_saving_transaction" model="ir.actions.act_window">
+        <field name="name">Savings Transactions</field>
+        <field name="res_model">saving.transaction</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Log your deposits and withdrawals here</p>
+        </field>
+    </record>
+    
+    <!-- Root Menu -->
+    <menuitem id="menu_savings_root" 
+            name="Savings Management" 
+            parent="hostel_main_menu" 
+            sequence= "7" 
+            groups="my_hostel.group_hostel_manager,my_hostel.group_hostel_user"/>
+
+    <!-- Portfolio Menu -->
+    <menuitem id="menu_savings_portfolio"
+              name="Portfolios"
+              parent="menu_savings_root"
+              action="action_saving_portfolio"
+              sequence="1"/>
+
+    <!-- Accounts Menu -->
+    <menuitem id="menu_savings_accounts"
+              name="Accounts"
+              parent="menu_savings_root"
+              action="action_saving_details"
+              sequence="2"/>
+
+    <!-- Transactions Menu -->
+    <menuitem id="menu_savings_transactions"
+              name="Transactions"
+              parent="menu_savings_root"
+              action="action_saving_transaction"
+              sequence="3"/>
+</odoo>
