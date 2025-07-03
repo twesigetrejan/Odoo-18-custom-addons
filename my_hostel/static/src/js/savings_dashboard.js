@@ -268,7 +268,7 @@ export class SavingsDashboardMain extends Component {
                     datasets: [{
                         label: 'Total Balance',
                         data: Object.values(productBalances),
-                        backgroundColor: '#FFCE56',
+                        backgroundColor: '#36A2EB',
                     }],
                 },
                 options: {

@@ -198,7 +198,7 @@ class SavingPortfolio(models.Model):
             'fully_filtered_accounts': len(fully_filtered_accounts),
             'filtered_dormant_accounts': len(dormant_accounts),
             'filtered_dormant_balances': sum(dormant_accounts.mapped('balance')),
-            'filtered_dormant_percentage': (len(dormant_accounts) / len(fully_filtered_accounts)) * 100 if all_accounts else 0,
+            'filtered_dormant_percentage': (len(dormant_accounts) / len(all_accounts)) * 100 if all_accounts else 0,
             
             # For backward compatibility
             'dormant_accounts': len(dormant_accounts),
