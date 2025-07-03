@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <!-- Tree view -->
+    <record id = "view_hostel_announcements_tree" model= "ir.ui.view">
+        <field name="name">hostel.announcements.tree.view</field>
+        <field name="model">hostel.announcements</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name= "hostel_id"/>
+                <field name= "announcement_title"/>
+                <field name= "target_audience"/>
+                <field name= "description"/>
+                <field name= "announcement_date"/>
+                <field name= "active"/>
+
+            </tree>
+
+        </field>
+     </record>
+
+    <!-- Form view -->
+    <record id="view_hostel_announcements_form" model="ir.ui.view">
+        <field name="name">hostel.announcements.form.view</field>
+        <field name="model">hostel.announcements</field>
+        <field name= "arch" type="xml">
+            <form string="Hostel Announcements">
+                <sheet>
+                    <group>
+                        <field name="hostel_id"/>
+                        <field name="target_audience"/>
+                    </group>
+                    <group>
+                        <field name="announcement_title"/>
+                        <field name="description"/>
+                    </group>
+                    <group>
+                        <field name="announcement_date"/>
+                        <field name="active"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- search view -->
+     <record id="view_hostel_announcements_search_view" model="ir.ui.view" >
+        <field name="name">hostel.announcements.search.view</field>
+        <field name="model">hostel.announcements</field>
+        <field name="arch" type="xml">
+            <search string="Search announcements">
+                <field name="announcement_title"/>
+                <field name="hostel_id"/>
+                <field name="target_audience"/>
+            </search>
+        </field>
+     </record>
+
+
+    <!-- Action -->
+    <record id="action_hostel_announcements" model="ir.actions.act_window">
+        <field name="name">Hostel Announcements</field>
+        <field name="res_model">hostel.announcements</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_hostel_announcements_search_view"/>
+        <field name="help" type="html">
+            <p class="flex items-center justify-center">
+                Create your first hostel announcement
+            </p>
+        </field>
+    </record>
+     <!-- Menu Item -->
+
+    <menuitem id="menu_hostel_announcements"
+              name="Hostel announcements"
+              parent="hostel_main_menu"
+              sequence="6"
+              action="action_hostel_announcements"
+              groups="my_hostel.group_hostel_manager,my_hostel.group_hostel_user"/>
+
+
+</odoo>

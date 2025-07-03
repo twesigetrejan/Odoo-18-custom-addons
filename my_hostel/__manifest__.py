@@ -19,6 +19,8 @@
         'views/loan_portfolio.xml',
         'reports/loan_portfolio_report.xml',
         'data/data.xml',
+        'views/hostel_announcements.xml',
+        # 'views/hostel_maintenance_requests.xml',
         # 'views/assets.xml'
     ],
     'assets': {

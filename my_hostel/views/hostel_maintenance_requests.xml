@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <!-- Tree view -->
+    <record id = "view_hostel_announcements_tree" model= "ir.ui.view">
+        <field name="name">hostel.announcements.tree</field>
+        <field name="model">hostel.announcements</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name= "hostel_id"/>
+                <field name= "annoucement_title"/>
+                <field name= "target_audience"/>
+                <field name= "description"/>
+                <field name= "announcement_date"/>
+                <field name= "active"/>
+
+            </tree>
+
+        </field>
+     </record>
+
+    <!-- Form view -->
+    <record id="view_hostel_announcements_form" model="ir.ui.view">
+        <field name="name">hostel.annoucements.form</field>
+        <field name="model">hostel.annoucements</field>
+        <field name= "arch" type="xml">
+            <form string=""></form>
+        </field>
+
+
+
+    </record>
+
+
+
+</odoo>
