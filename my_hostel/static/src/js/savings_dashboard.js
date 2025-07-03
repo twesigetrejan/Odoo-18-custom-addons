@@ -19,6 +19,7 @@ export class SavingsDashboardMain extends Component {
             low_balance_accounts: 0,
             error: null,
             accountDetails: [],
+            filteredAccountDetails: [],
             currentPage: 1,
             itemsPerPage: 10,
             totalPages: 1,
@@ -40,7 +41,6 @@ export class SavingsDashboardMain extends Component {
         
         this.barChartRef = useRef('barChart');
         this.pieChartRef = useRef('pieChart');
-        this.idleChartRef = useRef('idleChart');
         this.balanceProductChartRef = useRef('balanceProductChart');
 
         onWillStart(async () => {
@@ -82,10 +82,6 @@ export class SavingsDashboardMain extends Component {
 
     async fetchDashboardData() {
         try {
-            const hasFilters = this.state.selectedMember || this.state.selectedProduct || 
-                            this.state.selectedPortfolio || this.state.dormancyPeriod || 
-                            this.state.balanceThreshold;
-            
             const data = await this.orm.call('saving.portfolio', 'get_filtered_metrics', [
                 this.state.selectedMember || null,
                 this.state.selectedProduct || null,
@@ -95,9 +91,9 @@ export class SavingsDashboardMain extends Component {
             ]);
             
             this.updateStateFromData(data);
-            this.state.isFiltered = hasFilters;
-            this.state.currentPage = 1;
-            this.state.totalPages = Math.ceil(this.state.accountDetails.length / this.state.itemsPerPage);
+            this.state.isFiltered = this.state.selectedMember || this.state.selectedProduct || 
+                                 this.state.selectedPortfolio || this.state.dormancyPeriod !== 90 || 
+                                 this.state.balanceThreshold !== 50000;
             
         } catch (error) {
             console.error('Error fetching dashboard data:', error);
@@ -113,12 +109,32 @@ export class SavingsDashboardMain extends Component {
         this.state.dormant_percentage = (data.dormant_accounts / data.total_accounts) * 100 || 0;
         this.state.low_balance_accounts = data.low_balance_accounts || 0;
         this.state.accountDetails = data.account_details || [];
+        this.applyFiltersToAccounts();
+    }
+
+    applyFiltersToAccounts() {
+        this.state.filteredAccountDetails = this.state.accountDetails.filter(account => {
+            const isDormant = account.days_idle >= this.state.dormancyPeriod;
+            const isLowBalance = this.state.balanceThreshold ? 
+                account.balance < this.state.balanceThreshold : true;
+            const productMatch = this.state.selectedProduct ? 
+                account.product_type === this.state.selectedProduct : true;
+            const portfolioMatch = this.state.selectedPortfolio ? 
+                account.portfolio === this.state.selectedPortfolio : true;
+            const memberMatch = this.state.selectedMember ? 
+                account.member_name === this.state.selectedMember : true;
+            
+            return isDormant && isLowBalance && productMatch && portfolioMatch && memberMatch;
+        });
+        
+        this.state.currentPage = 1;
+        this.state.totalPages = Math.ceil(this.state.filteredAccountDetails.length / this.state.itemsPerPage);
     }
 
     get paginatedAccountDetails() {
         const start = (this.state.currentPage - 1) * this.state.itemsPerPage;
         const end = start + this.state.itemsPerPage;
-        return this.state.accountDetails.slice(start, end);
+        return this.state.filteredAccountDetails.slice(start, end);
     }
 
     nextPage() {
@@ -153,13 +169,13 @@ export class SavingsDashboardMain extends Component {
 
     async onDormancyPeriodChange(event) {
         this.state.dormancyPeriod = parseInt(event.target.value) || 90;
-        await this.fetchDashboardData();
+        this.applyFiltersToAccounts();
         this.renderCharts();
     }
 
     async onBalanceThresholdChange(event) {
         this.state.balanceThreshold = parseInt(event.target.value) || 50000;
-        await this.fetchDashboardData();
+        this.applyFiltersToAccounts();
         this.renderCharts();
     }
 
@@ -176,7 +192,6 @@ export class SavingsDashboardMain extends Component {
     renderCharts() {
         this.renderBarChart();
         this.renderPieChart();
-        this.renderIdleChart();
         this.renderBalanceProductChart();
     }
 
@@ -239,9 +254,8 @@ export class SavingsDashboardMain extends Component {
             const ctx = this.balanceProductChartRef.el.getContext('2d');
             if (this.state.balanceProductChart) this.state.balanceProductChart.destroy();
             
-            // Group balances by product type
             const productBalances = {};
-            this.state.accountDetails.forEach(account => {
+            this.state.filteredAccountDetails.forEach(account => {
                 if (!productBalances[account.product_type]) {
                     productBalances[account.product_type] = 0;
                 }
@@ -268,48 +282,6 @@ export class SavingsDashboardMain extends Component {
                     plugins: { legend: { display: false } },
                 },
             });
-        }
-    }
-
-    async renderIdleChart() {
-        try {
-            const distribution = await this.orm.call('saving.portfolio', 'get_idle_distribution', [
-                this.state.dormancyPeriod,
-                this.state.balanceThreshold,
-                this.state.selectedMember,
-                this.state.selectedProduct,
-                this.state.selectedPortfolio
-            ]);
-            
-            if (this.idleChartRef.el) {
-                const ctx = this.idleChartRef.el.getContext('2d');
-                if (this.state.idleChart) this.state.idleChart.destroy();
-                
-                this.state.idleChart = new Chart(ctx, {
-                    type: 'bar',
-                    data: {
-                        labels: ['30+ Days', '60+ Days', '120+ Days', '160+ Days'],
-                        datasets: [{
-                            label: 'Count by Days Idle',
-                            data: [
-                                distribution['30'],
-                                distribution['60'],
-                                distribution['120'],
-                                distribution['160+'],
-                            ],
-                            backgroundColor: ['#4BC0C0', '#9966FF', '#FF9F40', '#FF6384'],
-                        }],
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        scales: { y: { beginAtZero: true } },
-                        plugins: { legend: { display: false } },
-                    },
-                });
-            }
-        } catch (error) {
-            console.error('Error rendering idle chart:', error);
         }
     }
 

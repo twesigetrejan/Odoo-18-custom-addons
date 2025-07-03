@@ -153,12 +153,17 @@ class SavingPortfolio(models.Model):
             
         accounts = self.env['saving.details'].search(domain)
         
-        total_accounts = len(accounts)
-        total_balances = sum(accounts.mapped('balance'))
-        dormant_accounts = len(accounts.filtered(lambda a: a.days_idle >= dormancy_period))
-        dormant_balances = sum(a.balance for a in accounts.filtered(lambda a: a.days_idle >= dormancy_period))
+        # Apply dormancy filter
+        dormant_accounts = accounts.filtered(lambda a: a.days_idle >= dormancy_period)
+        dormant_balances = sum(a.balance for a in dormant_accounts)
         
-        # Get account details for display
+        # Apply balance threshold filter if provided
+        if balance_threshold:
+            low_balance_accounts = accounts.filtered(lambda a: a.balance < balance_threshold)
+        else:
+            low_balance_accounts = accounts
+            
+        # Get all account details (client will do additional filtering)
         account_details = []
         for account in accounts:
             account_details.append({
@@ -170,22 +175,17 @@ class SavingPortfolio(models.Model):
                 'balance': account.balance,
                 'days_idle': account.days_idle,
                 'last_transaction_date': account.last_transaction_date.strftime('%Y-%m-%d') if account.last_transaction_date else '',
-                'is_dormant': account.days_idle >= dormancy_period,
-                'is_low_balance': account.balance < balance_threshold if balance_threshold else False
             })
         
         metrics = {
-            'total_accounts': total_accounts,
-            'total_balances': total_balances,
-            'dormant_accounts': dormant_accounts,
+            'total_accounts': len(accounts),
+            'total_balances': sum(accounts.mapped('balance')),
+            'dormant_accounts': len(dormant_accounts),
             'dormant_balances': dormant_balances,
-            'dormant_percentage': (dormant_accounts / total_accounts) * 100 if total_accounts else 0,
+            'dormant_percentage': (len(dormant_accounts) / len(accounts)) * 100 if accounts else 0,
+            'low_balance_accounts': len(low_balance_accounts),
             'account_details': account_details
         }
-        
-        if balance_threshold is not None:
-            low_balance_accounts = len(accounts.filtered(lambda a: a.balance < balance_threshold))
-            metrics['low_balance_accounts'] = low_balance_accounts
             
         return metrics
 

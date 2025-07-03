@@ -29,10 +29,10 @@
                                 <option value="50000" selected="selected">UGX 50,000</option>
                                 <option value="100000">UGX 100,000</option>
                                 <option value="200000">UGX 200,000</option>
-                                <option value="200000">UGX 400,000</option>
-                                <option value="200000">UGX 500,000</option>
-                                <option value="200000">UGX 750,000</option>
-                                <option value="200000">UGX 1,000,000</option>
+                                <option value="400000">UGX 400,000</option>
+                                <option value="500000">UGX 500,000</option>
+                                <option value="750000">UGX 750,000</option>
+                                <option value="1000000">UGX 1,000,000</option>
                             </select>
                         </div>
                         <div class="col-md-2">
@@ -69,6 +69,8 @@
                             <t t-if="state.selectedProduct">product "<t t-esc="getProductTypeDisplay(state.selectedProduct)"/>"</t>
                             <t t-if="state.selectedProduct and state.selectedPortfolio"> and </t>
                             <t t-if="state.selectedPortfolio">branch "<t t-esc="state.selectedPortfolio"/>"</t>
+                            <t t-if="state.dormancyPeriod !== 90"> (Dormant ≥ <t t-esc="state.dormancyPeriod"/> days)</t>
+                            <t t-if="state.balanceThreshold"> (Balance &lt; <t t-esc="formatCurrency(state.balanceThreshold)"/>)</t>
                         </div>
                     </t>
                 </div>
@@ -129,7 +131,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <t t-foreach="state.accountDetails" t-as="account" t-key="account.id">
+                                <t t-foreach="paginatedAccountDetails" t-as="account" t-key="account.id">
                                     <tr>
                                         <td><t t-esc="account.member_id"/></td>
                                         <td><strong><t t-esc="account.member_name"/></strong></td>
@@ -137,12 +139,11 @@
                                         <td><t t-esc="formatDate(account.last_transaction_date)"/></td>
                                         <td><t t-esc="account.days_idle"/></td>
                                         <td><t t-esc="formatCurrency(account.balance)"/></td>
-                                        
                                     </tr>
                                 </t>
-                                <t t-if="state.accountDetails.length === 0">
+                                <t t-if="state.filteredAccountDetails.length === 0">
                                     <tr>
-                                        <td colspan="7" class="text-center text-muted">
+                                        <td colspan="6" class="text-center text-muted">
                                             <i>No account details available for the selected filters.</i>
                                         </td>
                                     </tr>
@@ -150,40 +151,37 @@
                             </tbody>
                         </table>
                     </div>
+                    <div class="mt-3 row">
+                        <div class="col-md-6">
+                            <span>
+                                Showing <t t-esc="state.currentPage * state.itemsPerPage - state.itemsPerPage + 1"/> to 
+                                <t t-esc="Math.min(state.currentPage * state.itemsPerPage, state.filteredAccountDetails.length)"/> of 
+                                <t t-esc="state.filteredAccountDetails.length"/> entries
+                            </span>
+                        </div>
+                        <div class="col-md-6 text-end">
+                            <button class="btn btn-sm btn-outline-secondary" t-on-click="prevPage" t-att-disabled="state.currentPage === 1">
+                                Previous
+                            </button>
+                            <span class="mx-2">
+                                Page <t t-esc="state.currentPage"/> of <t t-esc="state.totalPages"/>
+                            </span>
+                            <button class="btn btn-sm btn-outline-secondary" t-on-click="nextPage" t-att-disabled="state.currentPage === state.totalPages">
+                                Next
+                            </button>
+                        </div>
+                    </div>
                 </div>
                 <div class="col-md-5">
-                    <!-- In your template, add this before the Account Distribution chart -->
-<div class="row">
-    <div class="col-12">
-        <h4>Balance by Product Type</h4>
-        <div style="background-color: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-            <canvas t-ref="balanceProductChart" width="450" height="250"></canvas>
-        </div>
-    </div>
-</div>
-
-<!-- Add pagination controls to your table -->
-<div class="mt-3 row">
-    <div class="col-md-6">
-        <span>
-            Showing <t t-esc="state.currentPage * state.itemsPerPage - state.itemsPerPage + 1"/> to 
-            <t t-esc="Math.min(state.currentPage * state.itemsPerPage, state.accountDetails.length)"/> of 
-            <t t-esc="state.accountDetails.length"/> entries
-        </span>
-    </div>
-    <div class="col-md-6 text-end">
-        <button class="btn btn-sm btn-outline-secondary" t-on-click="prevPage" t-att-disabled="state.currentPage === 1">
-            Previous
-        </button>
-        <span class="mx-2">
-            Page <t t-esc="state.currentPage"/> of <t t-esc="state.totalPages"/>
-        </span>
-        <button class="btn btn-sm btn-outline-secondary" t-on-click="nextPage" t-att-disabled="state.currentPage === state.totalPages">
-            Next
-        </button>
-    </div>
-</div>
                     <div class="row">
+                        <div class="col-12">
+                            <h4>Balance by Product Type</h4>
+                            <div style="background-color: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                                <canvas t-ref="balanceProductChart" width="450" height="250"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-4 row">
                         <div class="col-12">
                             <h4>Account Distribution</h4>
                             <div style="background-color: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
@@ -196,14 +194,6 @@
                             <h4>Dormancy Status</h4>
                             <div style="background-color: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
                                 <canvas t-ref="pieChart" width="450" height="250"></canvas>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="mt-4 row">
-                        <div class="col-12">
-                            <h4>Idle Period Distribution</h4>
-                            <div style="background-color: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                                <canvas t-ref="idleChart" width="450" height="250"></canvas>
                             </div>
                         </div>
                     </div>
