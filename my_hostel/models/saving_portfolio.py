@@ -61,11 +61,29 @@ class SavingPortfolio(models.Model):
         return metrics
 
     @api.model
-    def get_idle_distribution(self):
+    def get_idle_distribution(self, dormancy_period=None, balance_threshold=None, 
+                            member_filter=None, product_filter=None, portfolio_filter=None):
+        """Get distribution of accounts by idle days with filters"""
+        domain = []
+        
+        if member_filter:
+            domain.append(('member_name', '=', member_filter))
+        if product_filter:
+            domain.append(('product_type', '=', product_filter))
+        if portfolio_filter:
+            domain.append(('portfolio_id.portfolio_code', '=', portfolio_filter))
+            
+        accounts = self.env['saving.details'].search(domain)
+        
         distribution = {'30': 0, '60': 0, '120': 0, '160+': 0}
-        accounts = self.env['saving.details'].search([])
-
+        
         for acc in accounts:
+            # Apply dormancy and balance filters for counting
+            if dormancy_period and acc.days_idle < dormancy_period:
+                continue
+            if balance_threshold and acc.balance >= balance_threshold:
+                continue
+                
             if acc.days_idle >= 160:
                 distribution['160+'] += 1
             elif acc.days_idle >= 120:
@@ -74,7 +92,7 @@ class SavingPortfolio(models.Model):
                 distribution['60'] += 1
             elif acc.days_idle >= 30:
                 distribution['30'] += 1
-
+        
         return distribution
 
     @api.model

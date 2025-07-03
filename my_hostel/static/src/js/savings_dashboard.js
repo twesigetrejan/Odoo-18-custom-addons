@@ -19,6 +19,9 @@ export class SavingsDashboardMain extends Component {
             low_balance_accounts: 0,
             error: null,
             accountDetails: [],
+            currentPage: 1,
+            itemsPerPage: 10,
+            totalPages: 1,
 
             // Filter options
             members: [],
@@ -38,6 +41,7 @@ export class SavingsDashboardMain extends Component {
         this.barChartRef = useRef('barChart');
         this.pieChartRef = useRef('pieChart');
         this.idleChartRef = useRef('idleChart');
+        this.balanceProductChartRef = useRef('balanceProductChart');
 
         onWillStart(async () => {
             await this.loadExternalLibraries();
@@ -78,28 +82,23 @@ export class SavingsDashboardMain extends Component {
 
     async fetchDashboardData() {
         try {
-            const hasFilters = this.state.selectedMember || this.state.selectedProduct || this.state.selectedPortfolio;
+            const hasFilters = this.state.selectedMember || this.state.selectedProduct || 
+                            this.state.selectedPortfolio || this.state.dormancyPeriod || 
+                            this.state.balanceThreshold;
             
-            if (hasFilters) {
-                const data = await this.orm.call('saving.portfolio', 'get_filtered_metrics', [
-                    this.state.selectedMember || null,
-                    this.state.selectedProduct || null,
-                    this.state.selectedPortfolio || null,
-                    this.state.dormancyPeriod,
-                    this.state.balanceThreshold
-                ]);
-                this.updateStateFromData(data);
-                this.state.isFiltered = true;
-            } else {
-                const data = await this.orm.call('saving.portfolio', 'get_overview_metrics', [
-                    this.state.dormancyPeriod,
-                    this.state.balanceThreshold
-                ]);
-                this.updateStateFromData(data);
-                this.state.isFiltered = false;
-                
-                await this.fetchAccountDetails();
-            }
+            const data = await this.orm.call('saving.portfolio', 'get_filtered_metrics', [
+                this.state.selectedMember || null,
+                this.state.selectedProduct || null,
+                this.state.selectedPortfolio || null,
+                this.state.dormancyPeriod,
+                this.state.balanceThreshold
+            ]);
+            
+            this.updateStateFromData(data);
+            this.state.isFiltered = hasFilters;
+            this.state.currentPage = 1;
+            this.state.totalPages = Math.ceil(this.state.accountDetails.length / this.state.itemsPerPage);
+            
         } catch (error) {
             console.error('Error fetching dashboard data:', error);
             this.state.error = 'Failed to fetch data: ' + error.message;
@@ -111,38 +110,26 @@ export class SavingsDashboardMain extends Component {
         this.state.total_balances = data.total_balances || 0;
         this.state.dormant_accounts = data.dormant_accounts || 0;
         this.state.dormant_balances = data.dormant_balances || 0;
-        this.state.dormant_percentage = data.dormant_percentage || 0;
+        this.state.dormant_percentage = (data.dormant_accounts / data.total_accounts) * 100 || 0;
         this.state.low_balance_accounts = data.low_balance_accounts || 0;
         this.state.accountDetails = data.account_details || [];
     }
 
-    async fetchAccountDetails() {
-        try {
-            const accounts = await this.orm.searchRead('saving.details', [], [
-                'member_id',
-                'member_name',
-                'product_type',
-                'portfolio_id',
-                'balance',
-                'days_idle',
-                'last_transaction_date',
-            ]);
-            
-            this.state.accountDetails = accounts.map(acc => ({
-                id: acc.id,
-                member_id: acc.member_id,
-                member_name: acc.member_name,
-                product_type: acc.product_type,
-                portfolio: acc.portfolio_id ? acc.portfolio_id[1] : '',
-                balance: acc.balance,
-                days_idle: acc.days_idle,
-                last_transaction_date: acc.last_transaction_date || '',
-                is_dormant: acc.days_idle >= this.state.dormancyPeriod,
-                is_low_balance: acc.balance < this.state.balanceThreshold
-            }));
-        } catch (error) {
-            console.error('Error fetching account details:', error);
-            this.state.error = 'Failed to fetch account details: ' + error.message;
+    get paginatedAccountDetails() {
+        const start = (this.state.currentPage - 1) * this.state.itemsPerPage;
+        const end = start + this.state.itemsPerPage;
+        return this.state.accountDetails.slice(start, end);
+    }
+
+    nextPage() {
+        if (this.state.currentPage < this.state.totalPages) {
+            this.state.currentPage++;
+        }
+    }
+
+    prevPage() {
+        if (this.state.currentPage > 1) {
+            this.state.currentPage--;
         }
     }
 
@@ -190,6 +177,7 @@ export class SavingsDashboardMain extends Component {
         this.renderBarChart();
         this.renderPieChart();
         this.renderIdleChart();
+        this.renderBalanceProductChart();
     }
 
     renderBarChart() {
@@ -246,9 +234,52 @@ export class SavingsDashboardMain extends Component {
         }
     }
 
+    renderBalanceProductChart() {
+        if (this.balanceProductChartRef.el) {
+            const ctx = this.balanceProductChartRef.el.getContext('2d');
+            if (this.state.balanceProductChart) this.state.balanceProductChart.destroy();
+            
+            // Group balances by product type
+            const productBalances = {};
+            this.state.accountDetails.forEach(account => {
+                if (!productBalances[account.product_type]) {
+                    productBalances[account.product_type] = 0;
+                }
+                productBalances[account.product_type] += account.balance;
+            });
+            
+            const labels = Object.keys(productBalances).map(this.getProductTypeDisplay);
+            const data = Object.values(productBalances);
+            
+            this.state.balanceProductChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Total Balance by Product',
+                        data: data,
+                        backgroundColor: '#4BC0C0',
+                    }],
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: { y: { beginAtZero: true } },
+                    plugins: { legend: { display: false } },
+                },
+            });
+        }
+    }
+
     async renderIdleChart() {
         try {
-            const distribution = await this.orm.call('saving.portfolio', 'get_idle_distribution', []);
+            const distribution = await this.orm.call('saving.portfolio', 'get_idle_distribution', [
+                this.state.dormancyPeriod,
+                this.state.balanceThreshold,
+                this.state.selectedMember,
+                this.state.selectedProduct,
+                this.state.selectedPortfolio
+            ]);
             
             if (this.idleChartRef.el) {
                 const ctx = this.idleChartRef.el.getContext('2d');
