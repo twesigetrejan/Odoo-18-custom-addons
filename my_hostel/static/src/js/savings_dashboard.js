@@ -73,31 +73,50 @@ export class SavingsDashboardMain extends Component {
     }
 
     async fetchDashboardData() {
-        try {
-            const data = await this.orm.call('saving.portfolio', 'get_filtered_metrics', [
-                this.state.selectedMember || null,
-                this.state.selectedProduct || null,
-                this.state.selectedPortfolio || null,
-                this.state.dormancyPeriod,
-                this.state.balanceThreshold
-            ]);
+    try {
+        const data = await this.orm.call('saving.portfolio', 'get_filtered_metrics', [
+            this.state.selectedMember || null,
+            this.state.selectedProduct || null,
+            this.state.selectedPortfolio || null,
+            this.state.dormancyPeriod,
+            this.state.balanceThreshold
+        ]);
+        
+        // Maintain your original calculation logic
+        this.state.total_accounts = data.total_accounts || 0;
+        this.state.total_balances = data.total_balances || 0;
+        this.state.filtered_dormant_accounts = data.filtered_dormant_accounts || 0;
+        this.state.filtered_dormant_balances = data.filtered_dormant_balances || 0;
+        this.state.filtered_dormant_percentage = data.filtered_dormant_percentage || 0;
+        this.state.accountDetails = data.account_details || [];
+        
+        this.applyFiltersToAccounts();
+        this.state.isFiltered = this.state.selectedMember || this.state.selectedProduct || 
+                             this.state.selectedPortfolio || this.state.dormancyPeriod !== 1 || 
+                             this.state.balanceThreshold !== 10000;
+        
+    } catch (error) {
+        console.error('Error fetching dashboard data:', error);
+        this.state.error = 'Failed to fetch data: ' + error.message;
+    }
+}
+
+    applyFiltersToAccounts() {
+        this.state.filteredAccountDetails = this.state.accountDetails.filter(account => {
+            const isDormant = account.days_idle >= this.state.dormancyPeriod;
+            const meetsBalanceThreshold = account.balance >= this.state.balanceThreshold;
+            const productMatch = this.state.selectedProduct ? 
+                account.product_type === this.state.selectedProduct : true;
+            const portfolioMatch = this.state.selectedPortfolio ? 
+                account.portfolio === this.state.selectedPortfolio : true;
+            const memberMatch = this.state.selectedMember ? 
+                account.member_name === this.state.selectedMember : true;
             
-            this.state.total_accounts = data.total_accounts || 0;
-            this.state.total_balances = data.total_balances || 0;
-            this.state.filtered_dormant_accounts = data.dormant_accounts || 0;
-            this.state.filtered_dormant_balances = data.dormant_balances || 0;
-            this.state.filtered_dormant_percentage = data.dormant_percentage || 0;
-            this.state.accountDetails = data.account_details || [];
-            
-            this.applyFiltersToAccounts();
-            this.state.isFiltered = this.state.selectedMember || this.state.selectedProduct || 
-                                 this.state.selectedPortfolio || this.state.dormancyPeriod !== 1 || 
-                                 this.state.balanceThreshold !== 10000;
-            
-        } catch (error) {
-            console.error('Error fetching dashboard data:', error);
-            this.state.error = 'Failed to fetch data: ' + error.message;
-        }
+            return isDormant && meetsBalanceThreshold && productMatch && portfolioMatch && memberMatch;
+        });
+        
+        this.state.currentPage = 1;
+        this.state.totalPages = Math.ceil(this.state.filteredAccountDetails.length / this.state.itemsPerPage);
     }
 
     applyFiltersToAccounts() {

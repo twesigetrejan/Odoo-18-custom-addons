@@ -59,7 +59,7 @@ class SavingPortfolio(models.Model):
 
     @api.model
     def get_filtered_metrics(self, member_filter=None, product_filter=None, portfolio_filter=None, 
-                           dormancy_period=90, balance_threshold=None):
+                        dormancy_period=90, balance_threshold=None):
         """Get filtered metrics for dashboard"""
         domain = []
         
@@ -70,11 +70,26 @@ class SavingPortfolio(models.Model):
         if portfolio_filter:
             domain.append(('portfolio_id.portfolio_code', '=', portfolio_filter))
         
-        accounts = self.env['saving.details'].search(domain)
-        dormant_accounts = accounts.filtered(lambda a: a.days_idle >= dormancy_period)
+        # Get ALL accounts in database (for total counts)
+        all_accounts = self.env['saving.details'].search([])
         
+        # Get accounts matching member/product/portfolio filters
+        filtered_accounts = self.env['saving.details'].search(domain)
+        
+        # Apply dormancy and balance filters to the filtered accounts
+        fully_filtered_accounts = filtered_accounts.filtered(
+            lambda a: a.days_idle >= dormancy_period and 
+                    a.balance >= balance_threshold
+        )
+        
+        # Get dormant accounts from the fully filtered set
+        dormant_accounts = fully_filtered_accounts.filtered(
+            lambda a: a.days_idle >= dormancy_period
+        )
+        
+        # Prepare account details for display (respecting all filters)
         account_details = []
-        for account in accounts:
+        for account in fully_filtered_accounts:
             account_details.append({
                 'id': account.id,
                 'member_id': account.member_id,
@@ -85,22 +100,37 @@ class SavingPortfolio(models.Model):
                 'days_idle': account.days_idle,
                 'last_transaction_date': account.last_transaction_date.strftime('%Y-%m-%d') if account.last_transaction_date else '',
                 'is_dormant': account.days_idle >= dormancy_period,
-                'meets_balance_threshold': account.balance >= balance_threshold if balance_threshold else True
+                'meets_balance_threshold': account.balance >= balance_threshold
             })
         
+        # Calculate balance by product type for the filtered accounts
         product_balances = {}
-        for account in accounts:
+        for account in fully_filtered_accounts:
             product_type = account.product_type
             if product_type not in product_balances:
                 product_balances[product_type] = 0
             product_balances[product_type] += account.balance
         
         return {
-            'total_accounts': len(accounts),
-            'total_balances': sum(accounts.mapped('balance')),
+            # Unfiltered totals (entire database)
+            'total_accounts': len(all_accounts),
+            'total_balances': sum(all_accounts.mapped('balance')),
+            
+            # Accounts matching member/product/portfolio filters
+            'filtered_accounts': len(filtered_accounts),
+            
+            # Accounts matching ALL filters (including dormancy and balance)
+            'fully_filtered_accounts': len(fully_filtered_accounts),
+            'filtered_dormant_accounts': len(dormant_accounts),
+            'filtered_dormant_balances': sum(dormant_accounts.mapped('balance')),
+            'filtered_dormant_percentage': (len(dormant_accounts) / len(all_accounts)) * 100 if all_accounts else 0,
+            
+            # For backward compatibility
             'dormant_accounts': len(dormant_accounts),
             'dormant_balances': sum(dormant_accounts.mapped('balance')),
-            'dormant_percentage': (len(dormant_accounts) / len(accounts)) * 100 if accounts else 0,
+            'low_balance_accounts': len(fully_filtered_accounts),
+            
+            # For client-side display
             'account_details': account_details,
             'product_balances': product_balances
         }
