@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates id="template" xml:space="preserve">
     <t t-name="my_hostel.SavingsDashboardMainTemplate">
-        <div class="savings_dashboard_main">
-            <div style="padding-left:20px">
-                <h1 class="text-3xl">Savings Accounts Dashboard</h1>
+        <div class="savings_dashboard_main" >
+            <div style="padding-left:20px; padding-top:20px;">
+                <h2 style= " font-weight: bold; font-size:32px;">Savings Accounts Dashboard</h2>
             </div>
             
             <!-- Filter Section -->
             <div class="mb-4 row" style="background-color: #f8f9fa; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
                 <div class="col-md-12">
-                    <h4 style="margin-bottom: 15px;">Filters 🔍</h4>
+                    <h1 style="font-weight: bold; padding-bottom: 15px;">Filters</h1>
                     <div class="row">
                         <div class="col-md-2">
                             <label for="dormancyPeriod" class="form-label">Dormancy Period:</label>
@@ -45,15 +45,7 @@
                                 </t>
                             </select>
                         </div>
-                        <!-- <div class="col-md-2">
-                            <label for="portfolioFilter" class="form-label">Savings category:</label>
-                            <select id="portfolioFilter" class="form-select" t-model="state.selectedPortfolio" t-on-change="onPortfolioFilterChange">
-                                <option value="">Any</option>
-                                <t t-foreach="state.portfolios" t-as="portfolio" t-key="portfolio">
-                                    <option t-att-value="portfolio"><t t-esc="portfolio"/></option>
-                                </t>
-                            </select>
-                        </div> -->
+                        
                         <div class="col-md-2">
                             <label for="memberFilter" class="form-label">As-of Date:</label>
                             <input type="date" class="form-control" value="2025-07-01" readonly="readonly"/>
@@ -120,7 +112,7 @@
             <!-- Main Content Area -->
             <div class="row" style="padding: 20px;">
                 <div class="col-md-7">
-                    <h4>Account Details</h4>
+                    <h3 style="font-weight: bold; padding-bottom: 20px;">Account Details</h3>
                     <div style="max-height: 500px; overflow-y: auto;">
                         <table class="table table-striped table-hover">
                             <thead class="table-dark">
@@ -178,9 +170,9 @@
                 <div class="col-md-5">
                     <div class="row">
                         <div class="col-12">
-                            <h4>Balance by Product Type</h4>
+                            <h3 style="font-weight: bold; padding-bottom: 20px;">Balance by Product Type</h3>
                             <div style="background-color: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                                <canvas t-ref="balanceProductChart" width="450" height="250"></canvas>
+                                <canvas t-ref="balanceProductChart" width="450" height="500"></canvas>
                             </div>
                         </div>
                     </div>
