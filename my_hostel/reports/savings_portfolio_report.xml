@@ -84,7 +84,6 @@
                                     <p class="card-text h3">
                                         <span t-esc="report_data.get('dormant_accounts', 0)"/>
                                     </p>
-                                    <small>(<span t-esc="'{:.1f}'.format(report_data.get('dormant_percentage', 0))"/>%)</small>
                                 </div>
                             </div>
                         </div>
@@ -93,7 +92,8 @@
                                 <div class="card-body">
                                     <h6 class="card-title">Dormant Balances</h6>
                                     <p class="card-text h3">
-                                        <span t-esc="'{:,.0f}'.format(report_data.get('dormant_balances', 0))"/> UGX
+                                        UGX
+                                        <span t-esc="'{:,.0f}'.format(report_data.get('dormant_balances', 0))"/>
                                     </p>
                                 </div>
                             </div>
@@ -156,7 +156,7 @@
                                                 <tr>
                                                     <th colspan="6" class="text-right">Total:</th>
                                                     <th class="text-right">
-                                                        <span t-esc="'{:,.0f}'.format(sum(acc.get('balance', 0) for acc in report_data.get('account_details', [])))"/> UGX
+                                                        <span t-esc="'{:,.0f}'.format(sum(acc.get('balance', 0) for acc in report_data.get('account_details', [])))"/>UGX
                                                     </th>
                                                     <th class="text-center">
                                                         <span t-esc="len(report_data.get('account_details', []))"/> accounts
@@ -171,7 +171,7 @@
                     </div>
                     
                     <!-- Balance by Product Type Chart -->
-                    <div class="mt-4 row" style="padding-top: 180px;">
+                    <div class="mt-4 row" style="padding-top: 40px;">
                         <div class="col-12">
                             <h3>Balance by Product Type</h3>
                             <div t-raw="svg_chart" t-if="svg_chart"/>
