@@ -100,22 +100,6 @@
                         </div>
                     </div>
                     
-                    <!-- Balance by Product Type Chart -->
-                    <div class="mt-4 row">
-                        <div class="col-12">
-                            <div class="card">
-                                <div class="card-header">
-                                    <h4>Balance by Product Type</h4>
-                                </div>
-                                <div class="text-center card-body">
-                                    <div t-raw="svg_chart" t-if="svg_chart"/>
-                                    <div class="alert alert-info" t-if="not svg_chart">
-                                        <i class="fa fa-info-circle"></i> Chart could not be generated. No data available for the selected filters.
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                     
                     <!-- Filtered Account Details Table -->
                     <div class="mt-4 row">
@@ -180,6 +164,23 @@
                                                 </tr>
                                             </tfoot>
                                         </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Balance by Product Type Chart -->
+                    <div class="mt-4 row">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h4>Balance by Product Type</h4>
+                                </div>
+                                <div class="text-center card-body">
+                                    <div t-raw="svg_chart" t-if="svg_chart"/>
+                                    <div class="alert alert-info" t-if="not svg_chart">
+                                        <i class="fa fa-info-circle"></i> Chart could not be generated. No data available for the selected filters.
                                     </div>
                                 </div>
                             </div>

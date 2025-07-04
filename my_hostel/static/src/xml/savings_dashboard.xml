@@ -3,7 +3,7 @@
     <t t-name="my_hostel.SavingsDashboardMainTemplate">
         <div class="savings_dashboard_main">
             <div style="padding-left:20px">
-                <h1>Dormant Accounts Dashboard</h1>
+                <h1 class="text-3xl">Savings Accounts Dashboard</h1>
             </div>
             
             <!-- Filter Section -->
@@ -45,7 +45,7 @@
                                 </t>
                             </select>
                         </div>
-                        <div class="col-md-2">
+                        <!-- <div class="col-md-2">
                             <label for="portfolioFilter" class="form-label">Savings category:</label>
                             <select id="portfolioFilter" class="form-select" t-model="state.selectedPortfolio" t-on-change="onPortfolioFilterChange">
                                 <option value="">Any</option>
@@ -53,7 +53,7 @@
                                     <option t-att-value="portfolio"><t t-esc="portfolio"/></option>
                                 </t>
                             </select>
-                        </div>
+                        </div> -->
                         <div class="col-md-2">
                             <label for="memberFilter" class="form-label">As-of Date:</label>
                             <input type="date" class="form-control" value="2025-07-01" readonly="readonly"/>
@@ -184,22 +184,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="mt-4 row">
-                        <div class="col-12">
-                            <h4>Account Distribution</h4>
-                            <div style="background-color: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                                <canvas t-ref="barChart" width="450" height="250"></canvas>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="mt-4 row">
-                        <div class="col-12">
-                            <h4>Dormancy Status</h4>
-                            <div style="background-color: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                                <canvas t-ref="pieChart" width="450" height="250"></canvas>
-                            </div>
-                        </div>
-                    </div>
+                    
                 </div>
             </div>
         </div>
