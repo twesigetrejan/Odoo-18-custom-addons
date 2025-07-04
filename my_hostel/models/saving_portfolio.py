@@ -2,6 +2,9 @@ from odoo import models, fields, api
 from datetime import date, datetime
 import base64
 import io
+import logging
+_logger = logging.getLogger(__name__)
+
 try:
     import matplotlib.pyplot as plt
     import matplotlib
@@ -134,13 +137,128 @@ class SavingPortfolio(models.Model):
             'account_details': account_details,
             'product_balances': product_balances
         }
+        
+        
+    def generate_svg_chart(self, product_balances):
+        """Generate SVG chart showing Balance by Product Type without matplotlib"""
+        if not product_balances:
+            return None
+        
+        try:
+            # Sort products by balance (descending)
+            sorted_products = sorted(
+                product_balances.items(),
+                key=lambda item: item[1],
+                reverse=True
+            )
+            
+            # Chart dimensions
+            chart_width = 600
+            chart_height = 400
+            bar_height = 40
+            gap = 20
+            left_margin = 200  # Space for product labels
+            top_margin = 50
+            bottom_margin = 50
+            
+            # Calculate maximum balance for scaling
+            max_balance = max(bal for _, bal in sorted_products) or 1
+            
+            # Product type display names
+            product_names = {
+                'ordinary': 'Ordinary Savings',
+                'fixed_deposit': 'Fixed Deposit',
+                'premium': 'Premium Savings',
+                'regular': 'Regular Savings',
+                'youth': 'Youth Savings',
+            }
+            
+            # Generate SVG content
+            svg_content = f"""
+            <svg width="100%" height="{chart_height}" viewBox="0 0 {chart_width} {chart_height}" font-family="Arial, sans-serif">
+                <!-- Background -->
+                <rect width="100%" height="100%" fill="#f8f9fa"/>
+                
+                <!-- Chart title -->
+                <text x="{chart_width/2}" y="{top_margin/2}" text-anchor="middle" font-size="16" font-weight="bold">
+                    Balance by Product Type
+                </text>
+                
+                <!-- X-axis line -->
+                <line x1="{left_margin}" y1="{chart_height - bottom_margin}" 
+                    x2="{chart_width}" y2="{chart_height - bottom_margin}" 
+                    stroke="#495057" stroke-width="2"/>
+            """
+            
+            # Colors for each bar
+            colors = ['#36A2EB', '#FF6384', '#FFCE56', '#4BC0C0', '#9966FF']
+            
+            # Add bars for each product
+            for i, (product_type, balance) in enumerate(sorted_products):
+                y_pos = top_margin + i * (bar_height + gap)
+                bar_width = (balance / max_balance) * (chart_width - left_margin - 20)
+                
+                # Product label
+                svg_content += f"""
+                <text x="{left_margin - 10}" y="{y_pos + bar_height/2}" 
+                    text-anchor="end" font-size="12" fill="#212529">
+                    {product_names.get(product_type, product_type)}
+                </text>
+                """
+                
+                # Bar
+                svg_content += f"""
+                <rect x="{left_margin}" y="{y_pos}" 
+                    width="{bar_width}" height="{bar_height}" 
+                    fill="{colors[i % len(colors)]}" rx="3" ry="3"/>
+                """
+                
+                # Value label
+                svg_content += f"""
+                <text x="{left_margin + bar_width + 10}" y="{y_pos + bar_height/2}" 
+                    text-anchor="start" font-size="11" fill="#212529">
+                    {balance:,.0f} UGX
+                </text>
+                """
+            
+            # Add Y-axis indicators
+            svg_content += f"""
+                <!-- Y-axis indicators -->
+                <line x1="{left_margin}" y1="{top_margin}" 
+                    x2="{left_margin}" y2="{chart_height - bottom_margin}" 
+                    stroke="#495057" stroke-width="1" stroke-dasharray="5,5"/>
+                    
+                <text x="{left_margin - 10}" y="{top_margin + 15}" 
+                    text-anchor="end" font-size="10" fill="#495057">
+                    {max_balance:,.0f}
+                </text>
+                
+                <text x="{left_margin - 10}" y="{chart_height - bottom_margin}" 
+                    text-anchor="end" font-size="10" fill="#495057">
+                    0
+                </text>
+            """
+            
+            svg_content += "</svg>"
+            return svg_content
+            
+        except Exception as e:
+            _logger.error("Failed to generate SVG chart: %s", str(e))
+            return None
 
     def _generate_chart(self, product_balances):
         """Generate SVG chart showing Balance by Product Type"""
-        if not plt:
+        if not plt or not product_balances:
             return None
             
         try:
+            # Convert product balances to a sorted list for consistent ordering
+            sorted_products = sorted(
+                product_balances.items(),
+                key=lambda item: item[1],  # Sort by balance
+                reverse=True
+            )
+            
             product_type_names = {
                 'ordinary': 'Ordinary Savings',
                 'fixed_deposit': 'Fixed Deposit',
@@ -152,46 +270,81 @@ class SavingPortfolio(models.Model):
             products = []
             balances = []
             
-            for product_type, balance in product_balances.items():
+            for product_type, balance in sorted_products:
                 products.append(product_type_names.get(product_type, product_type))
                 balances.append(balance)
             
+            if not balances:  # No data to display
+                return None
+                
             fig, ax = plt.subplots(figsize=(10, 6))
-            bars = ax.barh(products, balances, color=['#36A2EB', '#FF6384', '#FFCE56', '#4BC0C0', '#9966FF'])
             
+            # Use a colormap for better visual distinction
+            colors = plt.cm.tab20c(range(len(balances)))
+            
+            bars = ax.barh(products, balances, color=colors)
+            
+            # Add value labels
             for bar, balance in zip(bars, balances):
                 width = bar.get_width()
-                ax.text(width + max(balances) * 0.01, bar.get_y() + bar.get_height()/2,
-                       f'{balance:,.0f} UGX',
-                       ha='left', va='center', fontweight='bold')
+                ax.text(
+                    width + (max(balances) * 0.01), 
+                    bar.get_y() + bar.get_height()/2,
+                    f'{balance:,.0f} UGX',
+                    ha='left', 
+                    va='center',
+                    fontsize=10
+                )
             
-            ax.set_title('Balance by Product Type', fontsize=16, fontweight='bold', pad=20)
+            ax.set_title(
+                'Balance by Product Type', 
+                fontsize=16, 
+                fontweight='bold', 
+                pad=20
+            )
             ax.set_xlabel('Balance (UGX)', fontsize=12)
             ax.set_ylabel('Product Type', fontsize=12)
-            ax.xaxis.set_major_formatter(plt.FuncFormatter(lambda x, p: f'{x:,.0f}'))
+            
+            # Format x-axis as currency
+            ax.xaxis.set_major_formatter(
+                plt.FuncFormatter(lambda x, p: f'{x:,.0f}')
+            )
+            
+            # Adjust layout
             plt.tight_layout()
             
+            # Save as SVG
             buffer = io.StringIO()
-            plt.savefig(buffer, format='svg', bbox_inches='tight', facecolor='white')
-            buffer.seek(0)
+            plt.savefig(
+                buffer, 
+                format='svg', 
+                bbox_inches='tight', 
+                facecolor='white',
+                transparent=False
+            )
+            plt.close()
+            
             svg_content = buffer.getvalue()
             buffer.close()
-            plt.close()
             
             return svg_content
             
         except Exception as e:
+            import traceback
+            traceback.print_exc()
             return None
 
     @api.model
     def generate_pdf_report(self, member_filter=None, product_filter=None, portfolio_filter=None, 
-                          dormancy_period=90, balance_threshold=None):
+                        dormancy_period=90, balance_threshold=None):
         """Generate PDF report for savings dashboard"""
         report_data = self.get_filtered_metrics(
-            member_filter, product_filter, portfolio_filter, dormancy_period, balance_threshold
+            member_filter, product_filter, portfolio_filter, 
+            dormancy_period, balance_threshold
         )
         
-        svg_chart = self._generate_chart(report_data.get('product_balances', {}))
+        # Generate chart using the new SVG method
+        svg_chart = self.generate_svg_chart(report_data.get('product_balances', {}))
         
         return {
             'type': 'ir.actions.report',

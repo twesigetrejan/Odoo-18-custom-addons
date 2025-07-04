@@ -100,7 +100,7 @@ export class SavingsDashboardMain extends Component {
         this.state.error = 'Failed to fetch data: ' + error.message;
     }
 }
-
+    
     applyFiltersToAccounts() {
         this.state.filteredAccountDetails = this.state.accountDetails.filter(account => {
             const isDormant = account.days_idle >= this.state.dormancyPeriod;
