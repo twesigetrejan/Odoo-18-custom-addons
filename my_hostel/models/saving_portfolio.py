@@ -140,7 +140,6 @@ class SavingPortfolio(models.Model):
         return metrics
 
     @api.model
-    @api.model
     def get_filtered_metrics(self, member_filter=None, product_filter=None, portfolio_filter=None, dormancy_period=1, balance_threshold=10000):
         """Get filtered metrics for dashboard with all filters properly applied"""
         domain = []
@@ -172,7 +171,7 @@ class SavingPortfolio(models.Model):
         
         # Prepare account details for display (respecting all filters)
         account_details = []
-        for account in filtered_accounts:  # Note: using filtered_accounts here for client-side flexibility
+        for account in fully_filtered_accounts:  # Changed to use fully_filtered_accounts
             account_details.append({
                 'id': account.id,
                 'member_id': account.member_id,
@@ -185,6 +184,14 @@ class SavingPortfolio(models.Model):
                 'is_dormant': account.days_idle >= dormancy_period,
                 'meets_balance_threshold': account.balance >= balance_threshold
             })
+        
+        # Calculate balance by product type for the filtered accounts
+        product_balances = {}
+        for account in fully_filtered_accounts:
+            product_type = account.product_type
+            if product_type not in product_balances:
+                product_balances[product_type] = 0
+            product_balances[product_type] += account.balance
         
         return {
             # Unfiltered totals (entire database)
@@ -206,9 +213,74 @@ class SavingPortfolio(models.Model):
             'low_balance_accounts': len(fully_filtered_accounts),
             
             # For client-side display
-            'account_details': account_details
+            'account_details': account_details,
+            'product_balances': product_balances
         }
 
+    def _generate_chart(self, report_data):
+        """Generate SVG chart showing Balance by Product Type"""
+        if not plt:
+            return None
+            
+        try:
+            # Get product balances from report data
+            product_balances = report_data.get('product_balances', {})
+            
+            if not product_balances:
+                return None
+            
+            # Product type display names
+            product_type_names = {
+                'ordinary': 'Ordinary Savings',
+                'fixed_deposit': 'Fixed Deposit',
+                'premium': 'Premium Savings',
+                'regular': 'Regular Savings',
+                'youth': 'Youth Savings',
+            }
+            
+            # Prepare data for chart
+            products = []
+            balances = []
+            
+            for product_type, balance in product_balances.items():
+                products.append(product_type_names.get(product_type, product_type))
+                balances.append(balance)
+            
+            # Create horizontal bar chart for better readability
+            fig, ax = plt.subplots(figsize=(10, 6))
+            
+            bars = ax.barh(products, balances, color=['#36A2EB', '#FF6384', '#FFCE56', '#4BC0C0', '#9966FF'])
+            
+            # Add value labels on bars
+            for bar, balance in zip(bars, balances):
+                width = bar.get_width()
+                ax.text(width + max(balances) * 0.01, bar.get_y() + bar.get_height()/2,
+                    f'{balance:,.0f} UGX',
+                    ha='left', va='center', fontweight='bold')
+            
+            ax.set_title('Balance by Product Type', fontsize=16, fontweight='bold', pad=20)
+            ax.set_xlabel('Balance (UGX)', fontsize=12)
+            ax.set_ylabel('Product Type', fontsize=12)
+            
+            # Format x-axis to show currency
+            ax.xaxis.set_major_formatter(plt.FuncFormatter(lambda x, p: f'{x:,.0f}'))
+            
+            # Adjust layout to prevent label cutoff
+            plt.tight_layout()
+            
+            # Convert to SVG
+            buffer = io.StringIO()
+            plt.savefig(buffer, format='svg', bbox_inches='tight', facecolor='white')
+            buffer.seek(0)
+            svg_content = buffer.getvalue()
+            buffer.close()
+            plt.close()
+            
+            return svg_content
+            
+        except Exception as e:
+            return None
+    
     @api.model
     def generate_pdf_report(self, member_filter=None, product_filter=None, portfolio_filter=None, dormancy_period=90, balance_threshold=None):
         """Generate PDF report for savings dashboard"""

@@ -281,11 +281,15 @@ export class SavingsDashboardMain extends Component {
         }
     }
 
+    // Update the downloadReport method in the JavaScript file
     downloadReport() {
         try {
             const memberFilter = this.state.selectedMember || null;
             const productFilter = this.state.selectedProduct || null;
             const portfolioFilter = this.state.selectedPortfolio || null;
+            
+            // Show loading state
+            this.state.error = null;
             
             this.orm.call('saving.portfolio', 'generate_pdf_report', [
                 memberFilter,
@@ -296,6 +300,8 @@ export class SavingsDashboardMain extends Component {
             ]).then(action => {
                 if (action) {
                     this.action.doAction(action);
+                } else {
+                    this.state.error = 'Failed to generate report. Please try again.';
                 }
             }).catch(error => {
                 console.error('Download Error:', error);
@@ -304,6 +310,111 @@ export class SavingsDashboardMain extends Component {
         } catch (error) {
             console.error('Download failed:', error);
             this.state.error = 'Failed to download report: ' + error.message;
+        }
+    }
+
+    // Update the renderBalanceProductChart method to match the report data structure
+    renderBalanceProductChart() {
+        if (this.balanceProductChartRef.el) {
+            const ctx = this.balanceProductChartRef.el.getContext('2d');
+            if (this.state.balanceProductChart) this.state.balanceProductChart.destroy();
+            
+            // Calculate product balances from filtered account details
+            const productBalances = {};
+            this.state.filteredAccountDetails.forEach(account => {
+                const productType = account.product_type;
+                productBalances[productType] = (productBalances[productType] || 0) + account.balance;
+            });
+            
+            // Product type display names
+            const productTypeNames = {
+                'ordinary': 'Ordinary Savings',
+                'fixed_deposit': 'Fixed Deposit',
+                'premium': 'Premium Savings',
+                'regular': 'Regular Savings',
+                'youth': 'Youth Savings',
+            };
+            
+            const labels = Object.keys(productBalances).map(key => 
+                productTypeNames[key] || key
+            );
+            const data = Object.values(productBalances);
+            
+            this.state.balanceProductChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Total Balance (UGX)',
+                        data: data,
+                        backgroundColor: [
+                            '#36A2EB',
+                            '#FF6384', 
+                            '#FFCE56',
+                            '#4BC0C0',
+                            '#9966FF'
+                        ],
+                        borderColor: [
+                            '#36A2EB',
+                            '#FF6384',
+                            '#FFCE56', 
+                            '#4BC0C0',
+                            '#9966FF'
+                        ],
+                        borderWidth: 1
+                    }],
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Balance by Product Type',
+                            font: {
+                                size: 16,
+                                weight: 'bold'
+                            }
+                        },
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return 'Balance: ' + new Intl.NumberFormat('en-UG', {
+                                        style: 'currency',
+                                        currency: 'UGX',
+                                        minimumFractionDigits: 0,
+                                        maximumFractionDigits: 0,
+                                    }).format(context.parsed.y);
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return new Intl.NumberFormat('en-UG', {
+                                        style: 'currency',
+                                        currency: 'UGX',
+                                        minimumFractionDigits: 0,
+                                        maximumFractionDigits: 0,
+                                    }).format(value);
+                                }
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                maxRotation: 45,
+                                minRotation: 0
+                            }
+                        }
+                    }
+                },
+            });
         }
     }
 
