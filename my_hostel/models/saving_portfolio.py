@@ -62,8 +62,8 @@ class SavingPortfolio(models.Model):
 
     @api.model
     def get_filtered_metrics(self, member_filter=None, product_filter=None, portfolio_filter=None, 
-                        dormancy_period=90, balance_threshold=None):
-        """Get filtered metrics for dashboard"""
+                        dormancy_period=90, balance_threshold=None, as_of_date=None):
+        """Get filtered metrics with date filtering"""
         domain = []
         
         if member_filter:
@@ -79,18 +79,23 @@ class SavingPortfolio(models.Model):
         # Get accounts matching member/product/portfolio filters
         filtered_accounts = self.env['saving.details'].search(domain)
         
-        # Apply dormancy and balance filters to the filtered accounts
+        # Apply date filtering if specified
+        if as_of_date:
+            as_of_date = fields.Date.from_string(as_of_date)
+            filtered_accounts = filtered_accounts.filtered(
+                lambda a: not a.last_transaction_date or a.last_transaction_date.date() <= as_of_date
+            )
+        
+        # Apply dormancy and balance filters
         fully_filtered_accounts = filtered_accounts.filtered(
             lambda a: a.days_idle >= dormancy_period and 
                     a.balance >= balance_threshold
         )
-        
-        # Get dormant accounts from the fully filtered set
+         # Get dormant accounts from the fully filtered set
         dormant_accounts = fully_filtered_accounts.filtered(
             lambda a: a.days_idle >= dormancy_period
         )
-        
-        # Prepare account details for display (respecting all filters)
+        # Prepare account details
         account_details = []
         for account in fully_filtered_accounts:
             account_details.append({
@@ -106,6 +111,7 @@ class SavingPortfolio(models.Model):
                 'meets_balance_threshold': account.balance >= balance_threshold
             })
         
+    # ... rest of your existing method ...
         # Calculate balance by product type for the filtered accounts
         product_balances = {}
         for account in fully_filtered_accounts:
@@ -344,11 +350,11 @@ class SavingPortfolio(models.Model):
 
     @api.model
     def generate_pdf_report(self, member_filter=None, product_filter=None, portfolio_filter=None, 
-                        dormancy_period=90, balance_threshold=None):
+                        dormancy_period=90, balance_threshold=None,  as_of_date=None):
         """Generate PDF report for savings dashboard"""
         report_data = self.get_filtered_metrics(
             member_filter, product_filter, portfolio_filter, 
-            dormancy_period, balance_threshold
+            dormancy_period, balance_threshold, as_of_date
         )
         
         # Generate chart using the same approach as loans model
@@ -422,10 +428,15 @@ class SavingDetails(models.Model):
 
     @api.depends('last_transaction_date')
     def _compute_days_idle(self):
-        today = date.today()
+        # Use context date if provided, otherwise use today's date
+        context_date = self.env.context.get('as_of_date')
+        reference_date = fields.Date.from_string(context_date) if context_date else date.today()
+        
         for rec in self:
-            rec.days_idle = (today - rec.last_transaction_date.date()).days if rec.last_transaction_date else 0
-
+            if rec.last_transaction_date:
+                rec.days_idle = (reference_date - rec.last_transaction_date.date()).days
+            else:
+                rec.days_idle = 0
 
 class SavingTransaction(models.Model):
     _name = 'saving.transaction'

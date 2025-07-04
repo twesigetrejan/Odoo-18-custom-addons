@@ -47,8 +47,12 @@
                         </div>
                         
                         <div class="col-md-2">
-                            <label for="memberFilter" class="form-label">As-of Date:</label>
-                            <input type="date" class="form-control" value="2025-07-01" readonly="readonly"/>
+                            <label for="asOfDate" class="form-label">As-of Date:</label>
+                            <input type="date" 
+                                class="form-control" 
+                                id="asOfDate" 
+                                t-model="state.asOfDate"
+                                t-on-change="onAsOfDateChange"/>
                         </div>
                         <div class="col-md-2" style="display: flex; align-items: end;">
                             <button class="btn btn-secondary" t-on-click="clearFilters" style="margin-bottom: 0;">
