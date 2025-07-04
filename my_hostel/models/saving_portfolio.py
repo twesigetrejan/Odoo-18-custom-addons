@@ -140,10 +140,10 @@ class SavingPortfolio(models.Model):
         
         
     def generate_svg_chart(self, product_balances):
-        """Generate SVG chart showing Balance by Product Type without matplotlib"""
+        """Generate SVG chart for savings products similar to loan model approach"""
         if not product_balances:
             return None
-        
+            
         try:
             # Sort products by balance (descending)
             sorted_products = sorted(
@@ -154,24 +154,32 @@ class SavingPortfolio(models.Model):
             
             # Chart dimensions
             chart_width = 600
-            chart_height = 400
-            bar_height = 40
-            gap = 20
-            left_margin = 200  # Space for product labels
-            top_margin = 50
-            bottom_margin = 50
+            chart_height = 500  # Increased height to accommodate title
+            bar_width = 100
+            gap = 40
+            top_margin = 40  # Space for title
+            bottom_margin = 80  # Space for x-axis labels
             
             # Calculate maximum balance for scaling
-            max_balance = max(bal for _, bal in sorted_products) or 1
+            max_value = max(bal for _, bal in sorted_products) if sorted_products else 1
             
-            # Product type display names
+            # Calculate available height for bars
+            available_height = chart_height - top_margin - bottom_margin
+            
+            # Base Y position (chart bottom minus bottom margin)
+            base_y = chart_height - bottom_margin
+            
+            # Product display names
             product_names = {
-                'ordinary': 'Ordinary Savings',
+                'ordinary': 'Ordinary',
                 'fixed_deposit': 'Fixed Deposit',
-                'premium': 'Premium Savings',
-                'regular': 'Regular Savings',
-                'youth': 'Youth Savings',
+                'premium': 'Premium',
+                'regular': 'Regular',
+                'youth': 'Youth',
             }
+            
+            # Colors for each product type
+            colors = ['#36A2EB', '#FF6384', '#FFCE56', '#4BC0C0', '#9966FF']
             
             # Generate SVG content
             svg_content = f"""
@@ -180,66 +188,66 @@ class SavingPortfolio(models.Model):
                 <rect width="100%" height="100%" fill="#f8f9fa"/>
                 
                 <!-- Chart title -->
-                <text x="{chart_width/2}" y="{top_margin/2}" text-anchor="middle" font-size="16" font-weight="bold">
+                <text x="{chart_width/2}" y="{top_margin/2}" 
+                    text-anchor="middle" font-size="16" font-weight="bold">
                     Balance by Product Type
                 </text>
                 
                 <!-- X-axis line -->
-                <line x1="{left_margin}" y1="{chart_height - bottom_margin}" 
-                    x2="{chart_width}" y2="{chart_height - bottom_margin}" 
+                <line x1="50" y1="{base_y}" x2="{chart_width - 50}" y2="{base_y}" 
                     stroke="#495057" stroke-width="2"/>
             """
             
-            # Colors for each bar
-            colors = ['#36A2EB', '#FF6384', '#FFCE56', '#4BC0C0', '#9966FF']
-            
             # Add bars for each product
             for i, (product_type, balance) in enumerate(sorted_products):
-                y_pos = top_margin + i * (bar_height + gap)
-                bar_width = (balance / max_balance) * (chart_width - left_margin - 20)
+                # Calculate bar height
+                bar_height = (balance / max_value) * available_height
                 
-                # Product label
+                # Calculate x position (centered with gaps)
+                x_pos = 50 + i * (bar_width + gap)
+                
+                # Add bar
                 svg_content += f"""
-                <text x="{left_margin - 10}" y="{y_pos + bar_height/2}" 
-                    text-anchor="end" font-size="12" fill="#212529">
+                <!-- {product_type} bar -->
+                <rect x="{x_pos}" y="{base_y - bar_height}" 
+                    width="{bar_width}" height="{bar_height}" 
+                    fill="{colors[i % len(colors)]}" rx="5" ry="5"/>
+                """
+                
+                # Add product label above bar
+                svg_content += f"""
+                <!-- {product_type} label -->
+                <text x="{x_pos + bar_width/2}" y="{base_y - bar_height - 15}" 
+                    text-anchor="middle" fill="#212529" font-size="12" font-weight="bold">
                     {product_names.get(product_type, product_type)}
                 </text>
                 """
                 
-                # Bar
+                # Add value label below bar
                 svg_content += f"""
-                <rect x="{left_margin}" y="{y_pos}" 
-                    width="{bar_width}" height="{bar_height}" 
-                    fill="{colors[i % len(colors)]}" rx="3" ry="3"/>
-                """
-                
-                # Value label
-                svg_content += f"""
-                <text x="{left_margin + bar_width + 10}" y="{y_pos + bar_height/2}" 
-                    text-anchor="start" font-size="11" fill="#212529">
-                    {balance:,.0f} UGX
+                <!-- {product_type} value -->
+                <text x="{x_pos + bar_width/2}" y="{base_y + 20}" 
+                    text-anchor="middle" fill="#212529" font-size="12">
+                    {'{:,.0f}'.format(balance)} UGX
                 </text>
                 """
             
             # Add Y-axis indicators
             svg_content += f"""
                 <!-- Y-axis indicators -->
-                <line x1="{left_margin}" y1="{top_margin}" 
-                    x2="{left_margin}" y2="{chart_height - bottom_margin}" 
+                <line x1="50" y1="{top_margin}" x2="50" y2="{base_y}" 
                     stroke="#495057" stroke-width="1" stroke-dasharray="5,5"/>
-                    
-                <text x="{left_margin - 10}" y="{top_margin + 15}" 
-                    text-anchor="end" font-size="10" fill="#495057">
-                    {max_balance:,.0f}
+                <text x="40" y="{top_margin + 15}" text-anchor="end" 
+                    fill="#495057" font-size="10">
+                    {'{:,.0f}'.format(max_value)}
                 </text>
-                
-                <text x="{left_margin - 10}" y="{chart_height - bottom_margin}" 
-                    text-anchor="end" font-size="10" fill="#495057">
+                <text x="40" y="{base_y}" text-anchor="end" 
+                    fill="#495057" font-size="10">
                     0
                 </text>
+            </svg>
             """
             
-            svg_content += "</svg>"
             return svg_content
             
         except Exception as e:
@@ -343,7 +351,7 @@ class SavingPortfolio(models.Model):
             dormancy_period, balance_threshold
         )
         
-        # Generate chart using the new SVG method
+        # Generate chart using the same approach as loans model
         svg_chart = self.generate_svg_chart(report_data.get('product_balances', {}))
         
         return {

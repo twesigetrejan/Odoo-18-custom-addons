@@ -171,23 +171,12 @@
                     </div>
                     
                     <!-- Balance by Product Type Chart -->
-                    <div class="mt-4 row">
+                    <div class="mt-4 row" style="padding-top: 180px;">
                         <div class="col-12">
-                            <div class="card">
-                                <div class="card-header">
-                                    <h4>Balance by Product Type</h4>
-                                </div>
-                                <div class="card-body">
-                                    <t t-if="svg_chart">
-                                        <div t-out="svg_chart"/>
-                                    </t>
-                                    <t t-else="">
-                                        <div class="alert alert-info">
-                                            <i class="fa fa-info-circle"></i> 
-                                            Chart could not be generated. Please check your filters.
-                                        </div>
-                                    </t>
-                                </div>
+                            <h3>Balance by Product Type</h3>
+                            <div t-raw="svg_chart" t-if="svg_chart"/>
+                            <div class="alert alert-warning" t-if="not svg_chart">
+                                Chart could not be generated for the selected filters.
                             </div>
                         </div>
                     </div>
