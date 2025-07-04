@@ -3,7 +3,7 @@
     <t t-name="my_hostel.SavingsDashboardMainTemplate">
         <div class="savings_dashboard_main">
             <div style="padding-left:20px">
-                <h1>Dormant &amp; Low-Balance Accounts</h1>
+                <h1>Dormant Accounts Dashboard</h1>
             </div>
             
             <!-- Filter Section -->

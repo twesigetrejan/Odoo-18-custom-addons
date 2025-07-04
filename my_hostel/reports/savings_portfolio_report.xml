@@ -26,7 +26,7 @@
                     
                     <div class="row">
                         <div class="text-center col-12">
-                            <h2>Dormant &amp; Low-Balance Accounts Report</h2>
+                            <h2>Dormant Accounts Report</h2>
                             <p class="text-muted">Generated on <span t-esc="datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')"/></p>
                         </div>
                     </div>
