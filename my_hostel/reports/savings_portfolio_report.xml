@@ -199,7 +199,7 @@
                                             <ul>
                                                 <li><strong>Total Accounts in System:</strong> <span t-esc="report_data.get('total_accounts', 0)"/></li>
                                                 <li><strong>Accounts Meeting Filter Criteria:</strong> <span t-esc="filtered_count"/></li>
-                                                <li><strong>Dormant Accounts:</strong> <span t-esc="report_data.get('dormant_accounts', 0)"/> (<span t-esc="'{:.1f}'.format(dormant_percentage)"/>%)</li>
+                                              
                                             </ul>
                                         </div>
                                         <div class="col-6">
