@@ -83,7 +83,6 @@ export class SavingsDashboardMain extends Component {
                 this.state.asOfDate || null
             ]);
             
-            // Maintain your original calculation logic
             this.state.total_accounts = data.total_accounts || 0;
             this.state.total_balances = data.total_balances || 0;
             this.state.filtered_dormant_accounts = data.filtered_dormant_accounts || 0;
