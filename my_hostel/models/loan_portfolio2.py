@@ -9,13 +9,16 @@ class LoanPortfolio2(models.Model):
     name = fields.Char(string='Portfolio Name', required=True)
     date_from = fields.Date(string='Date From', required=True, default=lambda self: date.today().replace(day=1))
     date_to = fields.Date(string='Date To', required=True, default=fields.Date.today)
-    branch_id = fields.Char( string='Branch', required= True, help= "Account opening branch")
+    product_type = fields.Selection([
+        ('ordinary', 'Ordinary Savings'),
+        ('fixed_deposit', 'Fixed Deposit'),
+        ('premium', 'Premium Savings'),
+        ('regular', 'Regular Savings'),
+        ('youth', 'Youth Savings'),
+    ], string='Product', required=True) 
     currency_id = fields.Many2one('res.currency', string='Currency', required=True, default=lambda self: self.env.company.currency_id)
     
-    # Portfolio lines
-    portfolio_line_ids = fields.One2many('loan.portfolio2.line', 'portfolio_id', string='Portfolio Lines')
-    
-    # Summary fields
+    portfolio_line_ids = fields.One2many('loan.portfolio2.line', 'portfolio_id', string='Portfolio Lines')    
     total_opening_portfolio = fields.Monetary(string='Total Opening Portfolio', compute='_compute_totals', store=True)
     total_disbursements = fields.Monetary(string='Total Disbursements', compute='_compute_totals', store=True)
     total_principal_repaid = fields.Monetary(string='Total Principal Repaid', compute='_compute_totals', store=True)

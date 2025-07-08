@@ -29,12 +29,10 @@
                 <field name="name"/>
                 <field name="date_from"/>
                 <field name="date_to"/>
-                <field name="branch_id"/>
+                <field name="product_type"/>
                 <field name="total_opening_portfolio"/>
                 <field name="total_disbursements"/>
                 <field name="total_closing_portfolio"/>
-                <field name="total_change_percentage"/>
-                <field name="currency_id" invisible="1"/>
             </tree>
         </field>
     </record>
@@ -55,10 +53,9 @@
                         <group>
                             <field name="date_from"/>
                             <field name="date_to"/>
-                            <field name="branch_id"/>
+                            <field name="product_type"/>
                         </group>
                         <group>
-                            <field name="currency_id"/>
                             <field name="total_opening_portfolio"/>
                             <field name="total_closing_portfolio"/>
                             <field name="total_change_percentage"/>
@@ -94,14 +91,14 @@
                 <field name="name"/>
                 <field name="date_from"/>
                 <field name="date_to"/>
-                <field name="branch_id"/>
+                <field name="product_type"/>
                 <filter string="Current Month" name="current_month" 
                         domain="[('date_from', '&gt;=', (datetime.date.today().replace(day=1)).strftime('%Y-%m-%d'))]"/>
                         <filter string="Last Month" name="last_month"
                         domain="[('date_from', '&gt;=', (datetime.date.today().replace(day=1) - datetime.timedelta(days=1)).replace(day=1).strftime('%Y-%m-%d')),
                         ('date_to', '&lt;=', (datetime.date.today().replace(day=1) - datetime.timedelta(days=1)).strftime('%Y-%m-%d'))]"/>
                         <group expand="0" string="Group By">
-                    <filter string="Branch" name="group_branch" context="{'group_by': 'branch_id'}"/>
+                    <filter string="product" name="group_branch" context="{'group_by': 'product_type'}"/>
                     <filter string="Date From" name="group_date_from" context="{'group_by': 'date_from'}"/>
                 </group>
             </search>

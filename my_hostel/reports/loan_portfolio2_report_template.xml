@@ -282,6 +282,12 @@
                             </div>
                         </div>
                     </div>
+                    
+                    <div class="mt-3 row">
+                        <div class="col-12">
+                            <p><strong>Note:</strong> All amounts are in Ugandan Shillings (UGX). Change percentages are calculated based on the difference between opening and closing portfolios.</p>
+                        </div>
+                    </div>
                                         
                     <div class="oe_structure"/> 
                 </div>
