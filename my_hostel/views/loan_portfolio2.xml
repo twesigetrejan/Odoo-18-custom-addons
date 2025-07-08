@@ -65,51 +65,6 @@
                         </group>
                     </group>
                     
-                    <group string="Summary">
-                        <div class="row">
-                            <div class="col-3">
-                                <div class="text-center card">
-                                    <div class="card-body">
-                                        <h6 class="card-title">Opening Portfolio</h6>
-                                        <p class="card-text h4">
-                                            <field name="total_opening_portfolio"/>
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-3">
-                                <div class="text-center card">
-                                    <div class="card-body">
-                                        <h6 class="card-title">Disbursements</h6>
-                                        <p class="card-text h4">
-                                            <field name="total_disbursements"/>
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-3">
-                                <div class="text-center card">
-                                    <div class="card-body">
-                                        <h6 class="card-title">Principal Repaid</h6>
-                                        <p class="card-text h4">
-                                            <field name="total_principal_repaid"/>
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-3">
-                                <div class="text-center card">
-                                    <div class="card-body">
-                                        <h6 class="card-title">Interest Earned</h6>
-                                        <p class="card-text h4">
-                                            <field name="total_interest_earned"/>
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </group>
-                    
                     <notebook>
                         <page string="Portfolio Lines">
                             <field name="portfolio_line_ids">

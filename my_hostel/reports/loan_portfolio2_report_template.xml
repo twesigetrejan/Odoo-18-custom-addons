@@ -282,24 +282,6 @@
                             </div>
                         </div>
                     </div>
-
-                    <!-- Chart Section -->
-                    <div class="mt-4 row" style="padding-top: 20px;">
-                        <div class="col-12">
-                            <h3>Portfolio Visualization</h3>
-                            <div t-raw="svg_chart" t-if="svg_chart"/>
-                            <div class="alert alert-info" t-if="not svg_chart">
-                                <p>Portfolio comparison chart would be displayed here.</p>
-                                <p>The chart shows opening vs closing portfolio values for each product.</p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="mt-3 row">
-                        <div class="col-12">
-                            <p><strong>Note:</strong> All amounts are in Ugandan Shillings (UGX). Change percentages are calculated based on the difference between opening and closing portfolios.</p>
-                        </div>
-                    </div>
                                         
                     <div class="oe_structure"/> 
                 </div>

@@ -163,21 +163,6 @@
                     </div>
                 </div>
 
-                <!-- Chart Section -->
-                <div class="mt-4 row" t-if="state.portfolioData.length > 0">
-                    <div class="col-12">
-                        <div class="card">
-                            <div class="card-header">
-                                <h5 class="card-title">Portfolio Performance Chart</h5>
-                            </div>
-                            <div class="card-body">
-                                <div style="height: 400px;">
-                                    <canvas t-ref="portfolioChart" style="max-height: 400px;"></canvas>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
     </t>
