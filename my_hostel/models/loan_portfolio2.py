@@ -15,7 +15,7 @@ class LoanPortfolio2(models.Model):
         ('premium', 'Premium Savings'),
         ('regular', 'Regular Savings'),
         ('youth', 'Youth Savings'),
-    ], string='Product', required=True) 
+    ], string='Product Type', required=True)
     currency_id = fields.Many2one('res.currency', string='Currency', required=True, default=lambda self: self.env.company.currency_id)
     
     portfolio_line_ids = fields.One2many('loan.portfolio2.line', 'portfolio_id', string='Portfolio Lines')    
@@ -38,7 +38,6 @@ class LoanPortfolio2(models.Model):
             portfolio.total_interest_earned = sum(lines.mapped('interest_earned'))
             portfolio.total_closing_portfolio = sum(lines.mapped('closing_portfolio'))
             
-            # Calculate total change percentage
             if portfolio.total_opening_portfolio:
                 change = portfolio.total_closing_portfolio - portfolio.total_opening_portfolio
                 portfolio.total_change_percentage = (change / portfolio.total_opening_portfolio) * 100
@@ -46,7 +45,7 @@ class LoanPortfolio2(models.Model):
                 portfolio.total_change_percentage = 0.0
 
     @api.model
-    def get_dashboard_data(self, date_from=None, date_to=None, branch_id=None):
+    def get_dashboard_data(self, date_from=None, date_to=None, product_type=None):
         """Get dashboard data for the snapshot view"""
         domain = []
         
@@ -54,18 +53,19 @@ class LoanPortfolio2(models.Model):
             domain.append(('date_from', '>=', date_from))
         if date_to:
             domain.append(('date_to', '<=', date_to))
-        if branch_id:
-            domain.append(('branch_id', '=', branch_id))
+        if product_type:
+            domain.append(('product_type', '=', product_type))
             
         portfolios = self.search(domain)
         
-        # Aggregate data by product
+        # Aggregate data by product name and include product type
         product_data = {}
         for portfolio in portfolios:
             for line in portfolio.portfolio_line_ids:
                 product = line.product_name
                 if product not in product_data:
                     product_data[product] = {
+                        'product_type': portfolio.product_type,  # Include product type
                         'opening_portfolio': 0,
                         'disbursements': 0,
                         'principal_repaid': 0,
@@ -87,30 +87,43 @@ class LoanPortfolio2(models.Model):
             else:
                 data['change_percentage'] = 0.0
         
+        # Calculate totals with change percentage
+        total_opening = sum(data['opening_portfolio'] for data in product_data.values())
+        total_closing = sum(data['closing_portfolio'] for data in product_data.values())
+        total_change = 0.0
+        if total_opening:
+            total_change = ((total_closing - total_opening) / total_opening) * 100
+        
         return {
             'product_data': product_data,
-            'total_opening': sum(data['opening_portfolio'] for data in product_data.values()),
+            'total_opening': total_opening,
             'total_disbursements': sum(data['disbursements'] for data in product_data.values()),
             'total_principal_repaid': sum(data['principal_repaid'] for data in product_data.values()),
             'total_interest_earned': sum(data['interest_earned'] for data in product_data.values()),
-            'total_closing': sum(data['closing_portfolio'] for data in product_data.values()),
+            'total_closing': total_closing,
+            'total_change_percentage': total_change
         }
 
     @api.model
     def get_filter_options(self):
         """Get filter options for dashboard"""
-        branches = self.env['res.branch'].search([])
         currencies = self.env['res.currency'].search([])
         
         return {
-            'branches': branches.read(['id', 'name']),
             'currencies': currencies.read(['id', 'name', 'symbol']),
+            'product_types': [
+                {'id': 'ordinary', 'name': 'Ordinary Savings'},
+                {'id': 'fixed_deposit', 'name': 'Fixed Deposit'},
+                {'id': 'premium', 'name': 'Premium Savings'},
+                {'id': 'regular', 'name': 'Regular Savings'},
+                {'id': 'youth', 'name': 'Youth Savings'}
+            ]
         }
 
     @api.model
-    def generate_snapshot_report(self, date_from=None, date_to=None, branch_id=None):
+    def generate_snapshot_report(self, date_from=None, date_to=None, product_type=None):
         """Generate snapshot report"""
-        report_data = self.get_dashboard_data(date_from, date_to, branch_id)
+        report_data = self.get_dashboard_data(date_from, date_to, product_type)
         
         return {
             'type': 'ir.actions.report',
@@ -120,14 +133,14 @@ class LoanPortfolio2(models.Model):
                 'report_data': report_data,
                 'date_from': date_from,
                 'date_to': date_to,
-                'branch_id': branch_id,
+                'product_type': product_type,
             },
             'context': {
                 'active_model': 'loan.portfolio2',
                 'report_data': report_data,
                 'date_from': date_from,
                 'date_to': date_to,
-                'branch_id': branch_id,
+                'product_type': product_type,
             }
         }
 
@@ -137,7 +150,7 @@ class LoanPortfolio2Line(models.Model):
     _description = 'Loan Portfolio Line'
 
     portfolio_id = fields.Many2one('loan.portfolio2', string='Portfolio', required=True, ondelete='cascade')
-    product_name = fields.Char(string='Product', required=True)
+    product_name = fields.Char(string='Product Name', required=True)
     opening_portfolio = fields.Monetary(string='Opening Portfolio', currency_field='currency_id')
     disbursements = fields.Monetary(string='Disbursements', currency_field='currency_id')
     principal_repaid = fields.Monetary(string='Principal Repaid', currency_field='currency_id')

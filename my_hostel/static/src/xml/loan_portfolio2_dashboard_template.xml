@@ -53,79 +53,97 @@
 
                 <!-- Main Data Table -->
                 <div class="row">
-                    <div class="col-12">
-                        <div class="card">
-                            <div class="card-body">
-                                <div class="table-responsive">
-                                    <table class="table table-hover">
-                                        <thead class="table-light">
-                                            <tr>
-                                                <th>Product</th>
-                                                <th class="text-end">Opening Portfolio</th>
-                                                <th class="text-end">Disbursements</th>
-                                                <th class="text-end">Principal Repaid</th>
-                                                <th class="text-end">Interest Earned</th>
-                                                <th class="text-end">Closing Portfolio</th>
-                                             
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <t t-foreach="state.portfolioData" t-as="item" t-key="item.product">
-                                                <tr>
-                                                    <td><strong><t t-esc="item.product"/></strong></td>
-                                                    <td class="text-end">
-                                                        <t t-esc="formatCurrency(item.opening_portfolio)"/>
-                                                    </td>
-                                                    <td class="text-end">
-                                                        <t t-esc="formatCurrency(item.disbursements)"/>
-                                                    </td>
-                                                    <td class="text-end">
-                                                        <t t-esc="formatCurrency(item.principal_repaid)"/>
-                                                    </td>
-                                                    <td class="text-end">
-                                                        <t t-esc="formatCurrency(item.interest_earned)"/>
-                                                    </td>
-                                                    <td class="text-end">
-                                                        <t t-esc="formatCurrency(item.closing_portfolio)"/>
-                                                    </td>
-                                                   
-                                                </tr>
-                                            </t>
-                                            <t t-if="state.portfolioData.length === 0">
-                                                <tr>
-                                                    <td colspan="7" class="text-center text-muted">
-                                                        No data available for the selected filters.
-                                                    </td>
-                                                </tr>
-                                            </t>
-                                        </tbody>
-                                        <tfoot class="table-dark">
-                                            <tr>
-                                                <td><strong>Totals</strong></td>
-                                                <td class="text-end">
-                                                    <strong><t t-esc="formatCurrency(state.totals.total_opening)"/></strong>
-                                                </td>
-                                                <td class="text-end">
-                                                    <strong><t t-esc="formatCurrency(state.totals.total_disbursements)"/></strong>
-                                                </td>
-                                                <td class="text-end">
-                                                    <strong><t t-esc="formatCurrency(state.totals.total_principal_repaid)"/></strong>
-                                                </td>
-                                                <td class="text-end">
-                                                    <strong><t t-esc="formatCurrency(state.totals.total_interest_earned)"/></strong>
-                                                </td>
-                                                <td class="text-end">
-                                                    <strong><t t-esc="formatCurrency(state.totals.total_closing)"/></strong>
-                                                </td>
-                                                
-                                            </tr>
-                                        </tfoot>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Product Type</th>
+                                <th>Product Name</th>
+                                <th class="text-end">Opening Portfolio</th>
+                                <th class="text-end">Disbursements</th>
+                                <th class="text-end">Principal Repaid</th>
+                                <th class="text-end">Interest Earned</th>
+                                <th class="text-end">Closing Portfolio</th>
+                                <th class="text-end">% Change</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="state.portfolioData" t-as="item" t-key="item.product">
+                                <tr>
+                                    <td>
+                                        <t t-if="item.product_type === 'ordinary'">Ordinary Savings</t>
+                                        <t t-if="item.product_type === 'fixed_deposit'">Fixed Deposit</t>
+                                        <t t-if="item.product_type === 'premium'">Premium Savings</t>
+                                        <t t-if="item.product_type === 'regular'">Regular Savings</t>
+                                        <t t-if="item.product_type === 'youth'">Youth Savings</t>
+                                    </td>
+                                    <td><strong><t t-esc="item.product"/></strong></td>
+                                    <td class="text-end">
+                                        <t t-esc="formatCurrency(item.opening_portfolio)"/>
+                                    </td>
+                                    <td class="text-end">
+                                        <t t-esc="formatCurrency(item.disbursements)"/>
+                                    </td>
+                                    <td class="text-end">
+                                        <t t-esc="formatCurrency(item.principal_repaid)"/>
+                                    </td>
+                                    <td class="text-end">
+                                        <t t-esc="formatCurrency(item.interest_earned)"/>
+                                    </td>
+                                    <td class="text-end">
+                                        <t t-esc="formatCurrency(item.closing_portfolio)"/>
+                                    </td>
+                                    <td class="text-end">
+                                        <span t-att-class="'badge ' + (item.change_percentage >= 0 ? 'bg-success' : 'bg-danger')">
+                                            <t t-esc="item.change_percentage.toFixed(1)"/>%
+                                        </span>
+                                    </td>
+                                </tr>
+                            </t>
+                            <t t-if="state.portfolioData.length === 0">
+                                <tr>
+                                    <td colspan="8" class="text-center text-muted">
+                                        No data available for the selected filters.
+                                    </td>
+                                </tr>
+                            </t>
+                        </tbody>
+                        <tfoot class="table-dark">
+                            <tr>
+                                <td colspan="2"><strong>Totals</strong></td>
+                                <td class="text-end">
+                                    <strong><t t-esc="formatCurrency(state.totals.total_opening)"/></strong>
+                                </td>
+                                <td class="text-end">
+                                    <strong><t t-esc="formatCurrency(state.totals.total_disbursements)"/></strong>
+                                </td>
+                                <td class="text-end">
+                                    <strong><t t-esc="formatCurrency(state.totals.total_principal_repaid)"/></strong>
+                                </td>
+                                <td class="text-end">
+                                    <strong><t t-esc="formatCurrency(state.totals.total_interest_earned)"/></strong>
+                                </td>
+                                <td class="text-end">
+                                    <strong><t t-esc="formatCurrency(state.totals.total_closing)"/></strong>
+                                </td>
+                                <td class="text-end">
+                                    <strong>
+                                        <span t-att-class="'badge ' + (state.totals.total_change_percentage >= 0 ? 'bg-success' : 'bg-danger')">
+                                            <t t-esc="state.totals.total_change_percentage.toFixed(1)"/>%
+                                        </span>
+                                    </strong>
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
 
                 <!-- Actions Row -->
                 <div class="mt-4 row">

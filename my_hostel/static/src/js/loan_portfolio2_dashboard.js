@@ -1,15 +1,15 @@
 /** @odoo-module **/
 
-import { Component, onWillStart, onMounted, useState, useRef } from '@odoo/owl';
+import { Component, onWillStart, useState } from '@odoo/owl';
 import { registry } from '@web/core/registry';
 import { useService } from '@web/core/utils/hooks';
-import { loadJS } from '@web/core/assets';
 
 export class LoanPortfolio2Dashboard extends Component {
     setup() {
         super.setup();
         this.orm = useService('orm');
         this.action = useService('action');
+        this.notification = useService('notification');
         
         // Set default dates
         const today = new Date();
@@ -19,9 +19,8 @@ export class LoanPortfolio2Dashboard extends Component {
         this.state = useState({
             dateFrom: firstDayOfMonth.toISOString().split('T')[0],
             dateTo: lastDayOfMonth.toISOString().split('T')[0],
-            selectedBranch: '',
+            selectedProduct: '',
             selectedCurrency: '',
-            compareEnabled: false,
             
             portfolioData: [],
             totals: {
@@ -33,53 +32,37 @@ export class LoanPortfolio2Dashboard extends Component {
                 total_change_percentage: 0
             },
             
-            branches: [],
+            productOptions: [
+                { id: 'ordinary', name: 'Ordinary Savings' },
+                { id: 'fixed_deposit', name: 'Fixed Deposit' },
+                { id: 'premium', name: 'Premium Savings' },
+                { id: 'regular', name: 'Regular Savings' },
+                { id: 'youth', name: 'Youth Savings' }
+            ],
             currencies: [],
             error: null,
             loading: false
         });
-        
-        this.chartRef = useRef('portfolioChart');
-        this.chart = null;
 
         onWillStart(async () => {
-            await this.loadExternalLibraries();
-            await this.loadFilterOptions();
+            await this.loadCurrencyOptions();
             await this.loadDashboardData();
         });
-
-        onMounted(() => {
-            this.renderChart();
-        });
     }
 
-    async loadExternalLibraries() {
-        const libraries = [
-            'https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js',
-        ];
-        for (const lib of libraries) {
-            try {
-                await loadJS(lib);
-            } catch (error) {
-                console.error(`Failed to load ${lib}:`, error);
-                this.state.error = `Failed to load required library: ${lib}`;
-            }
-        }
-    }
-
-    async loadFilterOptions() {
+    async loadCurrencyOptions() {
         try {
             const options = await this.orm.call('loan.portfolio2', 'get_filter_options', []);
-            this.state.branches = options.branches || [];
             this.state.currencies = options.currencies || [];
             
-            // Set default currency
             if (this.state.currencies.length > 0) {
                 this.state.selectedCurrency = this.state.currencies[0].id;
             }
         } catch (error) {
-            console.error('Failed to load filter options:', error);
-            this.state.error = 'Failed to load filter options';
+            console.error('Failed to load currency options:', error);
+            this.notification.add('Failed to load currency options', {
+                type: 'danger',
+            });
         }
     }
 
@@ -91,14 +74,23 @@ export class LoanPortfolio2Dashboard extends Component {
             const params = {
                 date_from: this.state.dateFrom,
                 date_to: this.state.dateTo,
-                branch_id: this.state.selectedBranch ? parseInt(this.state.selectedBranch) : null
+                product_type: this.state.selectedProduct || false
             };
 
-            const result = await this.orm.call('loan.portfolio2', 'get_dashboard_data', [], params);
-            
-            // Transform product_data object to array for template
+            const result = await this.orm.call(
+                'loan.portfolio2',
+                'get_dashboard_data',
+                [params.date_from, params.date_to, params.product_type]
+            );
+
+            if (!result) {
+                throw new Error("No data returned from server");
+            }
+
+            // Transform data to include both product name and type
             this.state.portfolioData = Object.entries(result.product_data || {}).map(([product, data]) => ({
                 product: product,
+                product_type: data.product_type || '',
                 opening_portfolio: data.opening_portfolio || 0,
                 disbursements: data.disbursements || 0,
                 principal_repaid: data.principal_repaid || 0,
@@ -114,17 +106,18 @@ export class LoanPortfolio2Dashboard extends Component {
                 total_principal_repaid: result.total_principal_repaid || 0,
                 total_interest_earned: result.total_interest_earned || 0,
                 total_closing: result.total_closing || 0,
-                total_change_percentage: this.calculateTotalChangePercentage(result.total_opening, result.total_closing)
+                total_change_percentage: this.calculateTotalChangePercentage(
+                    result.total_opening || 0, 
+                    result.total_closing || 0
+                )
             };
-            
-            // Update chart if it exists
-            if (this.chart) {
-                this.updateChart();
-            }
             
         } catch (error) {
             console.error('Failed to load dashboard data:', error);
-            this.state.error = 'Failed to load dashboard data';
+            this.state.error = error.message || 'Failed to load dashboard data';
+            this.notification.add(this.state.error, {
+                type: 'danger',
+            });
         } finally {
             this.state.loading = false;
         }
@@ -146,112 +139,23 @@ export class LoanPortfolio2Dashboard extends Component {
         this.state.dateTo = event.target.value;
     }
 
-    async onBranchChange(event) {
-        this.state.selectedBranch = event.target.value;
+    async onProductChange(event) {
+        try {
+            this.state.selectedProduct = event.target.value;
+            await this.loadDashboardData();
+        } catch (error) {
+            console.error('Product change error:', error);
+            this.state.error = 'Failed to change product filter';
+            this.notification.add(this.state.error, { type: 'danger' });
+        }
     }
 
     async onCurrencyChange(event) {
         this.state.selectedCurrency = event.target.value;
     }
 
-    async onCompareChange(event) {
-        this.state.compareEnabled = event.target.checked;
-    }
-
     async applyFilters() {
         await this.loadDashboardData();
-    }
-
-    // Chart rendering
-    renderChart() {
-        if (!this.chartRef.el || !window.Chart) {
-            return;
-        }
-
-        const ctx = this.chartRef.el.getContext('2d');
-        
-        // Destroy existing chart if it exists
-        if (this.chart) {
-            this.chart.destroy();
-        }
-
-        const labels = this.state.portfolioData.map(item => item.product);
-        const openingData = this.state.portfolioData.map(item => item.opening_portfolio);
-        const closingData = this.state.portfolioData.map(item => item.closing_portfolio);
-        const disbursementsData = this.state.portfolioData.map(item => item.disbursements);
-
-        this.chart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: labels,
-                datasets: [
-                    {
-                        label: 'Opening Portfolio',
-                        data: openingData,
-                        backgroundColor: 'rgba(54, 162, 235, 0.8)',
-                        borderColor: 'rgba(54, 162, 235, 1)',
-                        borderWidth: 1
-                    },
-                    {
-                        label: 'Closing Portfolio',
-                        data: closingData,
-                        backgroundColor: 'rgba(75, 192, 192, 0.8)',
-                        borderColor: 'rgba(75, 192, 192, 1)',
-                        borderWidth: 1
-                    },
-                    {
-                        label: 'Disbursements',
-                        data: disbursementsData,
-                        backgroundColor: 'rgba(255, 206, 86, 0.8)',
-                        borderColor: 'rgba(255, 206, 86, 1)',
-                        borderWidth: 1
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    title: {
-                        display: true,
-                        text: 'Portfolio Performance by Product'
-                    },
-                    legend: {
-                        display: true,
-                        position: 'top'
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            callback: function(value) {
-                                return this.formatCurrency(value);
-                            }.bind(this)
-                        }
-                    }
-                }
-            }
-        });
-    }
-
-    updateChart() {
-        if (!this.chart) {
-            this.renderChart();
-            return;
-        }
-
-        const labels = this.state.portfolioData.map(item => item.product);
-        const openingData = this.state.portfolioData.map(item => item.opening_portfolio);
-        const closingData = this.state.portfolioData.map(item => item.closing_portfolio);
-        const disbursementsData = this.state.portfolioData.map(item => item.disbursements);
-
-        this.chart.data.labels = labels;
-        this.chart.data.datasets[0].data = openingData;
-        this.chart.data.datasets[1].data = closingData;
-        this.chart.data.datasets[2].data = disbursementsData;
-        
-        this.chart.update();
     }
 
     // Utility methods
@@ -276,7 +180,7 @@ export class LoanPortfolio2Dashboard extends Component {
                 filters: {
                     dateFrom: this.state.dateFrom,
                     dateTo: this.state.dateTo,
-                    selectedBranch: this.state.selectedBranch,
+                    selectedProduct: this.state.selectedProduct,
                     selectedCurrency: this.state.selectedCurrency
                 }
             };
@@ -298,16 +202,19 @@ export class LoanPortfolio2Dashboard extends Component {
         } catch (error) {
             console.error('Export failed:', error);
             this.state.error = 'Export failed';
+            this.notification.add(this.state.error, { type: 'danger' });
         }
     }
 
     convertToCSV(data) {
-        const headers = ['Product', 'Opening Portfolio', 'Disbursements', 'Principal Repaid', 'Interest Earned', 'Closing Portfolio', 'Change %'];
+        const headers = ['Product Type', 'Product', 'Opening Portfolio', 'Disbursements', 
+                       'Principal Repaid', 'Interest Earned', 'Closing Portfolio', 'Change %'];
         const csvRows = [headers.join(',')];
         
         // Add data rows
         data.portfolioData.forEach(item => {
             const row = [
+                this.getProductTypeName(item.product_type),
                 item.product,
                 item.opening_portfolio,
                 item.disbursements,
@@ -322,6 +229,7 @@ export class LoanPortfolio2Dashboard extends Component {
         // Add totals row
         const totalsRow = [
             'TOTALS',
+            '',
             data.totals.total_opening,
             data.totals.total_disbursements,
             data.totals.total_principal_repaid,
@@ -334,12 +242,17 @@ export class LoanPortfolio2Dashboard extends Component {
         return csvRows.join('\n');
     }
 
+    getProductTypeName(type) {
+        const product = this.state.productOptions.find(p => p.id === type);
+        return product ? product.name : type;
+    }
+
     async downloadReport() {
         try {
             const params = {
                 date_from: this.state.dateFrom,
                 date_to: this.state.dateTo,
-                branch_id: this.state.selectedBranch ? parseInt(this.state.selectedBranch) : null
+                product_type: this.state.selectedProduct || null
             };
 
             const result = await this.orm.call('loan.portfolio2', 'generate_snapshot_report', [], params);
@@ -351,10 +264,10 @@ export class LoanPortfolio2Dashboard extends Component {
         } catch (error) {
             console.error('Report generation failed:', error);
             this.state.error = 'Report generation failed';
+            this.notification.add(this.state.error, { type: 'danger' });
         }
     }
-
 }
-LoanPortfolio2Dashboard.template = 'my_hostel.LoanPortfolio2DashboardTemplate';
 
+LoanPortfolio2Dashboard.template = 'my_hostel.LoanPortfolio2DashboardTemplate';
 registry.category('actions').add('loan_portfolio2_dashboard', LoanPortfolio2Dashboard);
