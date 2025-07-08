@@ -10,6 +10,8 @@ export class LoanPortfolio2Dashboard extends Component {
         this.orm = useService('orm');
         this.action = useService('action');
         this.notification = useService('notification');
+
+
         
         // Set default dates
         const today = new Date();
@@ -21,6 +23,7 @@ export class LoanPortfolio2Dashboard extends Component {
             dateTo: lastDayOfMonth.toISOString().split('T')[0],
             selectedProduct: '',
             selectedCurrency: '',
+            currentPage: 1,
             
             portfolioData: [],
             totals: {
@@ -152,6 +155,11 @@ export class LoanPortfolio2Dashboard extends Component {
 
     async onCurrencyChange(event) {
         this.state.selectedCurrency = event.target.value;
+    }
+    async onPageChange(page) {
+        if (page >= 1 && page <= Math.ceil(this.state.portfolioData.length / 10)) {
+            this.state.currentPage = page;
+        }
     }
 
     async applyFilters() {

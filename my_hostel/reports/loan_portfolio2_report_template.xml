@@ -20,7 +20,7 @@
                     <t t-set="report_data" t-value="data and data.get('report_data', {}) or context.get('report_data', {}) or {}"/>
                     <t t-set="date_from" t-value="data and data.get('date_from') or context.get('date_from')"/>
                     <t t-set="date_to" t-value="data and data.get('date_to') or context.get('date_to')"/>
-                    <t t-set="branch_id" t-value="data and data.get('branch_id') or context.get('branch_id')"/>
+                    <t t-set="product_type" t-value="data and data.get('product_type') or context.get('product_type')"/>
                     
                     <div class="row">
                         <div class="text-center col-12">
@@ -29,7 +29,7 @@
                         </div>
                     </div>
                     
-                    <t t-if="date_from or date_to or branch_id">
+                    <t t-if="date_from or date_to or product_type">
                         <div class="mt-3 mb-3 row">
                             <div class="col-12">
                                 <div class="alert alert-info">
@@ -37,8 +37,17 @@
                                     <t t-if="date_from">From: <span t-esc="date_from"/></t>
                                     <t t-if="date_from and date_to"> | </t>
                                     <t t-if="date_to">To: <span t-esc="date_to"/></t>
-                                    <t t-if="(date_from or date_to) and branch_id"> | </t>
-                                    <t t-if="branch_id">Branch ID: <span t-esc="branch_id"/></t>
+                                    <t t-if="(date_from or date_to) and product_type"> | </t>
+                                    <t t-if="product_type">
+                                        Product Type: 
+                                        <t t-switch="product_type">
+                                            <t t-case="'ordinary'">Ordinary Savings</t>
+                                            <t t-case="'fixed_deposit'">Fixed Deposit</t>
+                                            <t t-case="'premium'">Premium Savings</t>
+                                            <t t-case="'regular'">Regular Savings</t>
+                                            <t t-case="'youth'">Youth Savings</t>
+                                        </t>
+                                    </t>
                                 </div>
                             </div>
                         </div>
@@ -115,6 +124,7 @@
                             <table class="table table-bordered table-striped">
                                 <thead class="table-dark">
                                     <tr>
+                                        <th>Product Type</th>
                                         <th>Product Name</th>
                                         <th class="text-end">Opening Portfolio</th>
                                         <th class="text-end">Disbursements</th>
@@ -129,6 +139,15 @@
                                         <t t-set="product_name" t-value="product_item[0]"/>
                                         <t t-set="product_data" t-value="product_item[1]"/>
                                         <tr>
+                                            <td>
+                                                <t t-switch="product_data.get('product_type')">
+                                                    <t t-case="'ordinary'">Ordinary Savings</t>
+                                                    <t t-case="'fixed_deposit'">Fixed Deposit</t>
+                                                    <t t-case="'premium'">Premium Savings</t>
+                                                    <t t-case="'regular'">Regular Savings</t>
+                                                    <t t-case="'youth'">Youth Savings</t>
+                                                </t>
+                                            </td>
                                             <td><strong><span t-esc="product_name"/></strong></td>
                                             <td class="text-end"><span t-esc="'{:,.0f}'.format(product_data.get('opening_portfolio', 0))"/></td>
                                             <td class="text-end"><span t-esc="'{:,.0f}'.format(product_data.get('disbursements', 0))"/></td>
@@ -144,7 +163,7 @@
                                     </t>
                                     <t t-if="not report_data.get('product_data')">
                                         <tr>
-                                            <td colspan="7" class="text-center text-muted">
+                                            <td colspan="8" class="text-center text-muted">
                                                 No portfolio data available for the selected filters.
                                             </td>
                                         </tr>
@@ -152,7 +171,7 @@
                                 </tbody>
                                 <tfoot class="table-secondary">
                                     <tr>
-                                        <td><strong>TOTALS</strong></td>
+                                        <td colspan="2"><strong>TOTALS</strong></td>
                                         <td class="text-end"><strong><span t-esc="'{:,.0f}'.format(report_data.get('total_opening', 0))"/></strong></td>
                                         <td class="text-end"><strong><span t-esc="'{:,.0f}'.format(report_data.get('total_disbursements', 0))"/></strong></td>
                                         <td class="text-end"><strong><span t-esc="'{:,.0f}'.format(report_data.get('total_principal_repaid', 0))"/></strong></td>
@@ -183,7 +202,7 @@
                                     
                                     <div class="row">
                                         <div class="col-6">
-                                            <p><strong>Net Portfolio Change:</strong> <span t-esc="'{:,.0f}'.format(net_change)"/> UGX</p>
+                                            <p><strong>Net Portfolio Change:</strong> <span t-esc="'{:,.0f}'.format(net_change)"/></p>
                                             <p><strong>Portfolio Growth Rate:</strong> <span t-esc="'{:.2f}'.format(growth_rate)"/>%</p>
                                             <p><strong>Disbursement to Opening Ratio:</strong> 
                                                 <span t-esc="'{:.2f}'.format((report_data.get('total_disbursements', 0) / report_data.get('total_opening', 1)) * 100 if report_data.get('total_opening', 0) > 0 else 0)"/>%
@@ -234,22 +253,30 @@
                                     <table class="table table-sm">
                                         <thead>
                                             <tr>
+                                                <th>Product Type</th>
                                                 <th>Product</th>
                                                 <th class="text-end">Growth %</th>
-                                                <th class="text-end">Closing Portfolio</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             <t t-set="sorted_products" t-value="sorted(report_data.get('product_data', {}).items(), key=lambda x: x[1].get('change_percentage', 0), reverse=True)[:5]"/>
                                             <t t-foreach="sorted_products" t-as="product_item">
                                                 <tr>
+                                                    <td>
+                                                        <t t-switch="product_item[1].get('product_type')">
+                                                            <t t-case="'ordinary'">Ordinary</t>
+                                                            <t t-case="'fixed_deposit'">Fixed Deposit</t>
+                                                            <t t-case="'premium'">Premium</t>
+                                                            <t t-case="'regular'">Regular</t>
+                                                            <t t-case="'youth'">Youth</t>
+                                                        </t>
+                                                    </td>
                                                     <td><span t-esc="product_item[0]"/></td>
                                                     <td class="text-end">
                                                         <span t-att-class="'badge ' + ('bg-success' if product_item[1].get('change_percentage', 0) >= 0 else 'bg-danger')">
                                                             <span t-esc="'{:.1f}'.format(product_item[1].get('change_percentage', 0))"/>%
                                                         </span>
                                                     </td>
-                                                    <td class="text-end"><span t-esc="'{:,.0f}'.format(product_item[1].get('closing_portfolio', 0))"/></td>
                                                 </tr>
                                             </t>
                                         </tbody>
@@ -260,20 +287,26 @@
                                     <table class="table table-sm">
                                         <thead>
                                             <tr>
+                                                <th>Product Type</th>
                                                 <th>Product</th>
                                                 <th class="text-end">Closing Portfolio</th>
-                                                <th class="text-end">% of Total</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             <t t-set="sorted_by_size" t-value="sorted(report_data.get('product_data', {}).items(), key=lambda x: x[1].get('closing_portfolio', 0), reverse=True)[:5]"/>
                                             <t t-foreach="sorted_by_size" t-as="product_item">
                                                 <tr>
+                                                    <td>
+                                                        <t t-switch="product_item[1].get('product_type')">
+                                                            <t t-case="'ordinary'">Ordinary</t>
+                                                            <t t-case="'fixed_deposit'">Fixed Deposit</t>
+                                                            <t t-case="'premium'">Premium</t>
+                                                            <t t-case="'regular'">Regular</t>
+                                                            <t t-case="'youth'">Youth</t>
+                                                        </t>
+                                                    </td>
                                                     <td><span t-esc="product_item[0]"/></td>
                                                     <td class="text-end"><span t-esc="'{:,.0f}'.format(product_item[1].get('closing_portfolio', 0))"/></td>
-                                                    <td class="text-end">
-                                                        <span t-esc="'{:.1f}'.format((product_item[1].get('closing_portfolio', 0) / report_data.get('total_closing', 1)) * 100 if report_data.get('total_closing', 0) > 0 else 0)"/>%
-                                                    </td>
                                                 </tr>
                                             </t>
                                         </tbody>
@@ -283,9 +316,9 @@
                         </div>
                     </div>
                     
-                    <div class="mt-3 row">
+                    <div class="mt-4 row">
                         <div class="col-12">
-                            <p><strong>Note:</strong> All amounts are in Ugandan Shillings (UGX). Change percentages are calculated based on the difference between opening and closing portfolios.</p>
+                            <p><strong>Note:</strong> All amounts are in the portfolio's currency. Change percentages are calculated based on the difference between opening and closing portfolios.</p>
                         </div>
                     </div>
                                         
