@@ -16,3 +16,4 @@ from . import hostel_dashboard
 from . import loan_portfolio
 from . import hostel_annoucements
 from . import saving_portfolio
+from . import loan_portfolio2

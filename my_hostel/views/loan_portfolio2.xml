@@ -19,25 +19,7 @@
         </field>
     </record>
 
-    <!-- Menu Item for Loan Portfolio2 -->
-    <menuitem id="menu_loan_portfolio2_root"
-              name="Loan Portfolio Snapshot"
-              parent="menu_hostel_dashboard_root"
-              sequence="7"
-              groups="my_hostel.group_hostel_manager,my_hostel.group_hostel_user"/>
-
-    <menuitem id="menu_loan_portfolio2_dashboard"
-              name="Portfolio Dashboard"
-              parent="menu_loan_portfolio2_root"
-              action="action_loan_portfolio2_dashboard"
-              sequence="1"/>
-
-    <menuitem id="menu_loan_portfolio2_list"
-              name="Portfolio Snapshots"
-              parent="menu_loan_portfolio2_root"
-              action="action_loan_portfolio2_list"
-              sequence="2"/>
-
+    
     <!-- Tree View for Loan Portfolio2 -->
     <record id="view_loan_portfolio2_tree" model="ir.ui.view">
         <field name="name">loan.portfolio2.tree</field>
@@ -56,7 +38,7 @@
             </tree>
         </field>
     </record>
-
+    
     <!-- Form View for Loan Portfolio2 -->
     <record id="view_loan_portfolio2_form" model="ir.ui.view">
         <field name="name">loan.portfolio2.form</field>
@@ -160,17 +142,17 @@
                 <field name="branch_id"/>
                 <filter string="Current Month" name="current_month" 
                         domain="[('date_from', '&gt;=', (datetime.date.today().replace(day=1)).strftime('%Y-%m-%d'))]"/>
-                <filter string="Last Month" name="last_month"
+                        <filter string="Last Month" name="last_month"
                         domain="[('date_from', '&gt;=', (datetime.date.today().replace(day=1) - datetime.timedelta(days=1)).replace(day=1).strftime('%Y-%m-%d')),
-                                ('date_to', '&lt;=', (datetime.date.today().replace(day=1) - datetime.timedelta(days=1)).strftime('%Y-%m-%d'))]"/>
-                <group expand="0" string="Group By">
+                        ('date_to', '&lt;=', (datetime.date.today().replace(day=1) - datetime.timedelta(days=1)).strftime('%Y-%m-%d'))]"/>
+                        <group expand="0" string="Group By">
                     <filter string="Branch" name="group_branch" context="{'group_by': 'branch_id'}"/>
                     <filter string="Date From" name="group_date_from" context="{'group_by': 'date_from'}"/>
                 </group>
             </search>
         </field>
     </record>
-
+    
     <!-- Tree View for Loan Portfolio2 Lines -->
     <record id="view_loan_portfolio2_line_tree" model="ir.ui.view">
         <field name="name">loan.portfolio2.line.tree</field>
@@ -187,7 +169,7 @@
             </tree>
         </field>
     </record>
-
+    
     <!-- Form View for Loan Portfolio2 Lines -->
     <record id="view_loan_portfolio2_line_form" model="ir.ui.view">
         <field name="name">loan.portfolio2.line.form</field>
@@ -213,4 +195,24 @@
             </form>
         </field>
     </record>
+    
+    <!-- Menu Item for Loan Portfolio2 -->
+    <menuitem id="menu_loan_portfolio2_root"
+              name="Loan Portfolio2"
+              parent="hostel_main_menu" 
+              sequence="12"
+              groups="my_hostel.group_hostel_manager,my_hostel.group_hostel_user"/>
+    
+    <menuitem id="menu_loan_portfolio2_dashboard"
+              name="Portfolio Dashboard"
+              parent="menu_loan_portfolio2_root"
+              action="action_loan_portfolio2_dashboard"
+              sequence="1"/>
+    
+    <menuitem id="menu_loan_portfolio2_list"
+              name="Portfolio Snapshots"
+              parent="menu_loan_portfolio2_root"
+              action="action_loan_portfolio2_list"
+              sequence="2"/>
+              
 </odoo>
