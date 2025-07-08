@@ -9,7 +9,7 @@ class LoanPortfolio2(models.Model):
     name = fields.Char(string='Portfolio Name', required=True)
     date_from = fields.Date(string='Date From', required=True, default=lambda self: date.today().replace(day=1))
     date_to = fields.Date(string='Date To', required=True, default=fields.Date.today)
-    branch_id = fields.Many2one('res.branch', string='Branch')
+    branch_id = fields.Char( string='Branch', required= True, help= "Account opening branch")
     currency_id = fields.Many2one('res.currency', string='Currency', required=True, default=lambda self: self.env.company.currency_id)
     
     # Portfolio lines
