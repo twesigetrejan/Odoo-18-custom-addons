@@ -27,4 +27,4 @@ class ResPartner(models.Model):
 
             # Sum the balances
             total_balance = sum(account.balance for account in savings_accounts)
-            partner.savings_balance = total_balance if total_balance > 0 else 0.0
+            partner.savings_balance = total_balance if total_balance > 0 else 0.0 
