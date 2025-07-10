@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates id="template" xml:space="preserve">
     <t t-name="my_hostel.LoanPortfolio2DashboardTemplate">
-        <div class="loan_portfolio2_dashboard">
+        <div class="loan_portfolio2_dashboard overflow-y: scroll; height: 100%">
             <!-- Header -->
             <div class="container-fluid" style="padding: 20px;">
                 <div class="row">
                     <div class="col-12">
-                        <h1 class="mb-4">Loan Portfolio Snapshot</h1>
+                        <h1 class="mb-4">Loan Portfolio Overview</h1>
                     </div>
                 </div>
                 
